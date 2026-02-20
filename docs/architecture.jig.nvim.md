@@ -10,9 +10,14 @@
 - `core/lazy.lua`: plugin bootstrap and channel command.
 - `core/plugin_state.lua`: install/update/restore/rollback lifecycle commands.
 - `core/health.lua`: health provider used by `:checkhealth jig`.
+- `ui/init.lua`: UI policy wiring (tokens, profiles, chrome, cmdline checks).
+- `ui/tokens.lua`: semantic highlight token system.
+- `ui/chrome.lua`: active/inactive statusline + winbar policy.
+- `ui/float.lua`: border hierarchy, elevation model, collision policy.
+- `ui/icons.lua`: Nerd Font/ASCII icon mode adapter.
 
 ## Plugin Layers
-- `plugins/ui.lua`: colorscheme, icons, statusline.
+- `plugins/ui.lua`: colorscheme, icons, keymap discovery UI.
 - `plugins/find.lua`: picker/navigation.
 - `plugins/lsp.lua`: native LSP + Mason.
 - `plugins/completion.lua`: completion stack with stable fallback.

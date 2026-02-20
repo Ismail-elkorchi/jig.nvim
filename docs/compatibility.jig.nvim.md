@@ -16,6 +16,7 @@
 - `ripgrep` recommended for search pickers
 - Nerd Font optional (ASCII fallback enabled)
 - truecolor preferred for default theme quality
+- Native `:` cmdline remains default (no mandatory cmdline overlay).
 
 ## API Baseline
 - `vim.lsp.config` / `vim.lsp.enable`
@@ -28,3 +29,4 @@
 - Systems without toolchains/native binaries should still run completion due Lua fuzzy fallback.
 - When clipboard provider is missing, editor remains functional but clipboard integration is degraded.
 - `NVIM_APPNAME=jig-safe` disables optional plugin layers for recovery workflows.
+- UI icon mode can be forced via `:JigIconMode ascii` on terminals without Nerd Fonts.
