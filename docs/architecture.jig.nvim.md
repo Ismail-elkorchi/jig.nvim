@@ -7,6 +7,7 @@
 - `core/keymaps.lua`: keymap registry (initial baseline).
 - `core/autocmd.lua`: diagnostics/yank UX behaviors.
 - `core/lazy.lua`: plugin bootstrap and channel command.
+- `core/plugin_state.lua`: install/update/restore/rollback lifecycle commands.
 - `core/health.lua`: health provider used by `:checkhealth jig`.
 
 ## Plugin Layers

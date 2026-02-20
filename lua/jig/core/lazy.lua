@@ -1,4 +1,5 @@
 local brand = require("jig.core.brand")
+local plugin_state = require("jig.core.plugin_state")
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 local lazy_available = vim.uv.fs_stat(lazypath) ~= nil
@@ -35,6 +36,11 @@ vim.api.nvim_create_user_command(brand.command("PluginBootstrap"), function()
   install_lazy()
 end, {
   desc = "Install lazy.nvim explicitly (no startup auto-install)",
+})
+
+plugin_state.register({
+  lazypath = lazypath,
+  bootstrap_command = brand.command("PluginBootstrap"),
 })
 
 if not lazy_available then

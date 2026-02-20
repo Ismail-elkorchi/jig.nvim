@@ -6,10 +6,18 @@
 - Startup side-effect policy: do not auto-install or auto-update plugins/toolchains.
 
 ## Update process
-1. Update lockfile in branch.
-2. Run startup + health smoke tests.
-3. Validate cmdline (`:`), completion, diagnostics, and picker flows.
-4. Merge via pull request only.
+1. Ensure plugin manager exists (`:JigPluginBootstrap` if missing).
+2. Run `:JigPluginUpdate` and confirm apply explicitly.
+3. Validate startup + health smoke tests.
+4. Validate cmdline (`:`), completion, diagnostics, and picker flows.
+5. Commit lockfile changes in branch.
+6. Merge via pull request only.
+
+## Plugin lifecycle commands
+- Install/sync: `:JigPluginInstall`
+- Update (transactional confirm): `:JigPluginUpdate`
+- Restore from lockfile: `:JigPluginRestore`
+- Roll back using previous lockfile backup: `:JigPluginRollback`
 
 ## Regression checklist
 - Startup succeeds in headless mode.
