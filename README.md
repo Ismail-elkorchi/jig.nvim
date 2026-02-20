@@ -41,6 +41,10 @@ NVIM_APPNAME=jig-safe nvim
 
 ## Commands
 - `:JigPluginBootstrap` install `lazy.nvim` explicitly.
+- `:JigPluginInstall` sync/install plugins.
+- `:JigPluginUpdate` preview (`Lazy check`) then apply update with explicit confirm.
+- `:JigPluginRestore` restore plugin state from `lazy-lock.json`.
+- `:JigPluginRollback` restore previous lockfile backup + `Lazy restore`.
 - `:JigChannel stable|edge` set update channel metadata.
 
 ## Profiles
@@ -64,6 +68,7 @@ nvim --headless -u ./init.lua '+checkhealth jig' '+qa'
 - `docs/contract.jig.nvim.md`
 - `docs/keymaps.jig.nvim.md`
 - `docs/architecture.jig.nvim.md`
+- `docs/plugin-manager.jig.nvim.md`
 - `docs/maintenance.jig.nvim.md`
 - `docs/stability.jig.nvim.md`
 - `docs/compatibility.jig.nvim.md`

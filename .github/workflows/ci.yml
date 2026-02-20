@@ -129,6 +129,10 @@ jobs:
         run: |
           nvim --headless -u ./init.lua '+lua print("jig-smoke")' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.g.jig_profile=="default")' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigPluginInstall")==2)' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigPluginUpdate")==2)' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigPluginRestore")==2)' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigPluginRollback")==2)' '+qa'
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.g.jig_profile=="safe")' '+qa'
 
       - name: Startup side-effect policy

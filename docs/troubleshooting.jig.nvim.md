@@ -28,7 +28,7 @@ Expected default: `false`.
 ```
 3. Restart Neovim and run:
 ```vim
-:Lazy sync
+:JigPluginInstall
 ```
 
 ## Icon Rendering Problems

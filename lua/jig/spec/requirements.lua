@@ -43,7 +43,7 @@ M.registry = {
     level = "MUST",
     text = "Plugin install/update/restore operations must be explicit.",
     owner = "core.lazy",
-    verification = "docs/maintenance.jig.nvim.md documents explicit plugin lifecycle commands",
+    verification = ":JigPluginInstall, :JigPluginUpdate, :JigPluginRestore, :JigPluginRollback",
     falsifier = "startup triggers install/update without explicit user command",
   },
   {
