@@ -28,4 +28,18 @@ return {
       }
     end,
   },
+  {
+    "folke/which-key.nvim",
+    event = "VeryLazy",
+    opts = {
+      preset = "modern",
+      delay = 200,
+      icons = {
+        mappings = vim.g.have_nerd_font,
+      },
+      win = {
+        border = "rounded",
+      },
+    },
+  },
 }

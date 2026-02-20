@@ -32,6 +32,9 @@ Run:
 - `docs/keymaps.nvim-2026.dev.md`
 - `docs/architecture.nvim-2026.dev.md`
 - `docs/maintenance.nvim-2026.dev.md`
+- `docs/stability.nvim-2026.dev.md`
+- `docs/compatibility.nvim-2026.dev.md`
+- `docs/troubleshooting.nvim-2026.dev.md`
 
 ## License
 MIT
