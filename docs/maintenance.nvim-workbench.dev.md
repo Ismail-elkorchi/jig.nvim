@@ -1,4 +1,4 @@
-# maintenance.nvim-2026.dev.md
+# maintenance.nvim-workbench.dev.md
 
 ## Release channels
 - `stable`: pinned plugin updates after CI pass.

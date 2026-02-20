@@ -12,18 +12,18 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
-  { import = "nvim2026.plugins" },
+  { import = "nvimworkbench.plugins" },
 }, {
   checker = { enabled = false },
   change_detection = { notify = false },
 })
 
-vim.api.nvim_create_user_command("Nvim2026Channel", function(opts)
+vim.api.nvim_create_user_command("NvimWorkbenchChannel", function(opts)
   local channel = opts.args
   if channel ~= "stable" and channel ~= "edge" then
-    vim.notify("Usage: :Nvim2026Channel stable|edge", vim.log.levels.ERROR)
+    vim.notify("Usage: :NvimWorkbenchChannel stable|edge", vim.log.levels.ERROR)
     return
   end
-  vim.g.nvim2026_channel = channel
+  vim.g.nvim_workbench_channel = channel
   vim.notify("Channel set to " .. channel .. ". Restart Neovim.")
 end, { nargs = 1, complete = function() return { "stable", "edge" } end })

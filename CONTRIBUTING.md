@@ -1,9 +1,9 @@
-# contributing.nvim-2026.dev
+# contributing.nvim-workbench.dev
 
 ## Workflow
 1. Create a branch from `main`.
 2. Open a pull request with a focused scope.
-3. Pass CI (`ci.nvim-2026.dev`).
+3. Pass CI (`ci.nvim-workbench.dev`).
 4. Keep commits linear and rebased.
 
 ## PR Requirements

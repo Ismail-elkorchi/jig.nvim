@@ -1,4 +1,4 @@
-# nvim-2026.dev
+# nvim-workbench.dev
 
 A Neovim distribution for 2026+ focused on stability, explicit customization, and modern API usage.
 
@@ -17,24 +17,24 @@ A Neovim distribution for 2026+ focused on stability, explicit customization, an
 ## Install
 ```bash
 mv ~/.config/nvim ~/.config/nvim.bak.$(date +%s) 2>/dev/null || true
-git clone https://github.com/Ismail-elkorchi/nvim-2026.dev ~/.config/nvim
+git clone https://github.com/Ismail-elkorchi/nvim-workbench.dev ~/.config/nvim
 nvim
 ```
 
 ## Health
 Run:
 ```vim
-:checkhealth nvim2026
+:checkhealth nvimworkbench
 ```
 
 ## Documentation
-- `docs/install.nvim-2026.dev.md`
-- `docs/keymaps.nvim-2026.dev.md`
-- `docs/architecture.nvim-2026.dev.md`
-- `docs/maintenance.nvim-2026.dev.md`
-- `docs/stability.nvim-2026.dev.md`
-- `docs/compatibility.nvim-2026.dev.md`
-- `docs/troubleshooting.nvim-2026.dev.md`
+- `docs/install.nvim-workbench.dev.md`
+- `docs/keymaps.nvim-workbench.dev.md`
+- `docs/architecture.nvim-workbench.dev.md`
+- `docs/maintenance.nvim-workbench.dev.md`
+- `docs/stability.nvim-workbench.dev.md`
+- `docs/compatibility.nvim-workbench.dev.md`
+- `docs/troubleshooting.nvim-workbench.dev.md`
 
 ## License
 MIT
