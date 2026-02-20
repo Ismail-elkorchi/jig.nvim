@@ -1,6 +1,5 @@
 local lifecycle = require("jig.lsp.lifecycle")
 local registry = require("jig.lsp.registry")
-local snapshot = require("jig.lsp.snapshot")
 
 local M = {}
 
