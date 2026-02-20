@@ -40,7 +40,8 @@ NVIM_APPNAME=jig-safe nvim
 
 ## Verification
 ```bash
-/home/ismail-el-korchi/Documents/Projects/tse-workbench/scripts/check_jig_legacy_brand.sh
+pattern='(nvim[-_]workbench|nvim(workbench)|nvim[-]2026|nvim(2026)|[N]vimWorkbench|[D]istroHealth|:[D]istro|distro[-]safe|distro[.])'
+rg -n "$pattern" . && exit 1 || true
 nvim --headless -u ./init.lua '+lua print("jig-smoke")' '+qa'
 nvim --headless -u ./init.lua '+checkhealth jig' '+qa'
 ```

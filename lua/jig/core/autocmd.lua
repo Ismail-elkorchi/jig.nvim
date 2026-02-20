@@ -1,3 +1,6 @@
+-- boundary: allow-vim-api
+-- Justification: augroup/autocmd registration is a Neovim host boundary operation.
+-- The module remains core because it defines default lifecycle policy.
 local brand = require("jig.core.brand")
 local aug = vim.api.nvim_create_augroup(brand.augroup("Core"), { clear = true })
 

@@ -1,0 +1,51 @@
+name: Bug Report
+description: Report a reproducible defect in Jig behavior.
+title: "bug: "
+labels:
+  - bug
+body:
+  - type: dropdown
+    id: incident_class
+    attributes:
+      label: Incident Class
+      options:
+        - startup
+        - cmdline
+        - completion
+        - lsp
+        - ui
+        - performance
+        - platform
+        - integration
+        - security
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction Steps
+      description: Provide exact commands and steps.
+    validations:
+      required: true
+  - type: textarea
+    id: expected_actual
+    attributes:
+      label: Expected vs Actual
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: |
+        Neovim version:
+        OS:
+        Shell:
+        NVIM_APPNAME:
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Attach logs, traces, screenshots, CI links.

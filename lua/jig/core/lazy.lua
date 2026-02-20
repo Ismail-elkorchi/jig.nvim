@@ -20,6 +20,8 @@ require("lazy").setup({
   change_detection = { notify = false },
 })
 
+-- boundary: allow-vim-api
+-- Justification: user command registration is part of Neovim host integration.
 vim.api.nvim_create_user_command(brand.command("Channel"), function(opts)
   local channel = opts.args
   if channel ~= "stable" and channel ~= "edge" then
@@ -28,4 +30,9 @@ vim.api.nvim_create_user_command(brand.command("Channel"), function(opts)
   end
   vim.g[brand.namespace .. "_channel"] = channel
   vim.notify(brand.brand .. " channel set to " .. channel .. ". Restart Neovim.")
-end, { nargs = 1, complete = function() return { "stable", "edge" } end })
+end, {
+  nargs = 1,
+  complete = function()
+    return { "stable", "edge" }
+  end,
+})
