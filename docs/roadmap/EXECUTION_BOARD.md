@@ -92,8 +92,15 @@ Updated at: `2026-02-20`
   - platform shell mismatch causes blocking failure in default workflow
 
 ### WP-09: Multi-Agent Interoperability Layer
-- Status: `in-progress`
+- Status: `done`
 - Depends on: `WP-08`
 - Issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/13
+- PR(s): https://github.com/Ismail-elkorchi/jig.nvim/pull/34
+- ADR(s): tbd
+
+### WP-10: Security, Trust Boundaries, and Risk Controls
+- Status: `not-started`
+- Depends on: `WP-09`
+- Issue: tbd
 - PR(s): tbd
 - ADR(s): tbd
