@@ -77,7 +77,7 @@ Updated at: `2026-02-20`
 - Status: `done`
 - Depends on: `WP-07`
 - Issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/12
-- PR(s): tbd
+- PR(s): https://github.com/Ismail-elkorchi/jig.nvim/pull/33
 - ADR(s): tbd
 - Deliverables (excerpt):
   - `vim.system` wrappers with explicit timeouts and nil-result hardening
