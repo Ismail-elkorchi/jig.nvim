@@ -15,11 +15,29 @@ jobs:
         nvim: [stable, v0.11.2]
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Install tools
         run: |
           sudo apt-get update
           sudo apt-get install -y ripgrep
+
+      - name: Setup Lua
+        uses: leafo/gh-actions-lua@v11
+        with:
+          luaVersion: "5.4"
+
+      - name: Setup LuaRocks
+        uses: leafo/gh-actions-luarocks@v5
+
+      - name: Install luacheck
+        run: luarocks install luacheck
+
+      - name: Install stylua
+        uses: taiki-e/install-action@v2
+        with:
+          tool: stylua
 
       - name: Install Neovim
         uses: rhysd/action-setup-vim@v1
@@ -30,11 +48,77 @@ jobs:
       - name: Legacy-brand guard
         run: |
           pattern='(nvim[-_]workbench|nvim(workbench)|nvim[-]2026|nvim(2026)|[N]vimWorkbench|[D]istroHealth|:[D]istro|distro[-]safe|distro[.])'
-          rg -n "$pattern" . || true
           if rg -n "$pattern" . ; then
             echo "legacy brand strings detected"
             exit 1
           fi
+
+      - name: Naming checks
+        run: |
+          set -euo pipefail
+          while IFS= read -r file; do
+            base="$(basename "$file")"
+            if [[ ! "$base" =~ ^[a-z0-9_]+\.lua$ ]]; then
+              echo "invalid lua filename: $file"
+              exit 1
+            fi
+          done < <(rg --files lua -g '*.lua')
+
+          while IFS= read -r hit; do
+            line="${hit#*:*:}"
+            name="$(echo "$line" | sed -nE "s/.*nvim_create_user_command[[:space:]]*\([[:space:]]*['\"]([^'\"]+)['\"].*/\1/p")"
+            if [[ -n "$name" && ! "$name" =~ ^Jig[A-Za-z0-9]*$ ]]; then
+              echo "invalid command prefix: $hit"
+              exit 1
+            fi
+          done < <(rg -n "nvim_create_user_command[[:space:]]*\(" lua || true)
+
+          while IFS= read -r hit; do
+            line="${hit#*:*:}"
+            name="$(echo "$line" | sed -nE "s/.*nvim_create_augroup[[:space:]]*\([[:space:]]*['\"]([^'\"]+)['\"].*/\1/p")"
+            if [[ -n "$name" && ! "$name" =~ ^Jig[A-Za-z0-9]*$ ]]; then
+              echo "invalid augroup prefix: $hit"
+              exit 1
+            fi
+          done < <(rg -n "nvim_create_augroup[[:space:]]*\(" lua || true)
+
+      - name: Boundary checks
+        run: |
+          set -euo pipefail
+          mapfile -t core_files < <(rg --files lua -g '*.lua' | rg '/core/.*\.lua$' || true)
+          for file in "${core_files[@]}"; do
+            if rg -n "require[[:space:]]*\(?[[:space:]]*['\"][^'\"]*([./]ui[./]|[./]agent[./]|\.ui\.|\.agent\.)" "$file"; then
+              echo "forbidden core import: $file"
+              exit 1
+            fi
+            if rg -n "vim\.api\." "$file" >/dev/null 2>&1; then
+              if ! rg -n "boundary:[[:space:]]*allow-vim-api" "$file" >/dev/null 2>&1; then
+                echo "missing boundary whitelist marker: $file"
+                exit 1
+              fi
+            fi
+          done
+
+      - name: Commit message checks
+        if: github.event_name == 'pull_request'
+        run: |
+          set -euo pipefail
+          range="${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}"
+          pattern='^(feat|fix|refactor|perf|docs|test|ci|build|chore|revert)(\([a-z0-9._/-]+\))?(!)?: .+'
+          while IFS=$'\t' read -r hash subject; do
+            [[ -z "$hash" ]] && continue
+            [[ "$subject" =~ ^Merge\  ]] && continue
+            if [[ ! "$subject" =~ $pattern ]]; then
+              echo "invalid commit subject: $hash $subject"
+              exit 1
+            fi
+          done < <(git log --no-merges --format='%H%x09%s' "$range")
+
+      - name: Formatting check
+        run: stylua --check --config-path .stylua.toml $(rg --files lua -g '*.lua')
+
+      - name: Lint check
+        run: luacheck --config .luacheckrc $(rg --files lua -g '*.lua')
 
       - name: Smoke test startup
         run: nvim --headless -u ./init.lua '+lua print("jig-smoke")' '+qa'
@@ -58,14 +142,6 @@ jobs:
         with:
           neovim: true
           version: nightly
-
-      - name: Legacy-brand guard (nightly)
-        run: |
-          pattern='(nvim[-_]workbench|nvim(workbench)|nvim[-]2026|nvim(2026)|[N]vimWorkbench|[D]istroHealth|:[D]istro|distro[-]safe|distro[.])'
-          if rg -n "$pattern" . ; then
-            echo "legacy brand strings detected"
-            exit 1
-          fi
 
       - name: Smoke and health (nightly)
         run: |
