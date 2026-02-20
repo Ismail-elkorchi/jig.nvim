@@ -1,6 +1,7 @@
 # architecture.jig.nvim.md
 
 ## Modules
+- `spec/requirements.lua`: machine-readable contract registry + self-check.
 - `core/options.lua`: editor defaults, font detection, loader setup.
 - `core/keymaps.lua`: keymap registry (initial baseline).
 - `core/autocmd.lua`: diagnostics/yank UX behaviors.
@@ -19,3 +20,4 @@
 - Native API alignment with Neovim 0.11+.
 - ASCII fallback for iconography.
 - PR-only + linear-history governance on `main`.
+- Optional extensions (including agent modules) must be removable without breaking core startup.

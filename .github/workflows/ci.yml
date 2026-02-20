@@ -114,6 +114,11 @@ jobs:
             fi
           done < <(git log --no-merges --format='%H%x09%s' "$range")
 
+      - name: Contract registry checks
+        run: |
+          lua -e 'package.path="./lua/?.lua;./lua/?/init.lua;"..package.path; assert(require("jig.spec.requirements").self_check())'
+          rg -n "MUST|SHOULD|MAY" docs/contract.jig.nvim.md
+
       - name: Formatting check
         run: stylua --check --config-path .stylua.toml $(rg --files lua -g '*.lua')
 

@@ -3,6 +3,7 @@
 ## Release channels
 - `stable`: pinned plugin updates after CI pass.
 - `edge`: faster updates for compatibility validation.
+- Startup side-effect policy: do not auto-install or auto-update plugins/toolchains.
 
 ## Update process
 1. Update lockfile in branch.

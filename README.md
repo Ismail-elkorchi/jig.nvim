@@ -42,12 +42,15 @@ NVIM_APPNAME=jig-safe nvim
 ```bash
 pattern='(nvim[-_]workbench|nvim(workbench)|nvim[-]2026|nvim(2026)|[N]vimWorkbench|[D]istroHealth|:[D]istro|distro[-]safe|distro[.])'
 rg -n "$pattern" . && exit 1 || true
+lua -e 'package.path="./lua/?.lua;./lua/?/init.lua;"..package.path; assert(require("jig.spec.requirements").self_check())'
+rg -n "MUST|SHOULD|MAY" docs/contract.jig.nvim.md
 nvim --headless -u ./init.lua '+lua print("jig-smoke")' '+qa'
 nvim --headless -u ./init.lua '+checkhealth jig' '+qa'
 ```
 
 ## Documentation
 - `docs/install.jig.nvim.md`
+- `docs/contract.jig.nvim.md`
 - `docs/keymaps.jig.nvim.md`
 - `docs/architecture.jig.nvim.md`
 - `docs/maintenance.jig.nvim.md`
