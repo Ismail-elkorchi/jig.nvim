@@ -1,4 +1,5 @@
-local aug = vim.api.nvim_create_augroup("nvimworkbench", { clear = true })
+local brand = require("jig.core.brand")
+local aug = vim.api.nvim_create_augroup(brand.augroup("Core"), { clear = true })
 
 vim.api.nvim_create_autocmd("TextYankPost", {
   group = aug,

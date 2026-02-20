@@ -1,7 +1,8 @@
 local M = {}
+local brand = require("jig.core.brand")
 
 function M.check()
-  vim.health.start("nvim-workbench.dev")
+  vim.health.start(brand.repo_slug)
 
   if vim.fn.has("nvim-0.11") == 1 then
     vim.health.ok("Neovim version >= 0.11")

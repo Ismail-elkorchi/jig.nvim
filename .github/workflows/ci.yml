@@ -1,37 +1,73 @@
-name: ci.nvim-2026.dev
+name: ci.jig.nvim
 
 on:
   pull_request:
   push:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
-  smoke:
+  required:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        nvim: [stable, nightly]
+        nvim: [stable, v0.11.2]
     steps:
       - uses: actions/checkout@v4
+
       - name: Install tools
         run: |
           sudo apt-get update
           sudo apt-get install -y ripgrep
+
       - name: Install Neovim
         uses: rhysd/action-setup-vim@v1
         with:
           neovim: true
           version: ${{ matrix.nvim }}
+
+      - name: Legacy-brand guard
+        run: |
+          pattern='(nvim[-_]workbench|nvim(workbench)|nvim[-]2026|nvim(2026)|[N]vimWorkbench|[D]istroHealth|:[D]istro|distro[-]safe|distro[.])'
+          rg -n "$pattern" . || true
+          if rg -n "$pattern" . ; then
+            echo "legacy brand strings detected"
+            exit 1
+          fi
+
       - name: Smoke test startup
-        run: |
-          nvim --headless \
-            -u ./init.lua \
-            '+lua print("nvim-2026.dev-smoke")' \
-            '+qa'
+        run: nvim --headless -u ./init.lua '+lua print("jig-smoke")' '+qa'
+
       - name: Health check
+        run: nvim --headless -u ./init.lua '+checkhealth jig' '+qa'
+
+  nightly-report:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install tools
         run: |
-          nvim --headless \
-            -u ./init.lua \
-            '+checkhealth nvim2026' \
-            '+qa'
+          sudo apt-get update
+          sudo apt-get install -y ripgrep
+
+      - name: Install Neovim (nightly)
+        uses: rhysd/action-setup-vim@v1
+        with:
+          neovim: true
+          version: nightly
+
+      - name: Legacy-brand guard (nightly)
+        run: |
+          pattern='(nvim[-_]workbench|nvim(workbench)|nvim[-]2026|nvim(2026)|[N]vimWorkbench|[D]istroHealth|:[D]istro|distro[-]safe|distro[.])'
+          if rg -n "$pattern" . ; then
+            echo "legacy brand strings detected"
+            exit 1
+          fi
+
+      - name: Smoke and health (nightly)
+        run: |
+          nvim --headless -u ./init.lua '+lua print("jig-smoke-nightly")' '+qa'
+          nvim --headless -u ./init.lua '+checkhealth jig' '+qa'
