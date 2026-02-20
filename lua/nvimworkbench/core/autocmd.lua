@@ -1,4 +1,4 @@
-local aug = vim.api.nvim_create_augroup("nvim2026", { clear = true })
+local aug = vim.api.nvim_create_augroup("nvimworkbench", { clear = true })
 
 vim.api.nvim_create_autocmd("TextYankPost", {
   group = aug,

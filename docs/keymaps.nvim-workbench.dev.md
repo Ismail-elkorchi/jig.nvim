@@ -1,4 +1,4 @@
-# keymaps.nvim-2026.dev.md
+# keymaps.nvim-workbench.dev.md
 
 ## Core
 - `<leader>qq`: quit all

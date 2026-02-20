@@ -1,8 +1,8 @@
-# troubleshooting.nvim-2026.dev.md
+# troubleshooting.nvim-workbench.dev.md
 
 ## Run Health Check
 ```vim
-:checkhealth nvim2026
+:checkhealth nvimworkbench
 ```
 
 ## Cmdline Error On `:`

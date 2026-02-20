@@ -1,4 +1,4 @@
-# compatibility.nvim-2026.dev.md
+# compatibility.nvim-workbench.dev.md
 
 ## Neovim Support
 - Minimum: `0.11.2`

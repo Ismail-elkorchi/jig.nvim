@@ -1,4 +1,4 @@
-# stability.nvim-2026.dev.md
+# stability.nvim-workbench.dev.md
 
 ## Policy
 - Default channel: `stable`

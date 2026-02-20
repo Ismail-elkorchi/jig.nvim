@@ -1,4 +1,4 @@
-# architecture.nvim-2026.dev.md
+# architecture.nvim-workbench.dev.md
 
 ## Modules
 - `core/options.lua`: editor defaults, font detection, loader setup.
