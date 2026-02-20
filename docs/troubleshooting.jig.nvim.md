@@ -17,6 +17,10 @@ NVIM_APPNAME=jig-safe nvim
 ```
 Expected default: `false`.
 3. If the error only appears in non-safe profile, inspect optional plugin overrides.
+4. Run automated cmdline check:
+```vim
+:JigCmdlineCheck
+```
 
 ## Plugin Manager Missing
 1. Confirm path:
@@ -38,6 +42,10 @@ Expected default: `false`.
 3. Validate detection:
 ```vim
 :lua print(vim.g.have_nerd_font)
+```
+4. Force ASCII fallback if needed:
+```vim
+:JigIconMode ascii
 ```
 
 ## LSP Not Attaching

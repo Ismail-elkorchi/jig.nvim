@@ -14,24 +14,6 @@ return {
     end,
   },
   {
-    "nvim-lualine/lualine.nvim",
-    dependencies = { "nvim-tree/nvim-web-devicons" },
-    opts = function()
-      local nerd = vim.g.have_nerd_font == true
-      return {
-        options = {
-          theme = "auto",
-          globalstatus = true,
-          icons_enabled = nerd,
-          section_separators = nerd and { left = "", right = "" }
-            or { left = "", right = "" },
-          component_separators = nerd and { left = "", right = "" }
-            or { left = "|", right = "|" },
-        },
-      }
-    end,
-  },
-  {
     "folke/which-key.nvim",
     event = "VeryLazy",
     opts = {

@@ -5,6 +5,11 @@ if not bootstrap.bootstrap() then
 end
 
 require("jig.core.options")
+
+if not vim.g.jig_safe_profile then
+  require("jig.ui").setup()
+end
+
 require("jig.core.keymaps")
 require("jig.core.autocmd")
 require("jig.core.doctor").setup()

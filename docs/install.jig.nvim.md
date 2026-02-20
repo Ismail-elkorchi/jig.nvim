@@ -20,3 +20,9 @@ NVIM_APPNAME=jig-safe nvim
 ```
 
 `jig-safe` loads only mandatory core modules for recovery/debugging.
+
+Optional UI profile tuning:
+```vim
+:JigUiProfile high-contrast
+:JigIconMode ascii
+```

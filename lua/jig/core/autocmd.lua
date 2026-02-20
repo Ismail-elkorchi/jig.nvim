@@ -20,7 +20,10 @@ vim.api.nvim_create_autocmd("VimEnter", {
       underline = true,
       update_in_insert = false,
       severity_sort = true,
-      float = { border = "rounded", source = "if_many" },
+      float = {
+        border = vim.g.jig_ui_float_border_secondary or "rounded",
+        source = "if_many",
+      },
     })
   end,
 })
