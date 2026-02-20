@@ -25,3 +25,4 @@
 - Completion works in insert and cmdline modes.
 - LSP attaches on known filetypes.
 - Icons degrade to ASCII when Nerd Font missing.
+- Keymap docs/vimdoc are synchronized with registry (`tests/keymaps/run_harness.sh`).

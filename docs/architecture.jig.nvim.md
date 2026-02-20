@@ -4,7 +4,10 @@
 - `spec/requirements.lua`: machine-readable contract registry + self-check.
 - `core/bootstrap.lua`: version gate, profile detection, safe-mode gating.
 - `core/options.lua`: editor defaults, font detection, loader setup.
-- `core/keymaps.lua`: keymap registry (initial baseline).
+- `core/keymaps.lua`: keymap application + `:JigKeys` command.
+- `core/keymap_registry.lua`: schema, conflict policy, safety constraints, runtime index.
+- `core/keymap_panel.lua`: discoverability panel for keymap index.
+- `core/keymap_docs.lua`: generated docs/vimdoc renderer + sync gate.
 - `core/autocmd.lua`: diagnostics/yank UX behaviors.
 - `core/doctor.lua`: health/provenance/bisect command entrypoints.
 - `core/lazy.lua`: plugin bootstrap and channel command.

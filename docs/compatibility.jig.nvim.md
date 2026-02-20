@@ -18,6 +18,7 @@
 - truecolor preferred for default theme quality
 - Native `:` cmdline remains default (no mandatory cmdline overlay).
 - Navigation commands degrade to builtin fallback paths when picker plugins fail or are missing.
+- Default keymaps do not override canonical Vim motions; mappings are leader-first by policy.
 
 ## API Baseline
 - `vim.lsp.config` / `vim.lsp.enable`

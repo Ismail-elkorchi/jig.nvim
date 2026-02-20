@@ -1,0 +1,37 @@
+*jig-keymaps*  Keymap Index
+
+Generated from keymap registry. Do not edit manually.
+
+COMMANDS
+  :JigKeys       Open keymap index panel
+
+KEYMAPS
+
+CORE
+  <leader>qq     Quit all
+  <leader>w      Write
+  <leader>e      File explorer
+
+DIAGNOSTICS
+  <leader>fd     Diagnostics list
+  ]d             Next diagnostic
+  [d             Previous diagnostic
+
+DISCOVERABILITY
+  <leader>fk     Open keymap index
+
+NAVIGATION
+  <leader>ff     Find files
+  <leader>fb     Find buffers
+  <leader>fr     Find recent files
+  <leader>fs     Find symbols
+  <leader>fD     Find diagnostics
+  <leader>fh     Find command history
+  <leader>fg     Find git changes
+
+TERMINAL
+  <leader>tt     Terminal current
+  <leader>th     Terminal horizontal
+  <leader>tv     Terminal vertical
+
+vim:tw=78:ts=8:noet:ft=help:norl:

@@ -1,26 +1,31 @@
 # keymaps.jig.nvim.md
 
+Generated from keymap registry. Do not edit manually.
+
 ## Core
-- `<leader>qq`: quit all
-- `<leader>w`: write buffer
-- `<leader>e`: file explorer
-
-## Navigation and Search
-- Command-first navigation (WP-05 baseline):
-  - `:JigFiles`
-  - `:JigBuffers`
-  - `:JigRecent`
-  - `:JigSymbols`
-  - `:JigDiagnostics`
-  - `:JigHistory`
-  - `:JigGitChanges`
-
-## Terminal
-- `<leader>tt`: terminal in current window
-- `<leader>th`: horizontal split terminal
-- `<leader>tv`: vertical split terminal
+- `<leader>qq`: Quit all
+- `<leader>w`: Write
+- `<leader>e`: File explorer
 
 ## Diagnostics
-- `[d`: previous diagnostic
-- `]d`: next diagnostic
-- `<leader>fd`: diagnostics list
+- `<leader>fd`: Diagnostics list
+- `]d`: Next diagnostic
+- `[d`: Previous diagnostic
+
+## Discoverability
+- `<leader>fk`: Open keymap index
+
+## Navigation
+- `<leader>ff`: Find files
+- `<leader>fb`: Find buffers
+- `<leader>fr`: Find recent files
+- `<leader>fs`: Find symbols
+- `<leader>fD`: Find diagnostics
+- `<leader>fh`: Find command history
+- `<leader>fg`: Find git changes
+
+## Terminal
+- `<leader>tt`: Terminal current
+- `<leader>th`: Terminal horizontal
+- `<leader>tv`: Terminal vertical
+

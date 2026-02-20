@@ -19,10 +19,10 @@ Updated at: `2026-02-20`
 - ADR(s): tbd
 
 ### WP-05: Finder, Navigation, and Information Architecture
-- Status: `in-progress`
+- Status: `done`
 - Depends on: `WP-04`
 - Issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/9
-- PR(s): tbd
+- PR(s): https://github.com/Ismail-elkorchi/jig.nvim/pull/30
 - ADR(s): tbd
 - Deliverables (excerpt):
   - deterministic root resolution policy (`vim.fs.root` + markers)
@@ -37,7 +37,7 @@ Updated at: `2026-02-20`
   - candidate list length exceeds configured cap under large-list path
 
 ### WP-06: Keymap Registry and Discoverability
-- Status: `not-started`
+- Status: `in-progress`
 - Depends on: `WP-05`
 - Issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/10
 - PR(s): tbd
