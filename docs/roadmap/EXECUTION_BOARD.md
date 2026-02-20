@@ -57,7 +57,7 @@ Updated at: `2026-02-20`
 - Status: `done`
 - Depends on: `WP-01`
 - Issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/11
-- PR(s): tbd
+- PR(s): https://github.com/Ismail-elkorchi/jig.nvim/pull/32
 - ADR(s): tbd
 - Deliverables (excerpt):
   - modern LSP APIs (`vim.lsp.config`, `vim.lsp.enable`)
