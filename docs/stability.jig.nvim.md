@@ -5,6 +5,7 @@
 - Optional channel: `edge`
 - No direct pushes to `main`; pull request flow only.
 - Linear history required on `main`.
+- Startup policy: no implicit plugin/tool install, update, or network mutation.
 
 ## Update Rules
 1. Update lockfile on feature branch.
