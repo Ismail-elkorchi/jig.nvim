@@ -1,4 +1,4 @@
-# maintenance.nvim-workbench.dev.md
+# maintenance.jig.nvim.md
 
 ## Release channels
 - `stable`: pinned plugin updates after CI pass.

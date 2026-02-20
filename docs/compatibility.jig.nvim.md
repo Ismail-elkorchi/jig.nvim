@@ -1,4 +1,4 @@
-# compatibility.nvim-workbench.dev.md
+# compatibility.jig.nvim.md
 
 ## Neovim Support
 - Minimum: `0.11.2`

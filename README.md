@@ -1,40 +1,56 @@
-# nvim-workbench.dev
+# jig.nvim
 
-A Neovim distribution for 2026+ focused on stability, explicit customization, and modern API usage.
+Jig is a Neovim distribution focused on predictable defaults and explicit operations.
 
-## Guarantees
-- Uses modern Neovim APIs (`vim.lsp.config`, `vim.lsp.enable`, `vim.system`, `vim.uv`).
-- Stable defaults for cmdline, completion, and diagnostics.
-- ASCII fallback when Nerd Font is not available.
-- Separation between stable and edge update channels.
+## Canonical IDs
+- Brand: `Jig`
+- Repository slug: `jig.nvim`
+- `NVIM_APPNAME` default: `jig`
+- `NVIM_APPNAME` safe profile: `jig-safe`
+- Lua namespace root: `jig`
+- User command prefix: `:Jig*`
+- Autocmd groups: `Jig*`
+- Highlight groups: `Jig*`
+- Help prefix: `jig-*` and `:help jig`
 
 ## Requirements
-- Neovim >= 0.11.2 (recommended: latest 0.11.x stable)
-- Git
-- `ripgrep` (`rg`) for full picker/search features
-- Nerd Font optional
+- Neovim >= `0.11.2`
+- `git`
+- `ripgrep` (`rg`) for picker/grep paths
+- Nerd Font optional (ASCII fallback supported)
 
 ## Install
 ```bash
 mv ~/.config/nvim ~/.config/nvim.bak.$(date +%s) 2>/dev/null || true
-git clone https://github.com/Ismail-elkorchi/nvim-workbench.dev ~/.config/nvim
+git clone https://github.com/Ismail-elkorchi/jig.nvim ~/.config/nvim
 nvim
 ```
 
+## Isolated Profiles
+```bash
+git clone https://github.com/Ismail-elkorchi/jig.nvim ~/.config/jig
+NVIM_APPNAME=jig nvim
+NVIM_APPNAME=jig-safe nvim
+```
+
 ## Health
-Run:
 ```vim
-:checkhealth nvimworkbench
+:checkhealth jig
+```
+
+## Verification
+```bash
+./scripts/ci_verify.sh
 ```
 
 ## Documentation
-- `docs/install.nvim-workbench.dev.md`
-- `docs/keymaps.nvim-workbench.dev.md`
-- `docs/architecture.nvim-workbench.dev.md`
-- `docs/maintenance.nvim-workbench.dev.md`
-- `docs/stability.nvim-workbench.dev.md`
-- `docs/compatibility.nvim-workbench.dev.md`
-- `docs/troubleshooting.nvim-workbench.dev.md`
+- `docs/install.jig.nvim.md`
+- `docs/keymaps.jig.nvim.md`
+- `docs/architecture.jig.nvim.md`
+- `docs/maintenance.jig.nvim.md`
+- `docs/stability.jig.nvim.md`
+- `docs/compatibility.jig.nvim.md`
+- `docs/troubleshooting.jig.nvim.md`
 
 ## License
 MIT

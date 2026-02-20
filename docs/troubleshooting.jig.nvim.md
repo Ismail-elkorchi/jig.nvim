@@ -1,8 +1,8 @@
-# troubleshooting.nvim-workbench.dev.md
+# troubleshooting.jig.nvim.md
 
 ## Run Health Check
 ```vim
-:checkhealth nvimworkbench
+:checkhealth jig
 ```
 
 ## Cmdline Error On `:`

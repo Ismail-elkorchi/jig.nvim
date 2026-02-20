@@ -1,4 +1,4 @@
-# architecture.nvim-workbench.dev.md
+# architecture.jig.nvim.md
 
 ## Modules
 - `core/options.lua`: editor defaults, font detection, loader setup.
@@ -13,7 +13,6 @@
 - `plugins/completion.lua`: completion stack with stable fallback.
 - `plugins/git.lua`: git signs and hunk state.
 - `plugins/syntax.lua`: treesitter highlighting/indent.
-- `plugins/terminal.lua`: integrated terminal workflows.
 
 ## Policy
 - Stability-first defaults.

@@ -1,4 +1,4 @@
-# stability.nvim-workbench.dev.md
+# stability.jig.nvim.md
 
 ## Policy
 - Default channel: `stable`
