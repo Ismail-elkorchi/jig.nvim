@@ -18,6 +18,12 @@ local function fixture_root()
   return repo_root() .. "/tests/fixtures/root_policy/workspace"
 end
 
+local function normalize(path)
+  local expanded = vim.fn.fnamemodify(path, ":p")
+  local real = vim.uv.fs_realpath(expanded)
+  return (real or expanded):gsub("/+$", "")
+end
+
 local function write_snapshot(path, payload)
   vim.fn.mkdir(vim.fn.fnamemodify(path, ":h"), "p")
   vim.fn.writefile({ vim.json.encode(payload) }, path)
@@ -60,7 +66,9 @@ local cases = {
         }
 
         local nested = fixture .. "/src/nested/project/main.lua"
-        local expected_nested = fixture .. "/src/nested/project"
+        local expected_nested = normalize(fixture .. "/src/nested/project")
+        local expected_workspace = normalize(fixture)
+        local expected_env = normalize(fixture .. "/src")
 
         local outputs = {}
         for _ = 1, 5 do
@@ -74,22 +82,22 @@ local cases = {
 
         local module_file = fixture .. "/src/module/file.lua"
         local resolved_module = root.resolve({ path = module_file })
-        assert(resolved_module.root == fixture, "workspace root mismatch")
+        assert(normalize(resolved_module.root) == expected_workspace, "workspace root mismatch")
 
         vim.env.JIG_ROOT = fixture .. "/src"
         local env_resolved = root.resolve({ path = nested })
-        assert(env_resolved.root == fixture .. "/src", "env root override mismatch")
+        assert(normalize(env_resolved.root) == expected_env, "env root override mismatch")
 
         root.set(fixture)
         vim.env.JIG_ROOT = nil
         local cmd_resolved = root.resolve({ path = nested })
-        assert(cmd_resolved.root == fixture, "command root override mismatch")
+        assert(normalize(cmd_resolved.root) == expected_workspace, "command root override mismatch")
 
         return {
           nested = expected_nested,
-          workspace = resolved_module.root,
-          env_override = env_resolved.root,
-          command_override = cmd_resolved.root,
+          workspace = normalize(resolved_module.root),
+          env_override = normalize(env_resolved.root),
+          command_override = normalize(cmd_resolved.root),
         }
       end)
     end,
