@@ -65,6 +65,18 @@ NVIM_APPNAME=jig-safe nvim
 - `:JigExec {cmd...}` run non-interactive command with deterministic result capture.
 - `:JigToolHealth` show shell/provider/tool integration summary.
 - `:JigTerm [root|buffer]` open integrated terminal in Jig root (or current buffer directory).
+- `:JigMcpList` list discovered MCP servers (when agent module enabled).
+- `:JigMcpStart <server>` start MCP handshake for one server (when enabled).
+- `:JigMcpStop <server>|all` stop MCP runtime state (when enabled).
+- `:JigMcpTools <server>` list tools from server via policy-routed call (when enabled).
+- `:JigMcpCall <server> <tool> <json_args>` call MCP tool through allow/ask/deny policy (when enabled).
+- `:JigAgentPolicyList` list persistent policy grants.
+- `:JigAgentPolicyGrant ...` persist allow/ask/deny policy rules with explicit scope.
+- `:JigAgentPolicyRevoke <rule_id>` revoke persistent policy rule.
+- `:JigAgentInstructions` show merged AGENTS/CLAUDE/GEMINI instruction sources.
+- `:JigAgentContext` show context ledger sources and budget warnings.
+- `:JigAgentTaskStart|Cancel|Resume|Tasks` manage auditable task handles.
+- `:JigAcpHandshake` and `:JigAcpPrompt` run ACP-stdio bridge hooks for candidate responses.
 - `:JigPluginBootstrap` install `lazy.nvim` explicitly.
 - `:JigPluginInstall` sync/install plugins.
 - `:JigPluginUpdate` preview (`Lazy check`) then apply update with explicit confirm.
@@ -75,6 +87,9 @@ NVIM_APPNAME=jig-safe nvim
 ## Profiles
 - `NVIM_APPNAME=jig` uses the default profile.
 - `NVIM_APPNAME=jig-safe` loads only mandatory core modules.
+- Agent layer is disabled by default in `jig` and absent in `jig-safe`.
+- Enable agent module explicitly with trusted config:
+  `vim.g.jig_agent = { enabled = true }`
 
 ## Verification
 ```bash
@@ -99,6 +114,7 @@ nvim --headless -u ./init.lua '+checkhealth jig' '+qa'
 - `docs/navigation.jig.nvim.md`
 - `docs/lsp.jig.nvim.md`
 - `docs/tools.jig.nvim.md`
+- `docs/agents.jig.nvim.md`
 - `docs/ui-foundation.jig.nvim.md`
 - `docs/ui-testing.jig.nvim.md`
 - `docs/maintenance.jig.nvim.md`
@@ -107,6 +123,7 @@ nvim --headless -u ./init.lua '+checkhealth jig' '+qa'
 - `docs/troubleshooting.jig.nvim.md`
 - `doc/jig-lsp.txt` (`:help jig-lsp`)
 - `doc/jig-tools.txt` (`:help jig-tools`)
+- `doc/jig-agents.txt` (`:help jig-agents`)
 
 ## License
 MIT

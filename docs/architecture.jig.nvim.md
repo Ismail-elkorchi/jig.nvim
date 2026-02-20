@@ -33,6 +33,18 @@
 - `tools/terminal.lua`: terminal integration with mode visibility and command-state feedback.
 - `tools/health.lua`: shell/provider/tool health summaries and checkhealth integration.
 - `tools/init.lua`: command orchestration + `:JigExec`, `:JigToolHealth`, `:JigTerm`.
+- `agent/config.lua`: optional multi-agent feature flags and trusted override merging.
+- `agent/policy.lua`: allow/ask/deny engine with persistent revocable grants.
+- `agent/log.lua`: append-only JSONL evidence logging.
+- `agent/health.lua`: optional health summary for agent state and MCP discovery.
+- `agent/task.lua`: task handles with cancel/resume and evidence continuity.
+- `agent/instructions.lua`: instruction artifact discovery and precedence merge.
+- `agent/observability.lua`: context ledger capture, budget warnings, and panel rendering.
+- `agent/mcp/config.lua`: MCP config discovery (`.mcp.json`, `mcp.json`) and normalization.
+- `agent/mcp/transport.lua`: minimal stdio JSON-RPC transport for deterministic MCP tests.
+- `agent/mcp/client.lua`: MCP lifecycle/list/call orchestration with policy routing.
+- `agent/backends/acp_stdio.lua`: ACP-stdio handshake/prompt skeleton for candidate outputs.
+- `agent/init.lua`: optional command-first surface for `:JigMcp*`, `:JigAgent*`, and `:JigAcp*`.
 - `ui/init.lua`: UI policy wiring (tokens, profiles, chrome, cmdline checks).
 - `ui/tokens.lua`: semantic highlight token system.
 - `ui/chrome.lua`: active/inactive statusline + winbar policy.
@@ -53,3 +65,4 @@
 - ASCII fallback for iconography.
 - PR-only + linear-history governance on `main`.
 - Optional extensions (including agent modules) must be removable without breaking core startup.
+- Agent module is disabled by default and never loaded in `NVIM_APPNAME=jig-safe`.

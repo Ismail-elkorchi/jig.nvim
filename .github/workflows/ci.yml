@@ -147,6 +147,9 @@ jobs:
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigExec")==2)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigToolHealth")==2)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigTerm")==2)' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigMcpList")==0)' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigAgentContext")==0)' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(package.loaded["jig.agent"]==nil)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigRootSet")==2)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigRootReset")==2)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigPluginInstall")==2)' '+qa'
@@ -165,6 +168,9 @@ jobs:
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigExec")==0)' '+qa'
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigToolHealth")==0)' '+qa'
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigTerm")==0)' '+qa'
+          NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigMcpList")==0)' '+qa'
+          NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigAgentContext")==0)' '+qa'
+          NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(package.loaded["jig.agent"]==nil)' '+qa'
 
       - name: Cmdline open-close check
         run: nvim --headless -u ./init.lua '+JigCmdlineCheck' '+qa'
@@ -214,6 +220,17 @@ jobs:
           rg -n '"capture-concurrency-guard"' tests/tools/snapshots/latest-headless.json
           rg -n '"timeout-or-nil-path"' tests/tools/snapshots/latest-headless.json
           rg -n '"safe-profile-isolation"' tests/tools/snapshots/latest-headless.json
+
+      - name: Agent harness snapshot checks
+        run: |
+          tests/agent/run_harness.sh
+          test -f tests/agent/snapshots/latest-headless.json
+          rg -n '"default-profile-agent-disabled"' tests/agent/snapshots/latest-headless.json
+          rg -n '"permission-policy-unit"' tests/agent/snapshots/latest-headless.json
+          rg -n '"task-cancel-resume"' tests/agent/snapshots/latest-headless.json
+          rg -n '"mcp-failure-injection"' tests/agent/snapshots/latest-headless.json
+          rg -n '"acp-bridge-hook"' tests/agent/snapshots/latest-headless.json
+          rg -n '"safe-profile-isolation"' tests/agent/snapshots/latest-headless.json
 
       - name: Deprecated API gate
         run: tests/lsp/check_deprecated.sh
