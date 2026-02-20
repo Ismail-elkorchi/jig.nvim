@@ -133,6 +133,7 @@ jobs:
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigVerboseMap")==2)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigVerboseSet")==2)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigBisectGuide")==2)' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigKeys")==2)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigFiles")==2)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigBuffers")==2)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigRecent")==2)' '+qa'
@@ -168,6 +169,19 @@ jobs:
           rg -n '"root-determinism"' tests/nav/snapshots/latest-headless.json
           rg -n '"latency-budget-smoke"' tests/nav/snapshots/latest-headless.json
           rg -n '"candidate-cap-guardrail"' tests/nav/snapshots/latest-headless.json
+
+      - name: Keymap harness snapshot checks
+        run: |
+          tests/keymaps/run_harness.sh
+          test -f tests/keymaps/snapshots/latest-headless.json
+          rg -n '"forbidden-defaults"' tests/keymaps/snapshots/latest-headless.json
+          rg -n '"runtime-forbidden-not-mapped"' tests/keymaps/snapshots/latest-headless.json
+          rg -n '"runtime-registry-subset"' tests/keymaps/snapshots/latest-headless.json
+          rg -n '"docs-sync-gate"' tests/keymaps/snapshots/latest-headless.json
+
+      - name: Keymap docs sync gate
+        run: |
+          nvim --headless -u ./init.lua '+lua package.path="./lua/?.lua;./lua/?/init.lua;"..package.path; _G.__jig_repo_root=vim.fn.getcwd(); require("jig.core.keymap_docs").generate({ check = true })' '+qa'
 
       - name: Startup side-effect policy
         run: |

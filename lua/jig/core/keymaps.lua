@@ -1,40 +1,18 @@
+-- boundary: allow-vim-api
+-- Justification: user command registration is a Neovim host boundary operation.
+local brand = require("jig.core.brand")
+local panel = require("jig.core.keymap_panel")
+local registry = require("jig.core.keymap_registry")
+
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 
-local map = vim.keymap.set
-local opts = { noremap = true, silent = true }
+local entries = registry.defaults({ safe_profile = vim.g.jig_safe_profile == true })
+registry.apply(entries)
 
-map("n", "<leader>qq", "<cmd>qa<cr>", vim.tbl_extend("force", opts, { desc = "Quit all" }))
-map("n", "<leader>w", "<cmd>w<cr>", vim.tbl_extend("force", opts, { desc = "Write" }))
-map("n", "<leader>e", "<cmd>Ex<cr>", vim.tbl_extend("force", opts, { desc = "File explorer" }))
-
-map("n", "<leader>fd", function()
-  vim.diagnostic.setloclist({ open = true })
-end, vim.tbl_extend("force", opts, { desc = "Diagnostics list" }))
-
-map(
-  "n",
-  "<leader>tt",
-  "<cmd>terminal<cr>",
-  vim.tbl_extend("force", opts, { desc = "Terminal current" })
-)
-map(
-  "n",
-  "<leader>th",
-  "<cmd>split | terminal<cr>",
-  vim.tbl_extend("force", opts, { desc = "Terminal horizontal" })
-)
-map(
-  "n",
-  "<leader>tv",
-  "<cmd>vsplit | terminal<cr>",
-  vim.tbl_extend("force", opts, { desc = "Terminal vertical" })
-)
-
-map("n", "]d", function()
-  vim.diagnostic.jump({ count = 1, float = true })
-end, vim.tbl_extend("force", opts, { desc = "Next diagnostic" }))
-
-map("n", "[d", function()
-  vim.diagnostic.jump({ count = -1, float = true })
-end, vim.tbl_extend("force", opts, { desc = "Prev diagnostic" }))
+vim.api.nvim_create_user_command(brand.command("Keys"), function()
+  local state = panel.open(entries)
+  vim.g.jig_keys_last_panel = state
+end, {
+  desc = "Show keymap registry index",
+})

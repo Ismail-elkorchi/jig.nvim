@@ -44,6 +44,7 @@ NVIM_APPNAME=jig-safe nvim
 - `:JigVerboseMap {lhs}` show keymap provenance.
 - `:JigVerboseSet {option}` show option provenance.
 - `:JigBisectGuide` print deterministic bisect guidance.
+- `:JigKeys` open keymap index panel.
 - `:JigUiProfile {profile}` set accessibility profile.
 - `:JigIconMode {mode}` set icon mode (`auto|nerd|ascii`).
 - `:JigCmdlineCheck` run native cmdline open/close check.
@@ -85,6 +86,7 @@ nvim --headless -u ./init.lua '+checkhealth jig' '+qa'
 - `docs/install.jig.nvim.md`
 - `docs/contract.jig.nvim.md`
 - `docs/keymaps.jig.nvim.md`
+- `doc/jig-keymaps.txt` (`:help jig-keymaps`)
 - `docs/architecture.jig.nvim.md`
 - `docs/plugin-manager.jig.nvim.md`
 - `docs/profiling.jig.nvim.md`
