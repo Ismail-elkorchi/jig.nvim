@@ -1,0 +1,41 @@
+*jig-tools*  Jig Tools and Terminal Integration
+
+OVERVIEW
+  WP-08 provides deterministic external command execution and terminal UX.
+
+COMMANDS
+  :JigExec {cmd...}
+      Run a non-interactive command through Jig's wrapper and display
+      stdout/stderr, exit code, duration, cwd, and failure classification.
+
+  :JigToolHealth
+      Show shell/tool/provider status and execution policy summary.
+
+  :JigTerm [root|buffer]
+      Open interactive terminal in Jig root (default) or current buffer dir.
+
+EXECUTION RULES
+  - argv-first execution via vim.system()
+  - no implicit shell=true
+  - sync waits always use explicit timeout
+  - missing binaries/providers are non-fatal and actionable
+
+FAILURE CLASSIFICATION
+  - spawn_error
+  - timeout
+  - system_wait_nil
+  - system_wait_error
+  - exit_nonzero
+
+SAFE PROFILE
+  NVIM_APPNAME=jig-safe disables tool and terminal commands.
+
+POLICY
+  Jig does not auto-install tools.
+  Jig does not auto-run startup network actions.
+
+CHECKS
+  :checkhealth jig
+  tests/tools/run_harness.sh
+
+vim:tw=78:ts=8:noet:ft=help:norl:

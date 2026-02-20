@@ -73,9 +73,27 @@ Updated at: `2026-02-20`
   - deprecated APIs used in maintained LSP modules
   - single server failure breaks global initialization
 
-### WP-08: Completion and Command UX
-- Status: `not-started`
+### WP-08: Terminal, Shell, and External Tool Integration
+- Status: `done`
 - Depends on: `WP-07`
+- Issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/12
+- PR(s): https://github.com/Ismail-elkorchi/jig.nvim/pull/33
+- ADR(s): tbd
+- Deliverables (excerpt):
+  - `vim.system` wrappers with explicit timeouts and nil-result hardening
+  - shell/provider/tool matrix reporting (`bash/zsh/fish/pwsh/powershell`, `git/rg/fd`, formatter/linter binaries)
+  - terminal UX rules (mode visibility + command-state feedback)
+- Verification commands (excerpt):
+  - `tests/tools/run_harness.sh`
+  - `nvim --headless -u ./init.lua '+checkhealth jig' '+qa'`
+  - `NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigExec")==0)' '+qa'`
+- Falsifiers (excerpt):
+  - silent fallback on missing provider
+  - platform shell mismatch causes blocking failure in default workflow
+
+### WP-09: Ecosystem Integration and Runtime Contracts
+- Status: `not-started`
+- Depends on: `WP-08`
 - Issue: tbd
 - PR(s): tbd
 - ADR(s): tbd

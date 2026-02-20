@@ -20,4 +20,5 @@ end
 
 require("jig.lsp").setup()
 require("jig.nav").setup()
+require("jig.tools").setup()
 require("jig.core.lazy")

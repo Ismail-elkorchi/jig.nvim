@@ -144,6 +144,9 @@ jobs:
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigLspHealth")==2)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigLspInfo")==2)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigLspSnapshot")==2)' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigExec")==2)' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigToolHealth")==2)' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigTerm")==2)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigRootSet")==2)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigRootReset")==2)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigPluginInstall")==2)' '+qa'
@@ -154,10 +157,14 @@ jobs:
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(package.loaded["jig.ui"]==nil)' '+qa'
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(package.loaded["jig.nav"]==nil)' '+qa'
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(package.loaded["jig.lsp"]==nil)' '+qa'
+          NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(package.loaded["jig.tools"]==nil)' '+qa'
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigFiles")==0)' '+qa'
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigLspHealth")==0)' '+qa'
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigLspInfo")==0)' '+qa'
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigLspSnapshot")==0)' '+qa'
+          NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigExec")==0)' '+qa'
+          NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigToolHealth")==0)' '+qa'
+          NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigTerm")==0)' '+qa'
 
       - name: Cmdline open-close check
         run: nvim --headless -u ./init.lua '+JigCmdlineCheck' '+qa'
@@ -197,6 +204,16 @@ jobs:
           rg -n '"default-command-surface"' tests/lsp/snapshots/latest-headless.json
           rg -n '"failure-isolation"' tests/lsp/snapshots/latest-headless.json
           rg -n '"safe-profile-isolation"' tests/lsp/snapshots/latest-headless.json
+
+      - name: Tools harness snapshot checks
+        run: |
+          tests/tools/run_harness.sh
+          test -f tests/tools/snapshots/latest-headless.json
+          rg -n '"provider-health-tests"' tests/tools/snapshots/latest-headless.json
+          rg -n '"command-execution-smoke"' tests/tools/snapshots/latest-headless.json
+          rg -n '"capture-concurrency-guard"' tests/tools/snapshots/latest-headless.json
+          rg -n '"timeout-or-nil-path"' tests/tools/snapshots/latest-headless.json
+          rg -n '"safe-profile-isolation"' tests/tools/snapshots/latest-headless.json
 
       - name: Deprecated API gate
         run: tests/lsp/check_deprecated.sh
