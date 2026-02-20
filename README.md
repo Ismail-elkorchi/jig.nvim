@@ -40,7 +40,9 @@ NVIM_APPNAME=jig-safe nvim
 
 ## Verification
 ```bash
-./scripts/ci_verify.sh
+/home/ismail-el-korchi/Documents/Projects/tse-workbench/scripts/check_jig_legacy_brand.sh
+nvim --headless -u ./init.lua '+lua print("jig-smoke")' '+qa'
+nvim --headless -u ./init.lua '+checkhealth jig' '+qa'
 ```
 
 ## Documentation

@@ -3,7 +3,7 @@
 ## Workflow
 1. Create a branch from `main`.
 2. Open a focused pull request.
-3. Run `./scripts/ci_verify.sh` locally.
+3. Run local verification commands (`rg` brand guard + headless smoke + health).
 4. Merge only after CI passes.
 
 ## Required PR Evidence
