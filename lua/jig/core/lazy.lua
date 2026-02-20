@@ -30,4 +30,9 @@ vim.api.nvim_create_user_command(brand.command("Channel"), function(opts)
   end
   vim.g[brand.namespace .. "_channel"] = channel
   vim.notify(brand.brand .. " channel set to " .. channel .. ". Restart Neovim.")
-end, { nargs = 1, complete = function() return { "stable", "edge" } end })
+end, {
+  nargs = 1,
+  complete = function()
+    return { "stable", "edge" }
+  end,
+})
