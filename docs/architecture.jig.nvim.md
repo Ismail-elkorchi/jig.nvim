@@ -27,6 +27,12 @@
 - `lsp/snapshot.lua`: structured LSP context snapshot export.
 - `lsp/health.lua`: actionable LSP health reporting.
 - `lsp/init.lua`: LSP orchestration + `:JigLsp*` commands.
+- `tools/platform.lua`: platform and shell detection with structured capabilities export.
+- `tools/registry.lua`: required/recommended/optional external tool registry and install hints.
+- `tools/system.lua`: deterministic `vim.system` wrappers (timeouts, nil handling, capture queue).
+- `tools/terminal.lua`: terminal integration with mode visibility and command-state feedback.
+- `tools/health.lua`: shell/provider/tool health summaries and checkhealth integration.
+- `tools/init.lua`: command orchestration + `:JigExec`, `:JigToolHealth`, `:JigTerm`.
 - `ui/init.lua`: UI policy wiring (tokens, profiles, chrome, cmdline checks).
 - `ui/tokens.lua`: semantic highlight token system.
 - `ui/chrome.lua`: active/inactive statusline + winbar policy.

@@ -19,7 +19,7 @@ function M.check()
   if vim.fn.executable("git") == 1 then
     vim.health.ok("git detected")
   else
-    vim.health.error("git not found; install with: sudo apt install git")
+    vim.health.warn("git not found; affected commands degrade. next: sudo apt install git")
   end
 
   if vim.fn.executable("fd") == 1 then
@@ -58,6 +58,13 @@ function M.check()
     vim.health.info("safe profile active; optional modules disabled")
   else
     vim.health.ok("default profile active")
+
+    local ok_tools, tools_health = pcall(require, "jig.tools.health")
+    if ok_tools and type(tools_health.checkhealth) == "function" then
+      tools_health.checkhealth()
+    else
+      vim.health.warn("tool integration health unavailable")
+    end
 
     local ok, lsp_health = pcall(require, "jig.lsp.health")
     if ok and type(lsp_health.checkhealth) == "function" then

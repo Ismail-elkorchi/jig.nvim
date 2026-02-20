@@ -62,6 +62,9 @@ NVIM_APPNAME=jig-safe nvim
 - `:JigLspHealth` show LSP health with per-server remediation.
 - `:JigLspInfo` show enabled servers and current buffer attach status.
 - `:JigLspSnapshot [path]` print JSON snapshot or write LSP state to file.
+- `:JigExec {cmd...}` run non-interactive command with deterministic result capture.
+- `:JigToolHealth` show shell/provider/tool integration summary.
+- `:JigTerm [root|buffer]` open integrated terminal in Jig root (or current buffer directory).
 - `:JigPluginBootstrap` install `lazy.nvim` explicitly.
 - `:JigPluginInstall` sync/install plugins.
 - `:JigPluginUpdate` preview (`Lazy check`) then apply update with explicit confirm.
@@ -95,6 +98,7 @@ nvim --headless -u ./init.lua '+checkhealth jig' '+qa'
 - `docs/profiling.jig.nvim.md`
 - `docs/navigation.jig.nvim.md`
 - `docs/lsp.jig.nvim.md`
+- `docs/tools.jig.nvim.md`
 - `docs/ui-foundation.jig.nvim.md`
 - `docs/ui-testing.jig.nvim.md`
 - `docs/maintenance.jig.nvim.md`
@@ -102,6 +106,7 @@ nvim --headless -u ./init.lua '+checkhealth jig' '+qa'
 - `docs/compatibility.jig.nvim.md`
 - `docs/troubleshooting.jig.nvim.md`
 - `doc/jig-lsp.txt` (`:help jig-lsp`)
+- `doc/jig-tools.txt` (`:help jig-tools`)
 
 ## License
 MIT
