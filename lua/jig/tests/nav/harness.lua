@@ -7,6 +7,9 @@ local root = require("jig.nav.root")
 local M = {}
 
 local function repo_root()
+  if type(_G.__jig_repo_root) == "string" and _G.__jig_repo_root ~= "" then
+    return _G.__jig_repo_root
+  end
   local source = debug.getinfo(1, "S").source:sub(2)
   return vim.fn.fnamemodify(source, ":p:h:h:h:h:h")
 end
