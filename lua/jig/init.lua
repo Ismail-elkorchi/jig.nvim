@@ -21,4 +21,10 @@ end
 require("jig.lsp").setup()
 require("jig.nav").setup()
 require("jig.tools").setup()
+
+local user_agent = type(vim.g.jig_agent) == "table" and vim.g.jig_agent or {}
+if user_agent.enabled == true then
+  require("jig.agent").setup()
+end
+
 require("jig.core.lazy")

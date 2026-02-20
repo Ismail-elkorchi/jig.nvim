@@ -91,9 +91,9 @@ Updated at: `2026-02-20`
   - silent fallback on missing provider
   - platform shell mismatch causes blocking failure in default workflow
 
-### WP-09: Ecosystem Integration and Runtime Contracts
-- Status: `not-started`
+### WP-09: Multi-Agent Interoperability Layer
+- Status: `in-progress`
 - Depends on: `WP-08`
-- Issue: tbd
+- Issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/13
 - PR(s): tbd
 - ADR(s): tbd

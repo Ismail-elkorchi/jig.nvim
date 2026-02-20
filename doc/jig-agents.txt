@@ -1,0 +1,61 @@
+*jig-agents*  Jig Agent Interoperability (WP-09)
+
+OVERVIEW
+  WP-09 adds an optional, vendor-neutral multi-agent layer focused on:
+    - policy-routed tool actions (allow/ask/deny)
+    - MCP governance and failure isolation
+    - task lifecycle handles (start/cancel/resume)
+    - append-only evidence logging
+    - instruction interoperability and context ledger observability
+
+DEFAULTS
+  - agent module disabled by default
+  - no startup auto-network
+  - no MCP or agent autostart on startup
+  - safe profile (`NVIM_APPNAME=jig-safe`) does not load agent modules
+
+ENABLEMENT
+  Set in trusted user config:
+    vim.g.jig_agent = { enabled = true }
+
+COMMANDS
+  :JigMcpList
+  :JigMcpStart <server>
+  :JigMcpStop <server>|all
+  :JigMcpTools <server>
+  :JigMcpCall <server> <tool> <json_args>
+
+  :JigAgentPolicyList
+  :JigAgentPolicyGrant <allow|ask|deny> <tool> <action_class> <target> <scope> [scope_value]
+  :JigAgentPolicyRevoke <rule_id>
+
+  :JigAgentTaskStart [title]
+  :JigAgentTaskCancel <task_id>
+  :JigAgentTaskResume <task_id>
+  :JigAgentTasks
+  :JigAgentLogTail [count]
+
+  :JigAgentInstructions
+  :JigAgentContext
+  :JigAgentContextReset
+
+  :JigAcpHandshake <json_spec>
+  :JigAcpPrompt <json_spec> <prompt>
+
+POLICY
+  default decisions:
+    read -> allow
+    write/net/git/shell/unknown -> ask
+
+  grants are persisted and revocable.
+  subagent task inheritance is enforced via task ancestry checks.
+
+BOUNDARY
+  WP-09 never writes files/buffers from agent output.
+  output is candidate-only. Transactional patch/diff edits are WP-17.
+
+CHECKS
+  tests/agent/run_harness.sh
+  :checkhealth jig
+
+vim:tw=78:ts=8:noet:ft=help:norl:
