@@ -126,7 +126,21 @@ jobs:
         run: luacheck --config .luacheckrc $(rg --files lua -g '*.lua')
 
       - name: Smoke test startup
-        run: nvim --headless -u ./init.lua '+lua print("jig-smoke")' '+qa'
+        run: |
+          nvim --headless -u ./init.lua '+lua print("jig-smoke")' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(vim.g.jig_profile=="default")' '+qa'
+          NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.g.jig_profile=="safe")' '+qa'
+
+      - name: Startup side-effect policy
+        run: |
+          set -euo pipefail
+          tmp="$(mktemp -d)"
+          XDG_DATA_HOME="$tmp/data" \
+          XDG_STATE_HOME="$tmp/state" \
+          XDG_CACHE_HOME="$tmp/cache" \
+          NVIM_APPNAME=jig-ci \
+          nvim --headless -u ./init.lua '+qa'
+          test ! -d "$tmp/data/jig-ci/lazy/lazy.nvim"
 
       - name: Health check
         run: nvim --headless -u ./init.lua '+checkhealth jig' '+qa'

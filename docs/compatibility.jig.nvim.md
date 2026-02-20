@@ -4,6 +4,7 @@
 - Minimum: `0.11.2`
 - Recommended: latest `0.11.x` stable
 - Nightly: supported in CI as compatibility signal, not as default runtime target.
+- Version gate: startup fails fast with deterministic error text below `0.11.2`.
 
 ## Platform Targets
 - Linux: x86_64, arm64
@@ -26,3 +27,4 @@
 ## Known Compatibility Constraints
 - Systems without toolchains/native binaries should still run completion due Lua fuzzy fallback.
 - When clipboard provider is missing, editor remains functional but clipboard integration is degraded.
+- `NVIM_APPNAME=jig-safe` disables optional plugin layers for recovery workflows.
