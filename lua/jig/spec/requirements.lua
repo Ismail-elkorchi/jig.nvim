@@ -61,7 +61,7 @@ M.registry = {
     level = "MUST",
     text = "Jig must provide a doctor entrypoint for actionable troubleshooting.",
     owner = "core.health",
-    verification = "nvim --headless -u ./init.lua '+checkhealth jig' '+qa'",
+    verification = ":JigHealth",
     falsifier = "health checks report failures without actionable next step",
   },
   {

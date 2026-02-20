@@ -6,6 +6,7 @@
 - `core/options.lua`: editor defaults, font detection, loader setup.
 - `core/keymaps.lua`: keymap registry (initial baseline).
 - `core/autocmd.lua`: diagnostics/yank UX behaviors.
+- `core/doctor.lua`: health/provenance/bisect command entrypoints.
 - `core/lazy.lua`: plugin bootstrap and channel command.
 - `core/plugin_state.lua`: install/update/restore/rollback lifecycle commands.
 - `core/health.lua`: health provider used by `:checkhealth jig`.

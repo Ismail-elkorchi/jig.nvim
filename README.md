@@ -40,6 +40,10 @@ NVIM_APPNAME=jig-safe nvim
 ```
 
 ## Commands
+- `:JigHealth` run distro + provider health checks.
+- `:JigVerboseMap {lhs}` show keymap provenance.
+- `:JigVerboseSet {option}` show option provenance.
+- `:JigBisectGuide` print deterministic bisect guidance.
 - `:JigPluginBootstrap` install `lazy.nvim` explicitly.
 - `:JigPluginInstall` sync/install plugins.
 - `:JigPluginUpdate` preview (`Lazy check`) then apply update with explicit confirm.
@@ -69,6 +73,7 @@ nvim --headless -u ./init.lua '+checkhealth jig' '+qa'
 - `docs/keymaps.jig.nvim.md`
 - `docs/architecture.jig.nvim.md`
 - `docs/plugin-manager.jig.nvim.md`
+- `docs/profiling.jig.nvim.md`
 - `docs/maintenance.jig.nvim.md`
 - `docs/stability.jig.nvim.md`
 - `docs/compatibility.jig.nvim.md`

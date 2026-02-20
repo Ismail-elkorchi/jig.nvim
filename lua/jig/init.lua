@@ -7,6 +7,7 @@ end
 require("jig.core.options")
 require("jig.core.keymaps")
 require("jig.core.autocmd")
+require("jig.core.doctor").setup()
 
 if vim.g.jig_safe_profile then
   return

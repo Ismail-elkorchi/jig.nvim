@@ -3,6 +3,7 @@
 ## Run Health Check
 ```vim
 :checkhealth jig
+:JigHealth
 ```
 
 ## Cmdline Error On `:`
@@ -55,3 +56,26 @@ Expected default: `false`.
 rg --version
 ```
 2. Reopen Neovim and retry `<leader><leader>` and `<leader>/`.
+
+## Provenance Helpers
+- Keymap provenance:
+```vim
+:JigVerboseMap <leader>qq
+```
+- Option provenance:
+```vim
+:JigVerboseSet number
+```
+
+## Deterministic Bisect Workflow
+1. Start safe profile:
+```bash
+NVIM_APPNAME=jig-safe nvim
+```
+2. Re-enable optional modules in halves and restart each time.
+3. Keep the failing half; disable the passing half.
+4. Repeat until one module remains.
+5. Capture issue with:
+```vim
+:JigHealth
+```
