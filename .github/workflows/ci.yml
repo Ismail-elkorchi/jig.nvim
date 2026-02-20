@@ -141,6 +141,9 @@ jobs:
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigDiagnostics")==2)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigHistory")==2)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigGitChanges")==2)' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigLspHealth")==2)' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigLspInfo")==2)' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigLspSnapshot")==2)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigRootSet")==2)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigRootReset")==2)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigPluginInstall")==2)' '+qa'
@@ -150,7 +153,11 @@ jobs:
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.g.jig_profile=="safe")' '+qa'
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(package.loaded["jig.ui"]==nil)' '+qa'
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(package.loaded["jig.nav"]==nil)' '+qa'
+          NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(package.loaded["jig.lsp"]==nil)' '+qa'
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigFiles")==0)' '+qa'
+          NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigLspHealth")==0)' '+qa'
+          NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigLspInfo")==0)' '+qa'
+          NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigLspSnapshot")==0)' '+qa'
 
       - name: Cmdline open-close check
         run: nvim --headless -u ./init.lua '+JigCmdlineCheck' '+qa'
@@ -182,6 +189,17 @@ jobs:
       - name: Keymap docs sync gate
         run: |
           nvim --headless -u ./init.lua '+lua package.path="./lua/?.lua;./lua/?/init.lua;"..package.path; _G.__jig_repo_root=vim.fn.getcwd(); require("jig.core.keymap_docs").generate({ check = true })' '+qa'
+
+      - name: LSP harness snapshot checks
+        run: |
+          tests/lsp/run_harness.sh
+          test -f tests/lsp/snapshots/latest-headless.json
+          rg -n '"default-command-surface"' tests/lsp/snapshots/latest-headless.json
+          rg -n '"failure-isolation"' tests/lsp/snapshots/latest-headless.json
+          rg -n '"safe-profile-isolation"' tests/lsp/snapshots/latest-headless.json
+
+      - name: Deprecated API gate
+        run: tests/lsp/check_deprecated.sh
 
       - name: Startup side-effect policy
         run: |

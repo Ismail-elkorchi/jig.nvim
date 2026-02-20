@@ -37,10 +37,10 @@ Updated at: `2026-02-20`
   - candidate list length exceeds configured cap under large-list path
 
 ### WP-06: Keymap Registry and Discoverability
-- Status: `in-progress`
+- Status: `done`
 - Depends on: `WP-05`
 - Issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/10
-- PR(s): tbd
+- PR(s): https://github.com/Ismail-elkorchi/jig.nvim/pull/31
 - ADR(s): tbd
 - Deliverables (excerpt):
   - declarative keymap registry schema
@@ -52,3 +52,30 @@ Updated at: `2026-02-20`
 - Falsifiers (excerpt):
   - runtime keymaps diverge from registry output
   - undocumented default mappings exist
+
+### WP-07: LSP, Diagnostics, and Language Runtime
+- Status: `done`
+- Depends on: `WP-01`
+- Issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/11
+- PR(s): tbd
+- ADR(s): tbd
+- Deliverables (excerpt):
+  - modern LSP APIs (`vim.lsp.config`, `vim.lsp.enable`)
+  - policy-separated modules (lifecycle, diagnostics, inlay hints, format-on-save)
+  - deprecation gate against `deprecated.txt`
+  - command-first observability (`:JigLspHealth`, `:JigLspInfo`, `:JigLspSnapshot`)
+- Verification commands (excerpt):
+  - `tests/lsp/run_harness.sh`
+  - `tests/lsp/check_deprecated.sh`
+  - `nvim --headless -u ./init.lua '+checkhealth jig' '+qa'`
+  - `NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigLspInfo")==0)' '+qa'`
+- Falsifiers (excerpt):
+  - deprecated APIs used in maintained LSP modules
+  - single server failure breaks global initialization
+
+### WP-08: Completion and Command UX
+- Status: `not-started`
+- Depends on: `WP-07`
+- Issue: tbd
+- PR(s): tbd
+- ADR(s): tbd
