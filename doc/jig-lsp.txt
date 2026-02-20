@@ -1,0 +1,35 @@
+*jig-lsp*  Jig LSP Runtime
+
+OVERVIEW
+  Jig LSP uses modern APIs:
+    - vim.lsp.config()
+    - vim.lsp.enable()
+
+  It separates policy modules for lifecycle, diagnostics, inlay hints,
+  and format-on-save.
+
+COMMANDS
+  :JigLspHealth
+      Show per-server health with remediation actions.
+
+  :JigLspInfo
+      Show enabled/degraded servers and current-buffer attach status.
+
+  :JigLspSnapshot [path]
+      Print JSON snapshot to stdout, or write JSON to [path].
+
+POLICY DEFAULTS
+  - inlay hints: disabled
+  - format-on-save: disabled
+  - missing binaries are non-fatal and surfaced in health output
+
+SAFE PROFILE
+  `NVIM_APPNAME=jig-safe` keeps LSP optional layers disabled.
+  LSP commands are not available in safe profile.
+
+CHECKS
+  :checkhealth jig
+  tests/lsp/run_harness.sh
+  tests/lsp/check_deprecated.sh
+
+vim:tw=78:ts=8:noet:ft=help:norl:

@@ -7,7 +7,7 @@ local aug = vim.api.nvim_create_augroup(brand.augroup("Core"), { clear = true })
 vim.api.nvim_create_autocmd("TextYankPost", {
   group = aug,
   callback = function()
-    vim.highlight.on_yank({ higroup = "Visual", timeout = 120 })
+    vim.hl.on_yank({ higroup = "Visual", timeout = 120 })
   end,
 })
 

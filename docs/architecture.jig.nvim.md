@@ -18,6 +18,15 @@
 - `nav/backend.lua`: picker backend bridge with fallback routing.
 - `nav/fallback.lua`: builtin command-safe fallback navigation paths.
 - `nav/miller.lua`: optional Miller-column mode module.
+- `lsp/config.lua`: LSP defaults and policy override data.
+- `lsp/registry.lua`: server registry validation and deterministic server list resolution.
+- `lsp/lifecycle.lua`: isolated per-server configure/enable lifecycle.
+- `lsp/diagnostics.lua`: diagnostics policy.
+- `lsp/inlay_hints.lua`: inlay hints policy.
+- `lsp/format_on_save.lua`: format-on-save policy.
+- `lsp/snapshot.lua`: structured LSP context snapshot export.
+- `lsp/health.lua`: actionable LSP health reporting.
+- `lsp/init.lua`: LSP orchestration + `:JigLsp*` commands.
 - `ui/init.lua`: UI policy wiring (tokens, profiles, chrome, cmdline checks).
 - `ui/tokens.lua`: semantic highlight token system.
 - `ui/chrome.lua`: active/inactive statusline + winbar policy.
@@ -27,7 +36,7 @@
 ## Plugin Layers
 - `plugins/ui.lua`: colorscheme, icons, keymap discovery UI.
 - `plugins/find.lua`: picker/navigation.
-- `plugins/lsp.lua`: native LSP + Mason.
+- `plugins/lsp.lua`: native LSP runtime wiring + optional Mason command surface.
 - `plugins/completion.lua`: completion stack with stable fallback.
 - `plugins/git.lua`: git signs and hunk state.
 - `plugins/syntax.lua`: treesitter highlighting/indent.

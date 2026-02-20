@@ -58,6 +58,13 @@ function M.check()
     vim.health.info("safe profile active; optional modules disabled")
   else
     vim.health.ok("default profile active")
+
+    local ok, lsp_health = pcall(require, "jig.lsp.health")
+    if ok and type(lsp_health.checkhealth) == "function" then
+      lsp_health.checkhealth()
+    else
+      vim.health.info("lsp subsystem not initialized")
+    end
   end
 end
 

@@ -33,7 +33,7 @@ local function fail_version_gate()
 
   -- boundary: allow-vim-api
   -- Justification: deterministic startup diagnostics must use host error channel.
-  vim.api.nvim_err_writeln(message)
+  vim.api.nvim_echo({ { message, "ErrorMsg" } }, true, { err = true })
   vim.g.jig_boot_ok = false
   vim.cmd("cquit 1")
 end
