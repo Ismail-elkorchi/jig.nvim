@@ -121,6 +121,40 @@ local cases = {
     end,
   },
   {
+    id = "latency-budget-smoke",
+    run = function()
+      return with_globals(function()
+        local tmp = vim.fn.tempname()
+        vim.fn.mkdir(tmp, "p")
+
+        for i = 1, 250 do
+          local file = string.format("%s/nav_%03d.txt", tmp, i)
+          vim.fn.writefile({ "latency" }, file)
+        end
+
+        local started = vim.uv.hrtime()
+        local result = backend.files({ root = tmp }, {
+          select = false,
+          candidate_cap = 60,
+          cap = 60,
+          ignore_globs = {},
+        })
+        local elapsed_ms = math.floor((vim.uv.hrtime() - started) / 1000000)
+
+        vim.fn.delete(tmp, "rf")
+
+        assert(result.count <= 60, "latency test candidate cap exceeded")
+        assert(elapsed_ms <= 1500, "latency budget exceeded")
+
+        return {
+          elapsed_ms = elapsed_ms,
+          count = result.count,
+          cap = result.cap,
+        }
+      end)
+    end,
+  },
+  {
     id = "candidate-cap-guardrail",
     run = function()
       return with_globals(function()

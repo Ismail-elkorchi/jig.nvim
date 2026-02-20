@@ -166,6 +166,7 @@ jobs:
           tests/nav/run_harness.sh
           test -f tests/nav/snapshots/latest-headless.json
           rg -n '"root-determinism"' tests/nav/snapshots/latest-headless.json
+          rg -n '"latency-budget-smoke"' tests/nav/snapshots/latest-headless.json
           rg -n '"candidate-cap-guardrail"' tests/nav/snapshots/latest-headless.json
 
       - name: Startup side-effect policy
