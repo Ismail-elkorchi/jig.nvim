@@ -12,6 +12,10 @@ map("n", "<leader>fd", function()
   vim.diagnostic.setloclist({ open = true })
 end, vim.tbl_extend("force", opts, { desc = "Diagnostics list" }))
 
+map("n", "<leader>tt", "<cmd>terminal<cr>", vim.tbl_extend("force", opts, { desc = "Terminal current" }))
+map("n", "<leader>th", "<cmd>split | terminal<cr>", vim.tbl_extend("force", opts, { desc = "Terminal horizontal" }))
+map("n", "<leader>tv", "<cmd>vsplit | terminal<cr>", vim.tbl_extend("force", opts, { desc = "Terminal vertical" }))
+
 map("n", "]d", function()
   vim.diagnostic.jump({ count = 1, float = true })
 end, vim.tbl_extend("force", opts, { desc = "Next diagnostic" }))

@@ -11,6 +11,11 @@
 - `<leader>fb`: buffers picker
 - `<leader>fh`: help tags picker
 
+## Terminal
+- `<leader>tt`: terminal in current window
+- `<leader>th`: horizontal split terminal
+- `<leader>tv`: vertical split terminal
+
 ## Diagnostics
 - `[d`: previous diagnostic
 - `]d`: next diagnostic

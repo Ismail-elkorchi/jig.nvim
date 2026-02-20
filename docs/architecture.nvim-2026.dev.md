@@ -11,8 +11,12 @@
 - `plugins/find.lua`: picker/navigation.
 - `plugins/lsp.lua`: native LSP + Mason.
 - `plugins/completion.lua`: completion stack with stable fallback.
+- `plugins/git.lua`: git signs and hunk state.
+- `plugins/syntax.lua`: treesitter highlighting/indent.
+- `plugins/terminal.lua`: integrated terminal workflows.
 
 ## Policy
 - Stability-first defaults.
 - Native API alignment with Neovim 0.11+.
 - ASCII fallback for iconography.
+- PR-only + linear-history governance on `main`.
