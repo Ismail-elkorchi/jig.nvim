@@ -1,6 +1,6 @@
 # EXECUTION_BOARD
 
-Generated from: `projects/nvim-workbench/plans/neovim-2026/roadmap.nvim-workbench.dev/dependency.roadmap.nvim-workbench.dev.v1.md`
+Generated from: `dependency roadmap (internal planning source)`
 Updated at: `2026-02-20`
 
 ## Status Legend
