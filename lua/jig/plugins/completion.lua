@@ -11,7 +11,8 @@ return {
         documentation = { auto_show = true, auto_show_delay_ms = 200 },
       },
       cmdline = {
-        enabled = true,
+        -- Baseline-safe default: keep native ':' cmdline path stable.
+        enabled = false,
       },
     },
   },

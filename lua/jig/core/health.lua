@@ -1,0 +1,44 @@
+local M = {}
+local brand = require("jig.core.brand")
+
+function M.check()
+  vim.health.start(brand.repo_slug)
+
+  if vim.fn.has("nvim-0.11.2") == 1 then
+    vim.health.ok("Neovim version >= 0.11.2")
+  else
+    vim.health.error("Neovim 0.11.2+ is required")
+  end
+
+  if vim.fn.executable("rg") == 1 then
+    vim.health.ok("ripgrep detected")
+  else
+    vim.health.warn("ripgrep not found; grep picker performance/features reduced")
+  end
+
+  if vim.fn.executable("git") == 1 then
+    vim.health.ok("git detected")
+  else
+    vim.health.error("git not found")
+  end
+
+  if vim.fn.has("clipboard") == 1 then
+    vim.health.ok("clipboard provider available")
+  else
+    vim.health.warn("clipboard provider missing")
+  end
+
+  if vim.g.have_nerd_font then
+    vim.health.ok("Nerd Font detected")
+  else
+    vim.health.info("Nerd Font not detected; ASCII icon fallback active")
+  end
+
+  if vim.g.jig_safe_profile then
+    vim.health.info("safe profile active; optional modules disabled")
+  else
+    vim.health.ok("default profile active")
+  end
+end
+
+return M

@@ -2,10 +2,12 @@
 
 ## Modules
 - `spec/requirements.lua`: machine-readable contract registry + self-check.
+- `core/bootstrap.lua`: version gate, profile detection, safe-mode gating.
 - `core/options.lua`: editor defaults, font detection, loader setup.
 - `core/keymaps.lua`: keymap registry (initial baseline).
 - `core/autocmd.lua`: diagnostics/yank UX behaviors.
 - `core/lazy.lua`: plugin bootstrap and channel command.
+- `core/health.lua`: health provider used by `:checkhealth jig`.
 
 ## Plugin Layers
 - `plugins/ui.lua`: colorscheme, icons, statusline.

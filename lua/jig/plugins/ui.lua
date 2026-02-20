@@ -22,6 +22,7 @@ return {
         options = {
           theme = "auto",
           globalstatus = true,
+          icons_enabled = nerd,
           section_separators = nerd and { left = "", right = "" }
             or { left = "", right = "" },
           component_separators = nerd and { left = "", right = "" }
