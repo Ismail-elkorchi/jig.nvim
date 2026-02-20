@@ -13,19 +13,39 @@ function M.check()
   if vim.fn.executable("rg") == 1 then
     vim.health.ok("ripgrep detected")
   else
-    vim.health.warn("ripgrep not found; grep picker performance/features reduced")
+    vim.health.warn("ripgrep not found; install with: sudo apt install ripgrep")
   end
 
   if vim.fn.executable("git") == 1 then
     vim.health.ok("git detected")
   else
-    vim.health.error("git not found")
+    vim.health.error("git not found; install with: sudo apt install git")
+  end
+
+  if vim.fn.executable("fd") == 1 then
+    vim.health.ok("fd detected")
+  else
+    vim.health.warn(
+      "fd not found; finder fallback is slower. install with: sudo apt install fd-find"
+    )
   end
 
   if vim.fn.has("clipboard") == 1 then
     vim.health.ok("clipboard provider available")
   else
-    vim.health.warn("clipboard provider missing")
+    vim.health.warn("clipboard provider missing; run :checkhealth provider for setup details")
+  end
+
+  if vim.fn.has("python3") == 1 then
+    vim.health.ok("python3 provider available")
+  else
+    vim.health.warn("python3 provider missing; run :checkhealth provider")
+  end
+
+  if vim.fn.has("nodejs") == 1 then
+    vim.health.ok("node provider available")
+  else
+    vim.health.warn("node provider missing; run :checkhealth provider")
   end
 
   if vim.g.have_nerd_font then

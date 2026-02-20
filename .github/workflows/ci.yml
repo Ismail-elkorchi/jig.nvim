@@ -129,6 +129,10 @@ jobs:
         run: |
           nvim --headless -u ./init.lua '+lua print("jig-smoke")' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.g.jig_profile=="default")' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigHealth")==2)' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigVerboseMap")==2)' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigVerboseSet")==2)' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigBisectGuide")==2)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigPluginInstall")==2)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigPluginUpdate")==2)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigPluginRestore")==2)' '+qa'
@@ -147,7 +151,7 @@ jobs:
           test ! -d "$tmp/data/jig-ci/lazy/lazy.nvim"
 
       - name: Health check
-        run: nvim --headless -u ./init.lua '+checkhealth jig' '+qa'
+        run: nvim --headless -u ./init.lua '+JigHealth' '+qa'
 
   nightly-report:
     runs-on: ubuntu-latest
