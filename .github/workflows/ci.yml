@@ -133,12 +133,23 @@ jobs:
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigVerboseMap")==2)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigVerboseSet")==2)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigBisectGuide")==2)' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigFiles")==2)' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigBuffers")==2)' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigRecent")==2)' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigSymbols")==2)' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigDiagnostics")==2)' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigHistory")==2)' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigGitChanges")==2)' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigRootSet")==2)' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigRootReset")==2)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigPluginInstall")==2)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigPluginUpdate")==2)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigPluginRestore")==2)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigPluginRollback")==2)' '+qa'
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.g.jig_profile=="safe")' '+qa'
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(package.loaded["jig.ui"]==nil)' '+qa'
+          NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(package.loaded["jig.nav"]==nil)' '+qa'
+          NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigFiles")==0)' '+qa'
 
       - name: Cmdline open-close check
         run: nvim --headless -u ./init.lua '+JigCmdlineCheck' '+qa'
@@ -149,6 +160,13 @@ jobs:
           test -f tests/ui/snapshots/latest-headless.json
           rg -n '"timing-sensitive"' tests/ui/snapshots/latest-headless.json
           rg -n '"ascii-fallback-legibility"' tests/ui/snapshots/latest-headless.json
+
+      - name: Navigation harness snapshot checks
+        run: |
+          tests/nav/run_harness.sh
+          test -f tests/nav/snapshots/latest-headless.json
+          rg -n '"root-determinism"' tests/nav/snapshots/latest-headless.json
+          rg -n '"candidate-cap-guardrail"' tests/nav/snapshots/latest-headless.json
 
       - name: Startup side-effect policy
         run: |

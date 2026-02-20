@@ -10,6 +10,11 @@
 - `core/lazy.lua`: plugin bootstrap and channel command.
 - `core/plugin_state.lua`: install/update/restore/rollback lifecycle commands.
 - `core/health.lua`: health provider used by `:checkhealth jig`.
+- `nav/root.lua`: deterministic root resolution policy.
+- `nav/guardrails.lua`: large-repo caps and ignore policies.
+- `nav/backend.lua`: picker backend bridge with fallback routing.
+- `nav/fallback.lua`: builtin command-safe fallback navigation paths.
+- `nav/miller.lua`: optional Miller-column mode module.
 - `ui/init.lua`: UI policy wiring (tokens, profiles, chrome, cmdline checks).
 - `ui/tokens.lua`: semantic highlight token system.
 - `ui/chrome.lua`: active/inactive statusline + winbar policy.

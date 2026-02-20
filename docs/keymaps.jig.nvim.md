@@ -6,10 +6,14 @@
 - `<leader>e`: file explorer
 
 ## Navigation and Search
-- `<leader><leader>`: files picker
-- `<leader>/`: grep picker
-- `<leader>fb`: buffers picker
-- `<leader>fh`: help tags picker
+- Command-first navigation (WP-05 baseline):
+  - `:JigFiles`
+  - `:JigBuffers`
+  - `:JigRecent`
+  - `:JigSymbols`
+  - `:JigDiagnostics`
+  - `:JigHistory`
+  - `:JigGitChanges`
 
 ## Terminal
 - `<leader>tt`: terminal in current window

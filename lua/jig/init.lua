@@ -18,4 +18,5 @@ if vim.g.jig_safe_profile then
   return
 end
 
+require("jig.nav").setup()
 require("jig.core.lazy")
