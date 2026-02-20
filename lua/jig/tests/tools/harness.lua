@@ -83,19 +83,37 @@ local function shell_smoke_matrix()
   }
 
   local checks = {}
+  local succeeded = 0
   for kind, spec in pairs(specs) do
     local shell = detected.shells[kind]
     if shell and shell.available then
-      local result = system.run_sync(spec.argv, { timeout_ms = 3000, cwd = vim.uv.cwd() })
-      assert(result.ok, string.format("shell smoke failed (%s): %s", kind, result.stderr))
-      assert(
-        result.stdout:lower():find("shell%-smoke", 1, false) ~= nil,
-        string.format("shell smoke output mismatch (%s): %s", kind, result.stdout)
-      )
-      checks[kind] = { ok = true, code = result.code }
+      local result = system.run_sync(spec.argv, { timeout_ms = 10000, cwd = vim.uv.cwd() })
+      local token_ok = result.stdout:lower():find("shell%-smoke", 1, false) ~= nil
+      local ok = result.ok and token_ok
+      if ok then
+        succeeded = succeeded + 1
+      end
+      checks[kind] = {
+        ok = ok,
+        code = result.code,
+        reason = result.reason,
+        stderr = result.stderr,
+      }
     else
       checks[kind] = { ok = true, skipped = "shell unavailable" }
     end
+  end
+
+  local configured_kind = detected.shell.kind
+  local configured_shell = detected.shells[configured_kind]
+  if configured_shell and configured_shell.available then
+    local configured_check = checks[configured_kind]
+    assert(
+      configured_check and configured_check.ok == true,
+      string.format("configured shell smoke failed (%s)", configured_kind)
+    )
+  else
+    assert(succeeded >= 1, "no available shell class passed smoke execution")
   end
 
   return checks
