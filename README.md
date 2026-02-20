@@ -48,6 +48,16 @@ NVIM_APPNAME=jig-safe nvim
 - `:JigIconMode {mode}` set icon mode (`auto|nerd|ascii`).
 - `:JigCmdlineCheck` run native cmdline open/close check.
 - `:JigFloatDemo` open sample floats with policy-driven borders/elevation/collision.
+- `:JigRootSet [path]` set deterministic navigation root override.
+- `:JigRootReset` clear deterministic navigation root override.
+- `:JigFiles` open files navigation.
+- `:JigBuffers` open buffers navigation.
+- `:JigRecent` open recent-files navigation.
+- `:JigSymbols` open symbols navigation.
+- `:JigDiagnostics` open diagnostics navigation.
+- `:JigHistory` open command-history navigation.
+- `:JigGitChanges` open git-changes navigation.
+- `:JigMiller` open optional Miller-column navigation mode.
 - `:JigPluginBootstrap` install `lazy.nvim` explicitly.
 - `:JigPluginInstall` sync/install plugins.
 - `:JigPluginUpdate` preview (`Lazy check`) then apply update with explicit confirm.
@@ -78,6 +88,7 @@ nvim --headless -u ./init.lua '+checkhealth jig' '+qa'
 - `docs/architecture.jig.nvim.md`
 - `docs/plugin-manager.jig.nvim.md`
 - `docs/profiling.jig.nvim.md`
+- `docs/navigation.jig.nvim.md`
 - `docs/ui-foundation.jig.nvim.md`
 - `docs/ui-testing.jig.nvim.md`
 - `docs/maintenance.jig.nvim.md`

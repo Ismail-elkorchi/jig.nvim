@@ -63,7 +63,17 @@ Expected default: `false`.
 ```bash
 rg --version
 ```
-2. Reopen Neovim and retry `<leader><leader>` and `<leader>/`.
+2. Retry command-first navigation:
+```vim
+:JigFiles
+:JigRecent
+```
+3. Check and reset deterministic root override if needed:
+```vim
+:lua print(vim.env.JIG_ROOT or "")
+:lua print(vim.g.jig_root_override or "")
+:JigRootReset
+```
 
 ## Provenance Helpers
 - Keymap provenance:

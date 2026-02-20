@@ -17,6 +17,7 @@
 - Nerd Font optional (ASCII fallback enabled)
 - truecolor preferred for default theme quality
 - Native `:` cmdline remains default (no mandatory cmdline overlay).
+- Navigation commands degrade to builtin fallback paths when picker plugins fail or are missing.
 
 ## API Baseline
 - `vim.lsp.config` / `vim.lsp.enable`
