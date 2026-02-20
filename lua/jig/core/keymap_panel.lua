@@ -1,3 +1,5 @@
+-- boundary: allow-vim-api
+-- Justification: floating keymap index panel is a Neovim host UI integration.
 local M = {}
 
 local function grouped(entries)
