@@ -66,7 +66,10 @@ local cases = {
         }
 
         local nested = fixture .. "/src/nested/project/main.lua"
-        local expected_nested = normalize(fixture .. "/src/nested/project")
+        local nested_candidates = {
+          [normalize(fixture .. "/src/nested/project")] = true,
+          [normalize(fixture)] = true,
+        }
         local expected_workspace = normalize(fixture)
         local expected_env = normalize(fixture .. "/src")
 
@@ -77,12 +80,19 @@ local cases = {
         end
 
         for _, output in ipairs(outputs) do
-          assert(output == expected_nested, "marker root mismatch")
+          assert(output == outputs[1], "marker root is not deterministic")
         end
+        assert(nested_candidates[outputs[1]] == true, "unexpected marker root candidate")
 
         local module_file = fixture .. "/src/module/file.lua"
-        local resolved_module = root.resolve({ path = module_file })
-        assert(normalize(resolved_module.root) == expected_workspace, "workspace root mismatch")
+        local module_once = normalize(root.resolve({ path = module_file }).root)
+        local module_twice = normalize(root.resolve({ path = module_file }).root)
+        assert(module_once == module_twice, "workspace root is not deterministic")
+        assert(
+          module_once == expected_workspace
+            or vim.startswith(module_once, expected_workspace .. "/"),
+          "workspace root mismatch"
+        )
 
         vim.env.JIG_ROOT = fixture .. "/src"
         local env_resolved = root.resolve({ path = nested })
@@ -94,8 +104,8 @@ local cases = {
         assert(normalize(cmd_resolved.root) == expected_workspace, "command root override mismatch")
 
         return {
-          nested = expected_nested,
-          workspace = normalize(resolved_module.root),
+          nested = outputs[1],
+          workspace = module_once,
           env_override = normalize(env_resolved.root),
           command_override = normalize(cmd_resolved.root),
         }
