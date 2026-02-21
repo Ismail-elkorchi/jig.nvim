@@ -1,0 +1,73 @@
+*jig-testing* jig.nvim testing
+
+Jig testing fabric is a deterministic headless suite framework introduced in WP-12.
+
+==============================================================================
+OVERVIEW                                                        *jig-testing-overview*
+
+Main runner:
+  nvim --headless -u NONE -l tests/run_harness.lua -- --all
+
+Run a suite:
+  nvim --headless -u NONE -l tests/run_harness.lua -- --suite <name>
+
+Key policy checks:
+  nvim --headless -u NONE -l tests/check_quarantine.lua
+  nvim --headless -u NONE -l tests/check_pending.lua
+  tests/check_hidden_unicode.sh
+
+==============================================================================
+SNAPSHOTS                                                      *jig-testing-snapshots*
+
+Each suite writes:
+  tests/<suite>/snapshots/latest-headless.json
+
+Snapshot fields include:
+  harness, generated_at, cases, summary.
+
+Timing-sensitive tests MUST declare label "timing-sensitive" and use retries.
+
+==============================================================================
+QUARANTINE                                                    *jig-testing-quarantine*
+
+Allowlist file:
+  tests/quarantine.json
+
+CI fails when:
+  - timing-sensitive case is missing from allowlist
+  - allowlist contains stale entries
+
+PRs that grow the quarantine list must include:
+  [quarantine-justification]
+
+==============================================================================
+PENDING TESTS                                                   *jig-testing-pending*
+
+Allowlist file:
+  tests/pending_tests.json
+
+Use pending tests only for roadmap-blocked checks. CI fails when pending entries
+are unallowlisted or stale.
+
+==============================================================================
+PERFORMANCE                                                       *jig-testing-perf*
+
+Perf harness:
+  tests/perf/run_harness.sh
+
+Budgets:
+  tests/perf/budgets.json
+
+Metrics:
+  - first diagnostic event
+  - first completion fallback confirmation
+  - first picker result batch under fixture tiers
+
+==============================================================================
+FIXTURE GENERATOR                                              *jig-testing-fixtures*
+
+Tiered nav fixture generator:
+  nvim --headless -u NONE -l tests/fixtures/generate_nav_fixture.lua -- --tier large
+
+==============================================================================
+vim:tw=78:ts=8:noet:ft=help:norl:

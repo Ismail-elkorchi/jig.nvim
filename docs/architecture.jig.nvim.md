@@ -71,6 +71,13 @@
 - `plugins/git.lua`: git signs and hunk state.
 - `plugins/syntax.lua`: treesitter highlighting/indent.
 
+## Test Fabric Modules
+- `tests/run_harness.lua`: unified headless suite runner (`--suite <name>`).
+- `tests/check_quarantine.lua`: timing-sensitive quarantine allowlist gate.
+- `tests/check_pending.lua`: pending-test allowlist gate for roadmap-blocked checks.
+- `lua/jig/tests/fixtures/nav_repo.lua`: deterministic tiered repository generator for nav/perf probes.
+- `lua/jig/tests/perf/harness.lua`: deterministic perf probes and extreme-regression budgets.
+
 ## Policy
 - Stability-first defaults.
 - Native API alignment with Neovim 0.11+.

@@ -1,0 +1,10 @@
+{
+  "diagnostic_first_ms": 1600,
+  "completion_first_ms": 400,
+  "picker_first_ms": {
+    "small": 800,
+    "medium": 1600,
+    "large": 2600
+  },
+  "extreme_regression_factor": 2.0
+}

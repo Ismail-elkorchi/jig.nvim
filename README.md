@@ -104,6 +104,10 @@ nvim --headless -u ./init.lua '+lua assert(vim.g.jig_profile=="default")' '+qa'
 NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.g.jig_profile=="safe")' '+qa'
 nvim --headless -u ./init.lua '+checkhealth jig' '+qa'
 nvim --headless -u NONE -l tests/run_harness.lua -- --all
+tests/check_hidden_unicode.sh
+nvim --headless -u NONE -l tests/check_quarantine.lua
+nvim --headless -u NONE -l tests/check_pending.lua
+tests/perf/run_harness.sh
 ```
 
 ## Documentation
@@ -120,6 +124,7 @@ nvim --headless -u NONE -l tests/run_harness.lua -- --all
 - `docs/agents.jig.nvim.md`
 - `docs/security.jig.nvim.md`
 - `docs/platform.jig.nvim.md`
+- `docs/testing.jig.nvim.md`
 - `docs/ui-foundation.jig.nvim.md`
 - `docs/ui-testing.jig.nvim.md`
 - `docs/maintenance.jig.nvim.md`
@@ -131,6 +136,7 @@ nvim --headless -u NONE -l tests/run_harness.lua -- --all
 - `doc/jig-agents.txt` (`:help jig-agents`)
 - `doc/jig-security.txt` (`:help jig-security`)
 - `doc/jig-platform.txt` (`:help jig-platform`)
+- `doc/jig-testing.txt` (`:help jig-testing`)
 
 ## License
 MIT

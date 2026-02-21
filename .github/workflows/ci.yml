@@ -53,6 +53,9 @@ jobs:
             exit 1
           fi
 
+      - name: Hidden Unicode gate
+        run: tests/check_hidden_unicode.sh
+
       - name: Naming checks
         run: |
           set -euo pipefail
@@ -201,6 +204,7 @@ jobs:
           rg -n '"root-determinism"' tests/nav/snapshots/latest-headless.json
           rg -n '"latency-budget-smoke"' tests/nav/snapshots/latest-headless.json
           rg -n '"candidate-cap-guardrail"' tests/nav/snapshots/latest-headless.json
+          rg -n '"large-fixture-tier-guardrail"' tests/nav/snapshots/latest-headless.json
 
       - name: Keymap harness snapshot checks
         run: |
@@ -210,6 +214,13 @@ jobs:
           rg -n '"runtime-forbidden-not-mapped"' tests/keymaps/snapshots/latest-headless.json
           rg -n '"runtime-registry-subset"' tests/keymaps/snapshots/latest-headless.json
           rg -n '"docs-sync-gate"' tests/keymaps/snapshots/latest-headless.json
+
+      - name: Completion harness snapshot checks
+        run: |
+          tests/completion/run_harness.sh
+          test -f tests/completion/snapshots/latest-headless.json
+          rg -n '"completion-policy-defaults"' tests/completion/snapshots/latest-headless.json
+          rg -n '"completion-fallback-smoke"' tests/completion/snapshots/latest-headless.json
 
       - name: Keymap docs sync gate
         run: |
@@ -242,6 +253,7 @@ jobs:
           rg -n '"task-cancel-resume"' tests/agent/snapshots/latest-headless.json
           rg -n '"mcp-failure-injection"' tests/agent/snapshots/latest-headless.json
           rg -n '"acp-bridge-hook"' tests/agent/snapshots/latest-headless.json
+          rg -n '"context-ledger-token-budget"' tests/agent/snapshots/latest-headless.json
           rg -n '"safe-profile-isolation"' tests/agent/snapshots/latest-headless.json
 
       - name: Security harness snapshot checks
@@ -263,6 +275,41 @@ jobs:
           rg -n '"shell-detection-and-argv-strategy"' tests/platform/snapshots/latest-headless.json
           rg -n '"clipboard-non-fatal"' tests/platform/snapshots/latest-headless.json
           rg -n '"root-detection-normalized-input"' tests/platform/snapshots/latest-headless.json
+
+      - name: Pending harness snapshot checks
+        run: |
+          tests/pending/run_harness.sh
+          test -f tests/pending/snapshots/latest-headless.json
+          rg -n '"agent:approval-notification-visible"' tests/pending/snapshots/latest-headless.json
+          rg -n '"agent:patch-diff-hunk-apply"' tests/pending/snapshots/latest-headless.json
+          rg -n '"status":"pending"' tests/pending/snapshots/latest-headless.json
+
+      - name: Quarantine and pending allowlist gates
+        run: |
+          nvim --headless -u NONE -l tests/check_quarantine.lua
+          nvim --headless -u NONE -l tests/check_pending.lua
+
+      - name: Quarantine growth policy (PR only)
+        if: github.event_name == 'pull_request'
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          tests/check_quarantine_growth.sh "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}"
+
+      - name: Performance harness snapshot checks
+        run: |
+          tests/perf/run_harness.sh
+          test -f tests/perf/snapshots/latest-headless.json
+          rg -n '"time-to-first-diagnostic"' tests/perf/snapshots/latest-headless.json
+          rg -n '"time-to-first-completion-menu"' tests/perf/snapshots/latest-headless.json
+          rg -n '"time-to-first-picker-results"' tests/perf/snapshots/latest-headless.json
+          rg -n '"metrics"' tests/perf/snapshots/latest-headless.json
+
+      - name: Upload perf snapshot artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: perf-snapshot-${{ matrix.nvim }}
+          path: tests/perf/snapshots/latest-headless.json
 
       - name: Cross-platform runner smoke
         run: |
