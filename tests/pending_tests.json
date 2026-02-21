@@ -1,0 +1,6 @@
+{
+  "allowed_pending": {
+    "agent:approval-notification-visible": "WP-17 approval queue UI not implemented yet.",
+    "agent:patch-diff-hunk-apply": "WP-17 transactional patch/diff pipeline not implemented yet."
+  }
+}

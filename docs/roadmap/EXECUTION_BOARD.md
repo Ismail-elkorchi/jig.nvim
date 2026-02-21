@@ -106,8 +106,15 @@ Updated at: `2026-02-21`
 - ADR(s): tbd
 
 ### WP-11: Cross-Platform Compatibility Matrix
-- Status: `in-progress`
+- Status: `done`
 - Depends on: `WP-10`
 - Issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/15
-- PR(s): tbd
+- PR(s): https://github.com/Ismail-elkorchi/jig.nvim/pull/36
+- ADR(s): tbd
+
+### WP-12: CI, Test Fabric, and Failure Injection
+- Status: `in-progress`
+- Depends on: `WP-03`, `WP-11`
+- Issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/16
+- PR(s): https://github.com/Ismail-elkorchi/jig.nvim/pull/TBD
 - ADR(s): tbd

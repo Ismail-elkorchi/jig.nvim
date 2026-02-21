@@ -4,6 +4,7 @@ local guardrails = require("jig.nav.guardrails")
 local miller = require("jig.nav.miller")
 local root = require("jig.nav.root")
 local platform_path = require("jig.platform.path")
+local nav_fixture = require("jig.tests.fixtures.nav_repo")
 
 local M = {}
 
@@ -215,6 +216,36 @@ local cases = {
           temp_dir = tmp,
           fallback_count = #items,
           synthetic_count = #capped,
+        }
+      end)
+    end,
+  },
+  {
+    id = "large-fixture-tier-guardrail",
+    run = function()
+      return with_globals(function()
+        local generated = nav_fixture.generate({
+          tier = "large",
+          base_dir = repo_root() .. "/tests/fixtures/generated/nav_harness",
+        })
+
+        local result = backend.files({ root = generated.root }, {
+          select = false,
+          candidate_cap = 75,
+          cap = 75,
+          ignore_globs = { "build/**", "node_modules/**" },
+        })
+
+        assert(type(result) == "table", "large fixture backend result missing")
+        assert(result.count > 0, "large fixture produced no candidates")
+        assert(result.count <= 75, "large fixture candidate cap exceeded")
+
+        return {
+          tier = generated.tier,
+          files = generated.files,
+          reused = generated.reused,
+          count = result.count,
+          cap = result.cap,
         }
       end)
     end,

@@ -109,6 +109,10 @@ local SUITES = {
     module = "jig.tests.keymaps.harness",
     snapshot = join(ROOT, "tests/keymaps/snapshots/latest-headless.json"),
   },
+  completion = {
+    module = "jig.tests.completion.harness",
+    snapshot = join(ROOT, "tests/completion/snapshots/latest-headless.json"),
+  },
   nav = {
     module = "jig.tests.nav.harness",
     snapshot = join(ROOT, "tests/nav/snapshots/latest-headless.json"),
@@ -129,6 +133,14 @@ local SUITES = {
     module = "jig.tests.security.harness",
     snapshot = join(ROOT, "tests/security/snapshots/latest-headless.json"),
   },
+  perf = {
+    module = "jig.tests.perf.harness",
+    snapshot = join(ROOT, "tests/perf/snapshots/latest-headless.json"),
+  },
+  pending = {
+    module = "jig.tests.pending.harness",
+    snapshot = join(ROOT, "tests/pending/snapshots/latest-headless.json"),
+  },
   platform = {
     module = "jig.tests.platform.harness",
     snapshot = join(ROOT, "tests/platform/snapshots/latest-headless.json"),
@@ -136,7 +148,7 @@ local SUITES = {
 }
 
 local DEFAULT_SUITES =
-  { "startup", "cmdline", "ui", "keymaps", "nav", "tools", "security", "platform" }
+  { "startup", "cmdline", "ui", "keymaps", "completion", "nav", "tools", "security", "platform" }
 
 local function resolve_suites(parsed)
   if parsed.all == true or #parsed.suites == 0 then

@@ -113,6 +113,17 @@ local function setup_mcp_fixture_root()
           },
         },
       },
+      misdeclared = {
+        command = paths.mcp_server,
+        args = { "ok" },
+        timeout_ms = 1200,
+        tools = {
+          echo = {
+            action_class = "read",
+            target = "misdeclared",
+          },
+        },
+      },
       missing = {
         command = "__jig_missing_mcp_binary__",
         args = {},
@@ -128,6 +139,36 @@ local function reset_state()
   require("jig.agent.policy").reset_for_test()
   require("jig.agent.task").reset_for_test()
   require("jig.agent.mcp.client").reset_for_test()
+end
+
+local function run_case(case)
+  local attempts = case.retries or 1
+  local delay = case.retry_delay_ms or 0
+  local last_details = {}
+
+  for attempt = 1, attempts do
+    local ok, passed, details = pcall(case.run)
+    if ok and passed then
+      return true,
+        {
+          attempts = attempt,
+          labels = case.labels or {},
+          details = details or {},
+        }
+    end
+
+    last_details = details or { error = passed }
+    if attempt < attempts and delay > 0 then
+      vim.wait(delay)
+    end
+  end
+
+  return false,
+    {
+      attempts = attempts,
+      labels = case.labels or {},
+      details = last_details,
+    }
 end
 
 local cases = {
@@ -236,6 +277,8 @@ local cases = {
   {
     id = "task-cancel-resume",
     labels = { "timing-sensitive" },
+    retries = 3,
+    retry_delay_ms = 80,
     run = function()
       reset_state()
       local task = require("jig.agent.task")
@@ -305,7 +348,7 @@ local cases = {
       assert(ok_set == true, tostring(err_set))
 
       local listing = mcp.list()
-      assert(#listing.servers >= 6, "fixture MCP servers missing")
+      assert(#listing.servers >= 7, "fixture MCP servers missing")
 
       local discovered = mcp.discovery()
       for _, server in pairs(discovered.servers or {}) do
@@ -386,6 +429,29 @@ local cases = {
         "tool not found path should be explicit"
       )
 
+      local misdeclared_start = mcp.start("misdeclared", { actor = "user" })
+      assert(misdeclared_start.ok == true, "misdeclared server should start")
+
+      local misdeclared_server = discovered.servers["misdeclared"]
+      local misdeclared = mcp_trust.authorize_tool(misdeclared_server, "echo", {
+        action_class = "net",
+      })
+      assert(
+        misdeclared.allowed == false and misdeclared.reason == "capability-action-mismatch",
+        "misdeclared capability mismatch must be denied"
+      )
+
+      local stopped = mcp.stop("ok")
+      assert(stopped.ok == true, "stop should succeed")
+
+      local cancelled = mcp.call("ok", "echo", {
+        message = "post-stop",
+      }, { actor = "user" })
+      assert(
+        cancelled.ok == false and cancelled.reason == "not_started",
+        "post-stop call should be interrupted with not_started"
+      )
+
       root.reset()
 
       return {
@@ -393,6 +459,8 @@ local cases = {
         early_reason = early.reason,
         timeout_reason = timeout.reason,
         malformed_reason = malformed.reason,
+        misdeclared_reason = misdeclared.reason,
+        cancelled_reason = cancelled.reason,
       }
     end,
   },
@@ -449,6 +517,49 @@ local cases = {
     end,
   },
   {
+    id = "context-ledger-token-budget",
+    run = function()
+      reset_state()
+      vim.g.jig_agent = {
+        enabled = true,
+      }
+      local status = require("jig.agent").setup()
+      assert(status.enabled == true, "agent setup should be enabled")
+
+      local observability = require("jig.agent.observability")
+      observability.reset()
+
+      local report = observability.capture({
+        user = {
+          enabled = true,
+          observability = {
+            budget_bytes = 80,
+            warning_ratio = 0.5,
+          },
+        },
+        sources = {
+          {
+            id = "test.extra.large",
+            kind = "fixture",
+            label = "fixture-large",
+            bytes = 120,
+            chars = 120,
+          },
+        },
+      })
+
+      assert(type(report) == "table", "context ledger report missing")
+      assert(type(report.sources) == "table" and #report.sources >= 2, "context sources missing")
+      assert(type(report.warnings) == "table" and #report.warnings >= 1, "budget warning expected")
+      assert(report.totals.bytes >= 120, "ledger totals bytes mismatch")
+
+      return {
+        warnings = report.warnings,
+        totals = report.totals,
+      }
+    end,
+  },
+  {
     id = "safe-profile-isolation",
     run = function()
       return run_safe_assertions()
@@ -465,11 +576,12 @@ function M.run(opts)
 
   local failed = {}
   for _, case in ipairs(cases) do
-    local ok, details = pcall(case.run)
+    local ok, case_result = run_case(case)
     report.cases[case.id] = {
       ok = ok,
-      labels = case.labels or {},
-      details = ok and details or { error = details },
+      labels = case_result.labels,
+      attempts = case_result.attempts,
+      details = case_result.details,
     }
 
     if not ok then

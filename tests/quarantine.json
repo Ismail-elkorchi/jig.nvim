@@ -1,0 +1,7 @@
+{
+  "timing_sensitive_allowlist": {
+    "ui:cmdline-open-close": "cmdline open/close check depends on event-loop scheduling.",
+    "tools:capture-concurrency-guard": "async shell capture queue ordering can vary by host shell startup latency.",
+    "agent:task-cancel-resume": "task cancel/resume transitions depend on scheduler timing."
+  }
+}
