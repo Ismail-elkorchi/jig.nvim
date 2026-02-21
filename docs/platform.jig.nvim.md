@@ -56,7 +56,7 @@ WSL lane:
 
 ## WSL Self-Hosted Plan
 1. Provision Windows host with WSL2 and Ubuntu.
-2. Install Git, Neovim, ripgrep, and runner dependencies inside WSL distro.
+2. Install Git, Neovim, ripgrep, and runner dependencies inside the WSL environment.
 3. Register a self-hosted GitHub Actions runner from inside WSL with labels:
    - `self-hosted`
    - `linux`

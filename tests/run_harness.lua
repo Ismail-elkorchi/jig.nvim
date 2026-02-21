@@ -195,6 +195,9 @@ local function main()
     }
     if not ok then
       failed[#failed + 1] = name
+      vim.api.nvim_err_writeln(
+        string.format("suite failed: %s -> %s", tostring(name), tostring(outcome))
+      )
     end
   end
 

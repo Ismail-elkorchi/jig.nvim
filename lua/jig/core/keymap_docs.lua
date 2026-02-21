@@ -96,6 +96,10 @@ local function read_or_empty(path)
   return data
 end
 
+local function normalize_newlines(value)
+  return tostring(value or ""):gsub("\r\n", "\n")
+end
+
 local function write(path, content)
   vim.fn.mkdir(vim.fn.fnamemodify(path, ":h"), "p")
   local fd = assert(vim.uv.fs_open(path, "w", 420))
@@ -115,14 +119,16 @@ function M.generate(opts)
   local vimdoc = M.render_vimdoc(entries)
 
   if opts.check then
-    local current_markdown = read_or_empty(markdown_path)
-    local current_vimdoc = read_or_empty(vimdoc_path)
+    local current_markdown = normalize_newlines(read_or_empty(markdown_path))
+    local current_vimdoc = normalize_newlines(read_or_empty(vimdoc_path))
+    local expected_markdown = normalize_newlines(markdown)
+    local expected_vimdoc = normalize_newlines(vimdoc)
 
-    if current_markdown ~= markdown then
+    if current_markdown ~= expected_markdown then
       error("docs/keymaps.jig.nvim.md is out of sync with keymap registry")
     end
 
-    if current_vimdoc ~= vimdoc then
+    if current_vimdoc ~= expected_vimdoc then
       error("doc/jig-keymaps.txt is out of sync with keymap registry")
     end
 
