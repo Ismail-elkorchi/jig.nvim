@@ -1,4 +1,5 @@
 local brand = require("jig.core.brand")
+-- boundary: allow-vim-api
 
 local M = {}
 
