@@ -49,7 +49,9 @@ local function run_nested(env)
   local root = repo_root()
   local root_lua = string.format("%q", root)
   local init_cmd = string.format(
-    "lua local root=%s; package.path=root..'/lua/?.lua;'..root..'/lua/?/init.lua;'..package.path; vim.opt.rtp:prepend(root); require('jig')",
+    "lua local root=%s; "
+      .. "package.path=root..'/lua/?.lua;'..root..'/lua/?/init.lua;'..package.path; "
+      .. "vim.opt.rtp:prepend(root); require('jig')",
     root_lua
   )
   local result = vim
@@ -70,7 +72,9 @@ local function run_safe_assertions()
   local root = repo_root()
   local root_lua = string.format("%q", root)
   local init_cmd = string.format(
-    "lua local root=%s; package.path=root..'/lua/?.lua;'..root..'/lua/?/init.lua;'..package.path; vim.opt.rtp:prepend(root); require('jig')",
+    "lua local root=%s; "
+      .. "package.path=root..'/lua/?.lua;'..root..'/lua/?/init.lua;'..package.path; "
+      .. "vim.opt.rtp:prepend(root); require('jig')",
     root_lua
   )
   local result = vim

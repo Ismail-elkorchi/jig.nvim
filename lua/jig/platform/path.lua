@@ -1,6 +1,4 @@
 local os_platform = require("jig.platform.os")
-local unpack_values = table.unpack or unpack
-
 local M = {}
 
 local function trim(value)
@@ -76,7 +74,10 @@ function M.join(...)
     return ""
   end
 
-  local joined = vim.fs.joinpath(unpack_values(values))
+  local joined = values[1]
+  for index = 2, #values do
+    joined = vim.fs.joinpath(joined, values[index])
+  end
   if os_platform.is_windows() then
     return M.from_slash(joined)
   end
