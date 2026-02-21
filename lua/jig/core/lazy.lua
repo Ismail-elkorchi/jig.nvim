@@ -5,18 +5,22 @@ local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 local lazy_available = vim.uv.fs_stat(lazypath) ~= nil
 
 local function install_lazy()
-  local result = vim
-    .system({
-      "git",
-      "clone",
-      "--filter=blob:none",
-      "--branch=stable",
-      "https://github.com/folke/lazy.nvim.git",
-      lazypath,
-    }, { text = true })
-    :wait()
+  local system = require("jig.tools.system")
+  local result = system.run_sync({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "--branch=stable",
+    "https://github.com/folke/lazy.nvim.git",
+    lazypath,
+  }, {
+    timeout_ms = 20000,
+    actor = "user",
+    origin = "plugin-manager.bootstrap",
+    allow_network = true,
+  })
 
-  if result.code ~= 0 then
+  if result.ok ~= true then
     local stderr = (result.stderr or ""):gsub("%s+$", "")
     local extra = stderr ~= "" and ("\n" .. stderr) or ""
     vim.notify("Failed to install lazy.nvim" .. extra, vim.log.levels.ERROR)

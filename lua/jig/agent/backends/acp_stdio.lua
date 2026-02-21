@@ -54,6 +54,8 @@ local function request(spec, method, params, opts)
     timeout_ms = timeout_ms,
     text = true,
     stdin = vim.json.encode(payload) .. "\n",
+    actor = opts.actor or "agent",
+    origin = opts.origin or "acp.stdio",
   })
 
   if result.ok ~= true then

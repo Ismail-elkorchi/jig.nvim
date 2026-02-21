@@ -105,6 +105,9 @@ function M.request(server, method, params, opts)
     timeout_ms = timeout_ms,
     stdin = vim.json.encode(payload.request) .. "\n",
     text = true,
+    actor = opts.actor or "agent",
+    origin = opts.origin or "mcp.transport",
+    allow_network = opts.allow_network == true,
   })
 
   if result.ok ~= true then

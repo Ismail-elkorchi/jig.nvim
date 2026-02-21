@@ -1,7 +1,7 @@
 # EXECUTION_BOARD
 
 Generated from: `dependency roadmap (internal planning source)`
-Updated at: `2026-02-20`
+Updated at: `2026-02-21`
 
 ## Status Legend
 - `not-started`
@@ -99,8 +99,8 @@ Updated at: `2026-02-20`
 - ADR(s): tbd
 
 ### WP-10: Security, Trust Boundaries, and Risk Controls
-- Status: `not-started`
+- Status: `done`
 - Depends on: `WP-09`
-- Issue: tbd
-- PR(s): tbd
+- Issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/14
+- PR(s): https://github.com/Ismail-elkorchi/jig.nvim/pull/35
 - ADR(s): tbd

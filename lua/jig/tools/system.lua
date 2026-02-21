@@ -78,6 +78,12 @@ local function mk_hint(reason)
     system_wait_nil = "This matches known Neovim wait() edge cases. Retry or increase timeout_ms.",
     system_wait_error = "wait() raised an error. Retry and inspect stderr for platform shell mismatch.",
     exit_nonzero = "Command exited non-zero. Inspect stderr and rerun manually if needed.",
+    startup_network_denied = "Startup network policy denied this command. "
+      .. "Review trace and allowlist only trusted entries.",
+    ["destructive-requires-override"] = "Destructive command blocked. Re-run with :JigExec! only if intentional.",
+    ["destructive-denied-non-user"] = "Destructive command denied for non-user actors.",
+    destructive_requires_override = "Destructive command blocked. Re-run with :JigExec! only if intentional.",
+    destructive_denied_non_user = "Destructive command denied for non-user actors.",
   }
   return hints[reason] or "Run :JigToolHealth to inspect shell/tool integration status."
 end
@@ -109,6 +115,7 @@ local function build_result(wait_result, meta)
     finished_at = os.date("!%Y-%m-%dT%H:%M:%SZ"),
     duration_ms = now_ms() - meta.started_ms,
     queue_id = meta.queue_id,
+    security = meta.security or {},
   }
 
   if wait_result == nil then
@@ -134,16 +141,26 @@ local function build_result(wait_result, meta)
     result.ok = true
     result.reason = nil
     result.hint = ""
+    if result.security.exec_safety and result.security.exec_safety.override_used then
+      result.override_used = true
+      result.override_warning =
+        "Warning: destructive command override was used; event recorded in audit log."
+    end
     return result
   end
 
   result.reason = classify_nonzero(result)
   result.hint = mk_hint(result.reason)
+  if result.security.exec_safety and result.security.exec_safety.override_used then
+    result.override_used = true
+    result.override_warning =
+      "Warning: destructive command override was used; event recorded in audit log."
+  end
   return result
 end
 
-local function synthetic_result(meta, reason, stderr)
-  return {
+local function synthetic_result(meta, reason, stderr, extra)
+  local result = {
     ok = false,
     code = -1,
     signal = nil,
@@ -158,7 +175,14 @@ local function synthetic_result(meta, reason, stderr)
     finished_at = os.date("!%Y-%m-%dT%H:%M:%SZ"),
     duration_ms = now_ms() - meta.started_ms,
     queue_id = meta.queue_id,
+    security = meta.security or {},
   }
+  if type(extra) == "table" then
+    for key, value in pairs(extra) do
+      result[key] = value
+    end
+  end
+  return result
 end
 
 local function build_system_opts(opts, cwd)
@@ -207,6 +231,54 @@ end
 
 local function should_capture(opts)
   return opts.text == true
+end
+
+local function security_gate(argv, opts, meta)
+  local actor = opts.actor or "user"
+  local origin = opts.origin or "jig.tools.system"
+  local task_id = opts.task_id
+  local security = {}
+
+  local ok_net, net_guard = pcall(require, "jig.security.net_guard")
+  if ok_net and type(net_guard.evaluate_argv) == "function" then
+    local net_report = net_guard.evaluate_argv(argv, {
+      actor = actor,
+      origin = origin,
+      task_id = task_id,
+      allow_network = opts.allow_network == true,
+    })
+    security.net_guard = net_report
+    if net_report.allowed ~= true then
+      meta.security = security
+      return false,
+        synthetic_result(meta, "startup_network_denied", net_report.hint or net_report.reason, {
+          reason = "startup_network_denied",
+          security = security,
+        })
+    end
+  end
+
+  local ok_exec, exec_safety = pcall(require, "jig.security.exec_safety")
+  if ok_exec and type(exec_safety.evaluate) == "function" then
+    local exec_report = exec_safety.evaluate(argv, {
+      actor = actor,
+      origin = origin,
+      task_id = task_id,
+      override = opts.override_destructive == true,
+    })
+    security.exec_safety = exec_report
+    if exec_report.allowed ~= true then
+      meta.security = security
+      return false,
+        synthetic_result(meta, exec_report.reason, exec_report.hint or exec_report.reason, {
+          reason = exec_report.reason,
+          security = security,
+        })
+    end
+  end
+
+  meta.security = security
+  return true, nil
 end
 
 local function dequeue()
@@ -282,6 +354,7 @@ function M.run(argv, opts)
     started_ms = now_ms(),
     started_at = os.date("!%Y-%m-%dT%H:%M:%SZ"),
     queue_id = queue_id,
+    security = {},
   }
 
   if not ok_argv then
@@ -295,6 +368,20 @@ function M.run(argv, opts)
       capture = false,
       error = argv_err,
       result = result,
+    }
+  end
+
+  local allowed, blocked = security_gate(normalized_argv, opts, meta)
+  if not allowed then
+    if type(opts.on_exit) == "function" then
+      opts.on_exit(blocked)
+    end
+    return {
+      id = queue_id,
+      queued = false,
+      capture = false,
+      error = blocked.reason,
+      result = blocked,
     }
   end
 
@@ -341,10 +428,16 @@ function M.run_sync(argv, opts)
     started_ms = now_ms(),
     started_at = os.date("!%Y-%m-%dT%H:%M:%SZ"),
     queue_id = -1,
+    security = {},
   }
 
   if not ok_argv then
     return synthetic_result(meta, "spawn_error", argv_err)
+  end
+
+  local allowed, blocked = security_gate(normalized_argv, opts, meta)
+  if not allowed then
+    return blocked
   end
 
   local run_opts = vim.tbl_deep_extend("force", cfg, opts)
@@ -385,6 +478,10 @@ function M.format_result_lines(result)
 
   if type(result.hint) == "string" and result.hint ~= "" then
     table.insert(lines, "hint: " .. result.hint)
+  end
+
+  if result.override_warning ~= nil and result.override_warning ~= "" then
+    table.insert(lines, "warning: " .. result.override_warning)
   end
 
   table.insert(lines, "")

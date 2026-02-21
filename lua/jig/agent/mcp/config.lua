@@ -40,7 +40,24 @@ local function normalize_tools(tools)
   return out
 end
 
-local function extract_servers(payload)
+local function source_label(path)
+  local normalized = tostring(path or ""):gsub("\\", "/")
+  if normalized == "" then
+    return "builtin"
+  end
+
+  if normalized:match("/%.mcp%.json$") or normalized:match("/mcp%.json$") then
+    local config_home = vim.fn.stdpath("config"):gsub("\\", "/")
+    if config_home ~= "" and normalized:find(config_home, 1, true) == 1 then
+      return "user-config"
+    end
+    return "project-config"
+  end
+
+  return "unknown"
+end
+
+local function extract_servers(payload, source)
   if type(payload) ~= "table" then
     return {}
   end
@@ -65,6 +82,7 @@ local function extract_servers(payload)
         timeout_ms = tonumber(spec.timeout_ms),
         transport = tostring(spec.transport or "stdio"),
         tools = normalize_tools(spec.tools),
+        source_label = source_label(source),
       }
     end
   end
@@ -97,7 +115,8 @@ local function load_file(path)
   return {
     exists = true,
     path = path,
-    servers = extract_servers(decoded),
+    source_label = source_label(path),
+    servers = extract_servers(decoded, path),
     error = "",
   }
 end
@@ -119,6 +138,7 @@ function M.discover(opts)
     for server_name, spec in pairs(report.servers) do
       if servers[server_name] == nil then
         spec._source = path
+        spec._source_label = report.source_label
         servers[server_name] = spec
       end
     end

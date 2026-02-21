@@ -33,6 +33,12 @@
 - `tools/terminal.lua`: terminal integration with mode visibility and command-state feedback.
 - `tools/health.lua`: shell/provider/tool health summaries and checkhealth integration.
 - `tools/init.lua`: command orchestration + `:JigExec`, `:JigToolHealth`, `:JigTerm`.
+- `security/config.lua`: runtime security policy defaults + override merge.
+- `security/startup_phase.lua`: startup phase boundary tracking (`startup` -> `done`).
+- `security/net_guard.lua`: startup network classification, deny-by-default, and trace hooks.
+- `security/mcp_trust.lua`: MCP trust registry with source labels and capability enforcement.
+- `security/exec_safety.lua`: destructive execution classifier + override controls.
+- `security/init.lua`: security setup orchestration for default profile.
 - `agent/config.lua`: optional multi-agent feature flags and trusted override merging.
 - `agent/policy.lua`: allow/ask/deny engine with persistent revocable grants.
 - `agent/log.lua`: append-only JSONL evidence logging.

@@ -4,6 +4,7 @@ local config = require("jig.agent.config")
 local instructions = require("jig.agent.instructions")
 local log = require("jig.agent.log")
 local mcp = require("jig.agent.mcp.client")
+local mcp_trust = require("jig.security.mcp_trust")
 local observability = require("jig.agent.observability")
 local policy = require("jig.agent.policy")
 local task = require("jig.agent.task")
@@ -111,7 +112,7 @@ local function cmd_mcp_start(opts)
     return
   end
 
-  local result = mcp.start(name)
+  local result = mcp.start(name, { actor = "user" })
   local level = result.ok and vim.log.levels.INFO or vim.log.levels.WARN
   vim.notify(
     string.format("JigMcpStart %s: %s (%s)", name, tostring(result.ok), result.reason),
@@ -138,7 +139,7 @@ local function cmd_mcp_tools(opts)
     return
   end
 
-  local result = mcp.tools(name, {})
+  local result = mcp.tools(name, { actor = "user" })
   local lines = {
     "Jig MCP Tools",
     string.rep("=", 48),
@@ -180,7 +181,7 @@ local function cmd_mcp_call(opts)
     return
   end
 
-  local result = mcp.call(server, tool_name, decoded_or_err, {})
+  local result = mcp.call(server, tool_name, decoded_or_err, { actor = "user" })
   local lines = {
     "Jig MCP Call",
     string.rep("=", 48),
@@ -194,6 +195,90 @@ local function cmd_mcp_call(opts)
     stringify(result.payload),
   }
   open_report("JigMcpCall", lines, result)
+end
+
+local function find_server_spec(name)
+  local report = mcp.discovery()
+  local server = report.servers and report.servers[name] or nil
+  return server, report
+end
+
+local function render_capability_pairs(capabilities)
+  local chunks = {}
+  for tool_name, capability in pairs(capabilities or {}) do
+    chunks[#chunks + 1] =
+      string.format("%s(%s)", tostring(tool_name), tostring(capability.action_class))
+  end
+  table.sort(chunks)
+  if #chunks == 0 then
+    return "<none>"
+  end
+  return table.concat(chunks, ",")
+end
+
+local function cmd_mcp_trust(opts)
+  local fargs = opts.fargs or {}
+  if #fargs == 0 then
+    local report = mcp.list()
+    local lines = {
+      "Jig MCP Trust",
+      string.rep("=", 48),
+      "trust_path: " .. mcp_trust.path(),
+      "",
+    }
+
+    for _, server in ipairs(report.servers or {}) do
+      lines[#lines + 1] = string.format(
+        "- %s trust=%s source=%s status=%s caps=%s",
+        server.name,
+        tostring(server.trust or "ask"),
+        tostring(server.source_label or "unknown"),
+        tostring(server.status or "stopped"),
+        render_capability_pairs(server.capabilities)
+      )
+    end
+
+    open_report("JigMcpTrust", lines, report)
+    return
+  end
+
+  local operation = tostring(fargs[1] or "")
+  local server_name = tostring(fargs[2] or "")
+  if server_name == "" then
+    vim.notify("Usage: :JigMcpTrust [allow|ask|deny|revoke] <server>", vim.log.levels.ERROR)
+    return
+  end
+
+  local server, _ = find_server_spec(server_name)
+  if server == nil then
+    vim.notify("JigMcpTrust server not found: " .. server_name, vim.log.levels.ERROR)
+    return
+  end
+
+  if operation == "revoke" then
+    local ok, payload = mcp_trust.revoke(server, { task_id = nil })
+    if not ok then
+      vim.notify("JigMcpTrust revoke failed: " .. tostring(payload), vim.log.levels.ERROR)
+      return
+    end
+    vim.notify("JigMcpTrust revoked: " .. tostring(payload.server_name), vim.log.levels.INFO)
+    return
+  end
+
+  if operation == "allow" or operation == "deny" or operation == "ask" then
+    local ok, payload = mcp_trust.set_state(server, operation, { task_id = nil })
+    if not ok then
+      vim.notify("JigMcpTrust update failed: " .. tostring(payload), vim.log.levels.ERROR)
+      return
+    end
+    vim.notify(
+      string.format("JigMcpTrust %s -> %s", payload.server_name, payload.trust),
+      vim.log.levels.INFO
+    )
+    return
+  end
+
+  vim.notify("Usage: :JigMcpTrust [allow|ask|deny|revoke] <server>", vim.log.levels.ERROR)
 end
 
 local function cmd_policy_list()
@@ -501,6 +586,23 @@ local function register_commands()
   create_command(brand.command("McpCall"), cmd_mcp_call, {
     nargs = "+",
     desc = "Call MCP tool with JSON args (policy-routed)",
+  })
+
+  create_command(brand.command("McpTrust"), cmd_mcp_trust, {
+    nargs = "*",
+    complete = function(_, cmdline)
+      local values = {}
+      local tokens = vim.split(cmdline, "%s+", { trimempty = true })
+      if #tokens <= 1 then
+        return { "allow", "ask", "deny", "revoke" }
+      end
+      local report = mcp.list()
+      for _, server in ipairs(report.servers or {}) do
+        values[#values + 1] = server.name
+      end
+      return values
+    end,
+    desc = "List or modify MCP trust entries",
   })
 
   create_command(brand.command("AgentPolicyList"), cmd_policy_list, {

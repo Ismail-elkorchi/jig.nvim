@@ -52,6 +52,9 @@ local function cmd_exec(opts)
   local argv = parse_exec_args(opts)
   local result = system.run_sync(argv, {
     timeout_ms = vim.g.jig_exec_timeout_ms,
+    actor = "user",
+    origin = "jig.exec",
+    override_destructive = opts.bang == true,
   })
 
   local lines = system.format_result_lines(result)
@@ -104,6 +107,7 @@ function M.setup()
 
   create_command(brand.command("Exec"), cmd_exec, {
     nargs = "+",
+    bang = true,
     complete = "shellcmd",
     desc = "Run command via Jig system wrapper and show deterministic result",
   })

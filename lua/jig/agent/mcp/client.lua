@@ -1,5 +1,7 @@
-local mcp_config = require("jig.agent.mcp.config")
 local log = require("jig.agent.log")
+local mcp_config = require("jig.agent.mcp.config")
+local net_guard = require("jig.security.net_guard")
+local mcp_trust = require("jig.security.mcp_trust")
 local policy = require("jig.agent.policy")
 local transport = require("jig.agent.mcp.transport")
 
@@ -17,11 +19,23 @@ local function server_runtime(name)
       status = "stopped",
       last_error = "",
       source = "",
+      source_label = "",
       initialized_at = nil,
     }
     runtime.servers[name] = item
   end
   return item
+end
+
+local function discovered_server_list(report)
+  local items = {}
+  for _, server in pairs(report.servers or {}) do
+    items[#items + 1] = server
+  end
+  table.sort(items, function(a, b)
+    return tostring(a.name) < tostring(b.name)
+  end)
+  return items
 end
 
 local function server_by_name(name, opts)
@@ -36,7 +50,7 @@ local function record(event)
   log.record(event)
 end
 
-local function decision_for(subject, opts)
+local function policy_decision(subject, opts)
   local result = policy.authorize(subject, {
     log = opts.log_policy ~= false,
   })
@@ -57,6 +71,8 @@ local function response_hint(result)
     not_started = "Run :JigMcpStart <server> first.",
     tool_not_found = "Check :JigMcpTools <server> and use a listed tool name.",
     blocked_by_policy = "Use :JigAgentPolicyGrant allow ... or revoke deny rules.",
+    blocked_by_trust = "Use :JigMcpTrust to grant explicit trust after reviewing source and capabilities.",
+    blocked_by_net_guard = "Startup network policy denied this operation.",
   }
 
   return hints[result] or "Inspect :JigMcpList and evidence log for details."
@@ -82,37 +98,51 @@ end
 
 local function classify_tool_action(server, tool_name)
   local meta = server.tools and server.tools[tool_name] or nil
-  local action_class = meta and meta.action_class or "net"
+  local action_class = meta and meta.action_class or "unknown"
   local target = meta and meta.target or server.name
   return action_class, target
 end
 
 function M.list(opts)
   local report = mcp_config.discover(opts)
-  local items = {}
+  local servers = discovered_server_list(report)
+  local trust = mcp_trust.list({ servers = servers })
+  local trust_by_name = {}
 
-  for name, server in pairs(report.servers) do
-    local item = server_runtime(name)
-    table.insert(items, {
-      name = name,
+  for _, entry in ipairs(trust) do
+    trust_by_name[entry.server_name] = entry
+  end
+
+  local items = {}
+  for _, server in ipairs(servers) do
+    local item = server_runtime(server.name)
+    local trust_entry = trust_by_name[server.name]
+
+    items[#items + 1] = {
+      name = server.name,
       command = server.command,
       args = server.args,
       source = server._source,
+      source_label = server._source_label,
       status = item.status,
       last_error = item.last_error,
       initialized_at = item.initialized_at,
-    })
+      trust = trust_entry and trust_entry.trust or "ask",
+      capabilities = trust_entry and trust_entry.capabilities or {},
+      trust_hint = trust_entry and trust_entry.hint or "",
+    }
   end
-
-  table.sort(items, function(a, b)
-    return a.name < b.name
-  end)
 
   return {
     root = report.root,
     files = report.files,
     servers = items,
+    trust_path = mcp_trust.path(),
   }
+end
+
+function M.discovery(opts)
+  return mcp_config.discover(opts)
 end
 
 function M.start(name, opts)
@@ -124,17 +154,39 @@ function M.start(name, opts)
     return result
   end
 
-  local allowed, decision = decision_for({
-    tool = "mcp.start." .. tostring(name),
-    action_class = "shell",
-    target = name,
-    project_root = opts.project_root,
+  local trust_result = mcp_trust.authorize_server(server, {
     task_id = opts.task_id,
-    ancestor_task_ids = opts.ancestor_task_ids,
-  }, opts)
+  })
+  if not trust_result.allowed then
+    local result = normalize_result(false, trust_result, "blocked_by_trust")
+    record({
+      event = "mcp_start",
+      task_id = opts.task_id,
+      tool = "mcp.start",
+      request = {
+        server = name,
+        source_label = server._source_label,
+      },
+      policy_decision = trust_result.decision,
+      result = result,
+      error_path = trust_result.hint,
+    })
+    return result
+  end
 
-  if not allowed then
-    local result = normalize_result(false, decision, "blocked_by_policy")
+  local argv = { server.command }
+  for _, arg in ipairs(server.args or {}) do
+    argv[#argv + 1] = arg
+  end
+
+  local actor = opts.actor or "agent"
+  local net_report = net_guard.evaluate_argv(argv, {
+    actor = actor,
+    origin = "mcp.start",
+    task_id = opts.task_id,
+  })
+  if net_report.allowed ~= true then
+    local result = normalize_result(false, net_report, "blocked_by_net_guard")
     record({
       event = "mcp_start",
       task_id = opts.task_id,
@@ -142,9 +194,9 @@ function M.start(name, opts)
       request = {
         server = name,
       },
-      policy_decision = decision.decision,
+      policy_decision = "deny",
       result = result,
-      error_path = result.hint,
+      error_path = net_report.hint,
     })
     return result
   end
@@ -165,7 +217,7 @@ function M.start(name, opts)
       request = {
         server = name,
       },
-      policy_decision = decision.decision,
+      policy_decision = trust_result.decision,
       result = result,
       error_path = result.hint,
     })
@@ -173,10 +225,18 @@ function M.start(name, opts)
     return result
   end
 
-  local handshake = transport.request(server, "initialize", {
-    client = "jig.nvim",
-    version = "0.1",
-  }, opts)
+  local handshake = transport.request(
+    server,
+    "initialize",
+    {
+      client = "jig.nvim",
+      version = "0.1",
+    },
+    vim.tbl_deep_extend("force", opts, {
+      actor = actor,
+      origin = "mcp.start",
+    })
+  )
 
   local item = server_runtime(name)
   if handshake.ok ~= true then
@@ -190,7 +250,7 @@ function M.start(name, opts)
       request = {
         server = name,
       },
-      policy_decision = decision.decision,
+      policy_decision = trust_result.decision,
       result = result,
       error_path = result.hint,
     })
@@ -201,6 +261,7 @@ function M.start(name, opts)
   item.last_error = ""
   item.initialized_at = os.date("!%Y-%m-%dT%H:%M:%SZ")
   item.source = server._source or ""
+  item.source_label = server._source_label or ""
 
   local result = normalize_result(true, {
     server = name,
@@ -212,8 +273,9 @@ function M.start(name, opts)
     tool = "mcp.start",
     request = {
       server = name,
+      source_label = server._source_label,
     },
-    policy_decision = decision.decision,
+    policy_decision = trust_result.decision,
     result = result,
   })
 
@@ -287,7 +349,26 @@ function M.tools(name, opts)
     return not_started
   end
 
-  local allowed, decision = decision_for({
+  local trust_result = mcp_trust.authorize_server(server, {
+    task_id = opts.task_id,
+  })
+  if not trust_result.allowed then
+    local result = normalize_result(false, trust_result, "blocked_by_trust")
+    record({
+      event = "mcp_tools",
+      task_id = opts.task_id,
+      tool = "mcp.tools",
+      request = {
+        server = name,
+      },
+      policy_decision = trust_result.decision,
+      result = result,
+      error_path = trust_result.hint,
+    })
+    return result
+  end
+
+  local allowed, decision = policy_decision({
     tool = "mcp.tools",
     action_class = "read",
     target = name,
@@ -312,7 +393,15 @@ function M.tools(name, opts)
     return result
   end
 
-  local response = transport.request(server, "tools/list", {}, opts)
+  local response = transport.request(
+    server,
+    "tools/list",
+    {},
+    vim.tbl_deep_extend("force", opts, {
+      actor = opts.actor or "agent",
+      origin = "mcp.tools",
+    })
+  )
   if response.ok ~= true then
     local result = normalize_result(false, response, response.reason)
     record({
@@ -355,7 +444,52 @@ function M.call(name, tool_name, arguments, opts)
   end
 
   local action_class, target = classify_tool_action(server, tool_name)
-  local allowed, decision = decision_for({
+  local trust_result = mcp_trust.authorize_tool(server, tool_name, {
+    action_class = action_class,
+    task_id = opts.task_id,
+  })
+  if not trust_result.allowed then
+    local result = normalize_result(false, trust_result, "blocked_by_trust")
+    record({
+      event = "mcp_call",
+      task_id = opts.task_id,
+      tool = "mcp.call",
+      request = {
+        server = name,
+        tool = tool_name,
+      },
+      policy_decision = trust_result.decision,
+      result = result,
+      error_path = trust_result.hint,
+    })
+    return result
+  end
+
+  if action_class == "net" then
+    local net_result = net_guard.evaluate_action_class("net", {
+      actor = opts.actor or "agent",
+      origin = "mcp.call",
+      task_id = opts.task_id,
+    })
+    if net_result.allowed ~= true then
+      local blocked = normalize_result(false, net_result, "blocked_by_net_guard")
+      record({
+        event = "mcp_call",
+        task_id = opts.task_id,
+        tool = "mcp.call",
+        request = {
+          server = name,
+          tool = tool_name,
+        },
+        policy_decision = "deny",
+        result = blocked,
+        error_path = net_result.hint,
+      })
+      return blocked
+    end
+  end
+
+  local allowed, decision = policy_decision({
     tool = "mcp.call." .. tostring(tool_name),
     action_class = action_class,
     target = target,
@@ -381,10 +515,18 @@ function M.call(name, tool_name, arguments, opts)
     return result
   end
 
-  local response = transport.request(server, "tools/call", {
-    name = tool_name,
-    arguments = arguments or {},
-  }, opts)
+  local response = transport.request(
+    server,
+    "tools/call",
+    {
+      name = tool_name,
+      arguments = arguments or {},
+    },
+    vim.tbl_deep_extend("force", opts, {
+      actor = opts.actor or "agent",
+      origin = "mcp.call",
+    })
+  )
 
   if response.ok ~= true then
     local result = normalize_result(false, response, response.reason)

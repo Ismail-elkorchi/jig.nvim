@@ -54,6 +54,54 @@ function M.check()
     vim.health.info("Nerd Font not detected; ASCII icon fallback active")
   end
 
+  local exrc_enabled = vim.o.exrc == true
+  local secure_enabled = vim.o.secure == true
+  local modeline_enabled = vim.o.modeline == true
+
+  vim.health.info(
+    string.format(
+      "local-config surfaces: exrc=%s secure=%s modeline=%s",
+      tostring(exrc_enabled),
+      tostring(secure_enabled),
+      tostring(modeline_enabled)
+    )
+  )
+
+  if exrc_enabled and not secure_enabled then
+    vim.health.warn(
+      "exrc is enabled without secure. What: local project configs may execute unsafe commands. "
+        .. "Why: reduced isolation. Next: set secure or disable exrc."
+    )
+  elseif exrc_enabled and secure_enabled then
+    vim.health.warn(
+      "exrc is enabled. What: project-local configs execute with restrictions. "
+        .. "Why: still increases local trust surface. Next: enable only for trusted projects."
+    )
+  else
+    vim.health.ok("exrc disabled by default")
+  end
+
+  if modeline_enabled then
+    vim.health.warn(
+      "modeline is enabled. What: file-local modelines can change editor behavior. "
+        .. "Why: adds local parsing surface. Next: disable modeline for stricter posture if needed."
+    )
+  else
+    vim.health.ok("modeline disabled")
+  end
+
+  local trace_enabled = vim.env.JIG_TRACE_STARTUP_NET == "1"
+    or vim.env.JIG_TRACE_STARTUP_NET == "true"
+  local strict_trace = vim.env.JIG_STRICT_STARTUP_NET == "1"
+    or vim.env.JIG_STRICT_STARTUP_NET == "true"
+  vim.health.info(
+    string.format(
+      "startup network trace: enabled=%s strict=%s",
+      tostring(trace_enabled),
+      tostring(strict_trace)
+    )
+  )
+
   if vim.g.jig_safe_profile then
     vim.health.info("safe profile active; optional modules disabled")
   else

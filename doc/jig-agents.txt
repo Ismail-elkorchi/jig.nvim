@@ -20,6 +20,7 @@ ENABLEMENT
 
 COMMANDS
   :JigMcpList
+  :JigMcpTrust
   :JigMcpStart <server>
   :JigMcpStop <server>|all
   :JigMcpTools <server>

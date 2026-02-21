@@ -293,14 +293,25 @@ local cases = {
       reset_state()
       local policy = require("jig.agent.policy")
       local mcp = require("jig.agent.mcp.client")
+      local mcp_trust = require("jig.security.mcp_trust")
+      local security = require("jig.security")
       local root = require("jig.nav.root")
 
+      security.mark_startup_done("agent-harness-mcp")
+
+      mcp_trust.reset_for_test()
       local fixture_root = setup_mcp_fixture_root()
       local ok_set, err_set = root.set(fixture_root)
       assert(ok_set == true, tostring(err_set))
 
       local listing = mcp.list()
       assert(#listing.servers >= 6, "fixture MCP servers missing")
+
+      local discovered = mcp.discovery()
+      for _, server in pairs(discovered.servers or {}) do
+        local ok_trust = mcp_trust.set_state(server, "allow")
+        assert(ok_trust == true, "trust allow failed for " .. tostring(server.name))
+      end
 
       local ok_shell_allow = policy.grant({
         decision = "allow",
@@ -311,33 +322,33 @@ local cases = {
       })
       assert(ok_shell_allow == true, "shell allow grant failed")
 
-      local missing = mcp.start("missing")
+      local missing = mcp.start("missing", { actor = "user" })
       assert(
         missing.ok == false and missing.reason == "missing_binary",
         "missing binary path failed"
       )
 
-      local early = mcp.start("early")
+      local early = mcp.start("early", { actor = "user" })
       assert(early.ok == false, "early-exit path must fail")
 
-      local timeout = mcp.start("timeout")
+      local timeout = mcp.start("timeout", { actor = "user" })
       assert(timeout.ok == false and timeout.reason == "timeout", "timeout path must fail")
 
-      local malformed = mcp.start("malformed")
+      local malformed = mcp.start("malformed", { actor = "user" })
       assert(
         malformed.ok == false and malformed.reason == "malformed_response",
         "malformed path must fail"
       )
 
-      local started = mcp.start("ok")
+      local started = mcp.start("ok", { actor = "user" })
       assert(started.ok == true, "ok server should start")
 
-      local tools = mcp.tools("ok")
+      local tools = mcp.tools("ok", { actor = "user" })
       assert(tools.ok == true, "tools/list should pass")
 
       local blocked = mcp.call("ok", "echo", {
         message = "hello",
-      })
+      }, { actor = "user" })
       assert(
         blocked.ok == false and blocked.reason == "blocked_by_policy",
         "mcp.call must route through policy ask/deny"
@@ -354,10 +365,10 @@ local cases = {
 
       local allowed = mcp.call("ok", "echo", {
         message = "hello",
-      })
+      }, { actor = "user" })
       assert(allowed.ok == true, "allowed call should pass")
 
-      local tool_missing_start = mcp.start("tool_missing")
+      local tool_missing_start = mcp.start("tool_missing", { actor = "user" })
       assert(tool_missing_start.ok == true, "tool_missing server should start")
 
       local ok_allow_unknown = policy.grant({
@@ -369,7 +380,7 @@ local cases = {
       })
       assert(ok_allow_unknown == true, "allow grant for unknown tool failed")
 
-      local tool_missing = mcp.call("tool_missing", "unknown", {})
+      local tool_missing = mcp.call("tool_missing", "unknown", {}, { actor = "user" })
       assert(
         tool_missing.ok == false and tool_missing.reason == "tool_not_found",
         "tool not found path should be explicit"
