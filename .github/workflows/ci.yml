@@ -99,6 +99,16 @@ jobs:
             fi
           done
 
+      - name: Platform conditional centralization gate
+        run: |
+          set -euo pipefail
+          hits="$(rg -n 'vim\\.uv\\.os_uname|WSL_DISTRO_NAME|WSL_INTEROP|/proc/version' lua/jig | rg -v '^lua/jig/platform/' | rg -v '^lua/jig/tests/' || true)"
+          if [[ -n "$hits" ]]; then
+            echo "os detection must route through lua/jig/platform/*"
+            echo "$hits"
+            exit 1
+          fi
+
       - name: Commit message checks
         if: github.event_name == 'pull_request'
         run: |
@@ -244,6 +254,20 @@ jobs:
           rg -n '"exec-safety-override-logging"' tests/security/snapshots/latest-headless.json
           rg -n '"safe-profile-isolation"' tests/security/snapshots/latest-headless.json
 
+      - name: Platform harness snapshot checks
+        run: |
+          nvim --headless -u NONE -l tests/run_harness.lua -- --suite platform
+          test -f tests/platform/snapshots/latest-headless.json
+          rg -n '"os-and-stdpath-invariants"' tests/platform/snapshots/latest-headless.json
+          rg -n '"path-join-normalize-roundtrip"' tests/platform/snapshots/latest-headless.json
+          rg -n '"shell-detection-and-argv-strategy"' tests/platform/snapshots/latest-headless.json
+          rg -n '"clipboard-non-fatal"' tests/platform/snapshots/latest-headless.json
+          rg -n '"root-detection-normalized-input"' tests/platform/snapshots/latest-headless.json
+
+      - name: Cross-platform runner smoke
+        run: |
+          nvim --headless -u NONE -l tests/run_harness.lua -- --suite startup --suite cmdline --suite keymaps --suite nav --suite tools --suite security --suite platform
+
       - name: Deprecated API gate
         run: tests/lsp/check_deprecated.sh
 
@@ -260,6 +284,85 @@ jobs:
 
       - name: Health check
         run: nvim --headless -u ./init.lua '+JigHealth' '+qa'
+
+  compat-matrix:
+    name: compat-matrix (${{ matrix.target }})
+    runs-on: ${{ matrix.runs_on }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: linux-x64
+            runs_on: ubuntu-latest
+          - target: linux-arm64
+            runs_on: ubuntu-24.04-arm
+          - target: macos-arm64
+            runs_on: macos-14
+          - target: macos-intel
+            runs_on: macos-13
+          - target: windows-x64
+            runs_on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ripgrep (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ripgrep
+
+      - name: Install ripgrep (macOS)
+        if: runner.os == 'macOS'
+        run: brew install ripgrep
+
+      - name: Install ripgrep (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: choco install ripgrep -y
+
+      - name: Install Neovim
+        uses: rhysd/action-setup-vim@v1
+        with:
+          neovim: true
+          version: stable
+
+      - name: Cross-platform core workflow harness
+        run: |
+          nvim --headless -u NONE -l tests/run_harness.lua -- --suite startup --suite cmdline --suite keymaps --suite nav --suite tools --suite platform
+
+  wsl-best-effort:
+    runs-on: windows-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Neovim (Windows host)
+        uses: rhysd/action-setup-vim@v1
+        with:
+          neovim: true
+          version: stable
+
+      - name: WSL probe and harness (best-effort)
+        shell: pwsh
+        run: |
+          if (-not (Get-Command wsl -ErrorAction SilentlyContinue)) {
+            Write-Host "WSL command unavailable on hosted runner; skipping."
+            exit 0
+          }
+          wsl --status
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "WSL not configured on hosted runner; skipping."
+            exit 0
+          }
+
+          $repoWin = (Get-Location).Path
+          $repoWsl = wsl wslpath -a "$repoWin"
+          if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($repoWsl)) {
+            Write-Host "Unable to map repo path into WSL; skipping."
+            exit 0
+          }
+
+          wsl bash -lc "cd '$repoWsl' && if command -v nvim >/dev/null 2>&1; then nvim --headless -u NONE -l tests/run_harness.lua -- --suite startup --suite cmdline --suite keymaps --suite nav --suite tools --suite platform; else echo 'nvim missing in WSL distro; skipping.'; fi"
 
   nightly-report:
     runs-on: ubuntu-latest

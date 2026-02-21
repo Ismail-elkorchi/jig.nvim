@@ -47,11 +47,10 @@ end
 
 local function run_nested(env)
   local root = repo_root()
+  local root_lua = string.format("%q", root)
   local init_cmd = string.format(
-    "lua package.path='%s/lua/?.lua;%s/lua/?/init.lua;'..package.path; vim.opt.rtp:prepend('%s'); require('jig')",
-    root,
-    root,
-    root
+    "lua local root=%s; package.path=root..'/lua/?.lua;'..root..'/lua/?/init.lua;'..package.path; vim.opt.rtp:prepend(root); require('jig')",
+    root_lua
   )
   local result = vim
     .system({ "nvim", "--headless", "-u", "NONE", "+" .. init_cmd, "+qa" }, {
@@ -69,11 +68,10 @@ end
 
 local function run_safe_assertions()
   local root = repo_root()
+  local root_lua = string.format("%q", root)
   local init_cmd = string.format(
-    "lua package.path='%s/lua/?.lua;%s/lua/?/init.lua;'..package.path; vim.opt.rtp:prepend('%s'); require('jig')",
-    root,
-    root,
-    root
+    "lua local root=%s; package.path=root..'/lua/?.lua;'..root..'/lua/?/init.lua;'..package.path; vim.opt.rtp:prepend(root); require('jig')",
+    root_lua
   )
   local result = vim
     .system({
@@ -107,6 +105,18 @@ local function fixture_paths()
   return {
     mcp_server = root .. "/tests/fixtures/mcp/fake_mcp_server.sh",
   }
+end
+
+local function destructive_exec_commands(file_path)
+  local is_windows = require("jig.platform.os").is_windows()
+  if is_windows then
+    local quoted = string.format("\"%s\"", file_path:gsub("\"", "\\\""))
+    local argv = "cmd /d /s /c del /f /q " .. vim.fn.fnameescape(quoted)
+    return argv, argv
+  end
+
+  local argv = "rm -f " .. vim.fn.fnameescape(file_path)
+  return argv, argv
 end
 
 local function setup_mcp_fixture_root()
@@ -283,7 +293,9 @@ local cases = {
       vim.fn.writefile({ "safety" }, temp)
       assert(vim.fn.filereadable(temp) == 1, "temp file setup failed")
 
-      vim.cmd("JigExec rm -f " .. vim.fn.fnameescape(temp))
+      local deny_cmd, allow_cmd = destructive_exec_commands(temp)
+
+      vim.cmd("JigExec " .. deny_cmd)
       local blocked = vim.g.jig_exec_last and vim.g.jig_exec_last.result
       assert(type(blocked) == "table", "JigExec blocked result missing")
       assert(
@@ -292,7 +304,7 @@ local cases = {
       )
       assert(vim.fn.filereadable(temp) == 1, "file should remain after blocked destructive command")
 
-      vim.cmd("JigExec! rm -f " .. vim.fn.fnameescape(temp))
+      vim.cmd("JigExec! " .. allow_cmd)
       local allowed = vim.g.jig_exec_last and vim.g.jig_exec_last.result
       assert(type(allowed) == "table" and allowed.ok == true, "override destructive command failed")
       assert(vim.fn.filereadable(temp) == 0, "file should be removed after override")

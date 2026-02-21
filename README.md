@@ -103,6 +103,7 @@ nvim --headless -u ./init.lua '+lua print("jig-smoke")' '+qa'
 nvim --headless -u ./init.lua '+lua assert(vim.g.jig_profile=="default")' '+qa'
 NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.g.jig_profile=="safe")' '+qa'
 nvim --headless -u ./init.lua '+checkhealth jig' '+qa'
+nvim --headless -u NONE -l tests/run_harness.lua -- --all
 ```
 
 ## Documentation
@@ -118,6 +119,7 @@ nvim --headless -u ./init.lua '+checkhealth jig' '+qa'
 - `docs/tools.jig.nvim.md`
 - `docs/agents.jig.nvim.md`
 - `docs/security.jig.nvim.md`
+- `docs/platform.jig.nvim.md`
 - `docs/ui-foundation.jig.nvim.md`
 - `docs/ui-testing.jig.nvim.md`
 - `docs/maintenance.jig.nvim.md`
@@ -128,6 +130,7 @@ nvim --headless -u ./init.lua '+checkhealth jig' '+qa'
 - `doc/jig-tools.txt` (`:help jig-tools`)
 - `doc/jig-agents.txt` (`:help jig-agents`)
 - `doc/jig-security.txt` (`:help jig-security`)
+- `doc/jig-platform.txt` (`:help jig-platform`)
 
 ## License
 MIT

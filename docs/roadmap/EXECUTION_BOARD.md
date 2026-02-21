@@ -104,3 +104,10 @@ Updated at: `2026-02-21`
 - Issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/14
 - PR(s): https://github.com/Ismail-elkorchi/jig.nvim/pull/35
 - ADR(s): tbd
+
+### WP-11: Cross-Platform Compatibility Matrix
+- Status: `in-progress`
+- Depends on: `WP-10`
+- Issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/15
+- PR(s): tbd
+- ADR(s): tbd

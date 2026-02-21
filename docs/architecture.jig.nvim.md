@@ -27,7 +27,13 @@
 - `lsp/snapshot.lua`: structured LSP context snapshot export.
 - `lsp/health.lua`: actionable LSP health reporting.
 - `lsp/init.lua`: LSP orchestration + `:JigLsp*` commands.
-- `tools/platform.lua`: platform and shell detection with structured capabilities export.
+- `platform/os.lua`: OS class, architecture, and WSL detection.
+- `platform/path.lua`: path join/normalize semantics and cross-platform helpers.
+- `platform/fs.lua`: filesystem helpers and `stdpath` contract surface.
+- `platform/clipboard.lua`: clipboard provider detection and non-fatal hints.
+- `platform/shell.lua`: shell discovery/classification and argv one-liner strategy.
+- `platform/init.lua`: aggregated platform capabilities export.
+- `tools/platform.lua`: compatibility adapter delegating to `jig.platform`.
 - `tools/registry.lua`: required/recommended/optional external tool registry and install hints.
 - `tools/system.lua`: deterministic `vim.system` wrappers (timeouts, nil handling, capture queue).
 - `tools/terminal.lua`: terminal integration with mode visibility and command-state feedback.

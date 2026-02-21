@@ -1,5 +1,5 @@
 local health = require("jig.tools.health")
-local platform = require("jig.tools.platform")
+local platform = require("jig.platform")
 local registry = require("jig.tools.registry")
 local system = require("jig.tools.system")
 
