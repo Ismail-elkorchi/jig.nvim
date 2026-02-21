@@ -113,8 +113,15 @@ Updated at: `2026-02-21`
 - ADR(s): tbd
 
 ### WP-12: CI, Test Fabric, and Failure Injection
-- Status: `in-progress`
+- Status: `done`
 - Depends on: `WP-03`, `WP-11`
 - Issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/16
-- PR(s): https://github.com/Ismail-elkorchi/jig.nvim/pull/TBD
+- PR(s): https://github.com/Ismail-elkorchi/jig.nvim/pull/37
+- ADR(s): tbd
+
+### WP-13: Documentation and In-Editor Knowledge Surface
+- Status: `not-started`
+- Depends on: `WP-12`
+- Issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/17
+- PR(s): tbd
 - ADR(s): tbd
