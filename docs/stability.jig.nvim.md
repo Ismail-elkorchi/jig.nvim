@@ -1,5 +1,7 @@
 # stability.jig.nvim.md
 
+Canonical help: `:help jig-safety`
+
 ## Policy
 - Default channel: `stable`
 - Optional channel: `edge`

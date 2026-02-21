@@ -1,5 +1,7 @@
 # compatibility.jig.nvim.md
 
+Canonical help: `:help jig-platform`
+
 ## Neovim Support
 - Minimum: `0.11.2`
 - Recommended: latest `0.11.x` stable

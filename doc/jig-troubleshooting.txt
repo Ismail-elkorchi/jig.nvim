@@ -1,0 +1,74 @@
+*jig-troubleshooting*  jig.nvim troubleshooting
+
+Use this order under failure:
+  1. capture what failed
+  2. map to failure class
+  3. run next command
+
+STARTUP
+  what failed: startup error or crash before editing.
+  why: plugin/runtime/config state drift.
+  next command:
+    NVIM_APPNAME=jig-safe nvim
+    nvim --startuptime /tmp/jig.startuptime.log -u ./init.lua '+qa'
+
+CMDLINE
+  what failed: `:` opens with error.
+  why: cmdline/plugin integration drift.
+  next command:
+    :JigCmdlineCheck
+    NVIM_APPNAME=jig-safe nvim
+
+COMPLETION
+  what failed: completion missing or unstable.
+  why: completion backend or environment mismatch.
+  next command:
+    nvim --headless -u NONE -l tests/run_harness.lua -- --suite completion
+
+LSP
+  what failed: no attach / diagnostics missing.
+  why: binary missing or server config failure.
+  next command:
+    :JigLspHealth
+    :JigLspInfo
+
+UI
+  what failed: chrome/icons/highlights unreadable.
+  why: terminal/font/profile mismatch.
+  next command:
+    :JigUiProfile high-contrast
+    :JigIconMode ascii
+
+PERFORMANCE
+  what failed: slow first response.
+  why: regression in startup/diagnostic/completion/picker path.
+  next command:
+    nvim --headless -u NONE -l tests/run_harness.lua -- --suite perf
+
+PLATFORM
+  what failed: OS-specific command/path behavior.
+  why: shell/path/provider mismatch.
+  next command:
+    nvim --headless -u NONE -l tests/run_harness.lua -- --suite platform
+
+INTEGRATION
+  what failed: external tools/provider behavior differs.
+  why: binary/provider missing or shell mismatch.
+  next command:
+    :JigToolHealth
+    :checkhealth jig
+
+AGENT / SECURITY
+  what failed: MCP/policy/exec safety behavior.
+  why: trust/policy denied or startup network guard blocked.
+  next command:
+    :JigMcpTrust
+    :JigAgentPolicyList
+    nvim --headless -u NONE -l tests/run_harness.lua -- --suite security
+
+NOT GUARANTEED / BOUNDARIES
+  - Some failures require project-specific repro input.
+  - WSL hosted CI lane is best-effort; local confirmation can still be required.
+  - Optional agent workflows may be intentionally unavailable by policy.
+
+vim:tw=78:ts=8:noet:ft=help:norl:

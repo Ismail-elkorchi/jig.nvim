@@ -5,9 +5,9 @@ labels:
   - bug
 body:
   - type: dropdown
-    id: incident_class
+    id: failure_surface
     attributes:
-      label: Incident Class
+      label: Failure Surface
       options:
         - startup
         - cmdline
@@ -17,7 +17,43 @@ body:
         - performance
         - platform
         - integration
+        - agent
         - security
+    validations:
+      required: true
+  - type: input
+    id: nvim_version
+    attributes:
+      label: Neovim version
+      placeholder: "nvim --version (first line)"
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: OS
+      placeholder: "e.g. Ubuntu 24.04, macOS 15, Windows 11, WSL Ubuntu"
+    validations:
+      required: true
+  - type: input
+    id: terminal
+    attributes:
+      label: Terminal
+      placeholder: "e.g. Kitty, WezTerm, iTerm2, Windows Terminal"
+    validations:
+      required: true
+  - type: input
+    id: shell
+    attributes:
+      label: Shell
+      placeholder: "e.g. bash, zsh, fish, pwsh"
+    validations:
+      required: true
+  - type: input
+    id: nvim_appname
+    attributes:
+      label: NVIM_APPNAME
+      placeholder: "jig, jig-safe, or custom value"
     validations:
       required: true
   - type: textarea
@@ -33,19 +69,21 @@ body:
       label: Expected vs Actual
     validations:
       required: true
-  - type: textarea
-    id: environment
+  - type: checkboxes
+    id: triage_checks
     attributes:
-      label: Environment
-      placeholder: |
-        Neovim version:
-        OS:
-        Shell:
-        NVIM_APPNAME:
-    validations:
-      required: true
+      label: Triage checks completed
+      options:
+        - label: reproduced in jig-safe
+          required: true
+        - label: ran :checkhealth jig
+          required: true
+        - label: attached :JigHealth output (or stated why unavailable)
+          required: true
   - type: textarea
     id: evidence
     attributes:
       label: Evidence
       description: Attach logs, traces, screenshots, CI links.
+    validations:
+      required: true

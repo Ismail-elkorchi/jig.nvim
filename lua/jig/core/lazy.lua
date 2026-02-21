@@ -47,6 +47,33 @@ plugin_state.register({
   bootstrap_command = brand.command("PluginBootstrap"),
 })
 
+-- boundary: allow-vim-api
+-- Justification: user command registration is part of Neovim host integration.
+vim.api.nvim_create_user_command(brand.command("Channel"), function(opts)
+  local channel = opts.args
+  if channel ~= "stable" and channel ~= "edge" then
+    vim.notify("Usage: :" .. brand.command("Channel") .. " stable|edge", vim.log.levels.ERROR)
+    return
+  end
+  vim.g[brand.namespace .. "_channel"] = channel
+  if not lazy_available then
+    vim.notify(
+      "Channel stored, but lazy.nvim is not installed. Run :"
+        .. brand.command("PluginBootstrap")
+        .. ".",
+      vim.log.levels.WARN
+    )
+    return
+  end
+  vim.notify(brand.brand .. " channel set to " .. channel .. ". Restart Neovim.")
+end, {
+  nargs = 1,
+  complete = function()
+    return { "stable", "edge" }
+  end,
+  desc = "Set update channel metadata (stable|edge)",
+})
+
 if not lazy_available then
   vim.notify(
     "lazy.nvim not found. Run :" .. brand.command("PluginBootstrap") .. " to install plugins.",
@@ -60,21 +87,4 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({ { import = "jig.plugins" } }, {
   checker = { enabled = false },
   change_detection = { notify = false },
-})
-
--- boundary: allow-vim-api
--- Justification: user command registration is part of Neovim host integration.
-vim.api.nvim_create_user_command(brand.command("Channel"), function(opts)
-  local channel = opts.args
-  if channel ~= "stable" and channel ~= "edge" then
-    vim.notify("Usage: :" .. brand.command("Channel") .. " stable|edge", vim.log.levels.ERROR)
-    return
-  end
-  vim.g[brand.namespace .. "_channel"] = channel
-  vim.notify(brand.brand .. " channel set to " .. channel .. ". Restart Neovim.")
-end, {
-  nargs = 1,
-  complete = function()
-    return { "stable", "edge" }
-  end,
 })

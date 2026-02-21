@@ -1,0 +1,36 @@
+*jig-configuration*  jig.nvim configuration boundaries
+
+PROFILE MODEL
+  Default profile (`NVIM_APPNAME=jig`):
+    - core + optional runtime layers
+
+  Safe profile (`NVIM_APPNAME=jig-safe`):
+    - core-only recovery surface
+    - no optional UI/nav/completion/lsp/tools/agent layers
+
+COMMON GLOBALS
+  vim.g.jig_ui
+  vim.g.jig_nav
+  vim.g.jig_lsp
+  vim.g.jig_tools
+  vim.g.jig_security
+  vim.g.jig_agent
+
+COMMANDS
+  :JigDocs
+  :JigRepro
+  :JigHealth
+  :JigVerboseMap <lhs>
+  :JigVerboseSet <option>
+
+CONFIG GUIDELINES
+  - keep defaults explicit
+  - prefer profile-scoped toggles
+  - avoid local config execution unless repository is trusted
+
+NOT GUARANTEED / BOUNDARIES
+  - WP-13 does not enforce user custom config correctness.
+  - Project-local overrides are user-controlled and can introduce drift.
+  - Optional agent module remains disabled unless explicitly enabled.
+
+vim:tw=78:ts=8:noet:ft=help:norl:

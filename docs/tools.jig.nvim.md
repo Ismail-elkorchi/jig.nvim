@@ -1,5 +1,7 @@
 # tools.jig.nvim.md
 
+Canonical help: `:help jig-tools`
+
 ## Scope
 WP-08 provides shell invocation wrappers, terminal UX integration, and external tool/provider messaging.
 

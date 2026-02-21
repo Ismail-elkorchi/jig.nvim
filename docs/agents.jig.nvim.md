@@ -1,5 +1,7 @@
 # agents.jig.nvim.md
 
+Canonical help: `:help jig-agents`
+
 ## Scope
 WP-09 adds an optional multi-agent interoperability layer with policy routing, MCP governance, ACP bridge hooks, and auditable task lifecycle controls.
 

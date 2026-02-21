@@ -1,99 +1,107 @@
 # troubleshooting.jig.nvim.md
 
-## Run Health Check
-```vim
-:checkhealth jig
-:JigHealth
-```
+Canonical help: `:help jig-troubleshooting`
 
-## Cmdline Error On `:`
-1. Start safe profile:
+## Failure-Class Workflow
+Use this sequence under failure:
+1. capture what failed
+2. identify failure surface
+3. run the next command
+
+## Failure Surfaces
+### startup
+- what failed: crash/error before editing.
+- why: profile/config/plugin state drift.
+- next command:
 ```bash
 NVIM_APPNAME=jig-safe nvim
+nvim --startuptime /tmp/jig.startuptime.log -u ./init.lua '+qa'
 ```
-2. Cmdline completion is disabled by default for stability. Confirm:
-```vim
-:lua print(require('blink.cmp.config').cmdline.enabled)
-```
-Expected default: `false`.
-3. If the error only appears in non-safe profile, inspect optional plugin overrides.
-4. Run automated cmdline check:
+
+### cmdline
+- what failed: `:` opens with errors.
+- why: cmdline integration drift.
+- next command:
 ```vim
 :JigCmdlineCheck
 ```
 
-## Plugin Manager Missing
-1. Confirm path:
-```vim
-:lua print(vim.fn.stdpath("data") .. "/lazy/lazy.nvim")
-```
-2. Install explicitly:
-```vim
-:JigPluginBootstrap
-```
-3. Restart Neovim and run:
-```vim
-:JigPluginInstall
+### completion
+- what failed: completion unavailable or unstable.
+- why: backend/provider mismatch.
+- next command:
+```bash
+nvim --headless -u NONE -l tests/run_harness.lua -- --suite completion
 ```
 
-## Icon Rendering Problems
-1. Verify Nerd Font is installed in terminal profile.
-2. If missing, distro falls back to ASCII icons automatically.
-3. Validate detection:
+### lsp
+- what failed: servers fail to attach, diagnostics missing.
+- why: server binary/config/runtime mismatch.
+- next command:
 ```vim
-:lua print(vim.g.have_nerd_font)
+:JigLspHealth
+:JigLspInfo
 ```
-4. Force ASCII fallback if needed:
+
+### ui
+- what failed: icons/highlights/chrome unreadable.
+- why: terminal/font/profile mismatch.
+- next command:
 ```vim
+:JigUiProfile high-contrast
 :JigIconMode ascii
 ```
 
-## LSP Not Attaching
-1. Confirm server availability:
-```vim
-:checkhealth vim.lsp
-```
-2. Confirm config enabled:
-```vim
-:lua print(vim.inspect(vim.lsp.is_enabled('lua_ls')))
+### performance
+- what failed: startup/first-action latency spikes.
+- why: regression in startup or first-response path.
+- next command:
+```bash
+nvim --headless -u NONE -l tests/run_harness.lua -- --suite perf
 ```
 
-## Picker/Search Not Working
-1. Confirm `rg` is installed:
+### platform
+- what failed: OS/shell/path behavior mismatch.
+- why: platform abstraction or shell differences.
+- next command:
 ```bash
-rg --version
+nvim --headless -u NONE -l tests/run_harness.lua -- --suite platform
 ```
-2. Retry command-first navigation:
+
+### integration
+- what failed: tools/providers don’t execute as expected.
+- why: missing binary/provider/shell mismatch.
+- next command:
 ```vim
-:JigFiles
-:JigRecent
+:JigToolHealth
+:checkhealth jig
 ```
-3. Check and reset deterministic root override if needed:
+
+### agent / security
+- what failed: trust/policy/MCP/exec-safety path denied or misbehaving.
+- why: policy or trust state.
+- next command:
 ```vim
-:lua print(vim.env.JIG_ROOT or "")
-:lua print(vim.g.jig_root_override or "")
-:JigRootReset
+:JigMcpTrust
+:JigAgentPolicyList
+```
+```bash
+nvim --headless -u NONE -l tests/run_harness.lua -- --suite security
 ```
 
 ## Provenance Helpers
-- Keymap provenance:
 ```vim
 :JigVerboseMap <leader>qq
-```
-- Option provenance:
-```vim
 :JigVerboseSet number
 ```
 
-## Deterministic Bisect Workflow
-1. Start safe profile:
-```bash
-NVIM_APPNAME=jig-safe nvim
-```
-2. Re-enable optional modules in halves and restart each time.
-3. Keep the failing half; disable the passing half.
-4. Repeat until one module remains.
-5. Capture issue with:
-```vim
-:JigHealth
-```
+## Deterministic Bisect
+1. `NVIM_APPNAME=jig-safe nvim`
+2. Re-enable optional layers in halves.
+3. Keep failing half, repeat.
+4. Capture evidence with `:JigHealth` and `:JigRepro`.
+
+## Not Guaranteed / Boundaries
+- Some failures require project-specific reproductions.
+- Hosted WSL CI lane is best-effort; local verification can still be required.
+- Optional agent workflows can be unavailable by policy.

@@ -1,5 +1,7 @@
 # lsp.jig.nvim.md
 
+Canonical help: `:help jig-lsp`
+
 ## Scope
 WP-07 provides Jig's LSP runtime boundary with explicit policy modules and failure isolation.
 
