@@ -120,8 +120,15 @@ Updated at: `2026-02-21`
 - ADR(s): tbd
 
 ### WP-13: Documentation and In-Editor Knowledge Surface
-- Status: `in-progress`
+- Status: `done`
 - Depends on: `WP-12`
 - Issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/17
+- PR(s): https://github.com/Ismail-elkorchi/jig.nvim/pull/39
+- ADR(s): tbd
+
+### WP-14: Release, Rollback, and Incident Operations
+- Status: `not-started` (`next`)
+- Depends on: `WP-13`
+- Issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/18
 - PR(s): tbd
 - ADR(s): tbd
