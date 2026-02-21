@@ -6,7 +6,7 @@ Generated from the default runtime command surface. Do not edit manually.
 |---|---|---|---|
 | `:JigBisectGuide` | `none` | `no` | Show deterministic bisect guidance |
 | `:JigBuffers` | `optional-one` | `no` | Find buffers filtered by deterministic root |
-| `:JigChannel` | `one` | `no` | (no description) |
+| `:JigChannel` | `one` | `no` | Set update channel metadata (stable|edge) |
 | `:JigCmdlineCheck` | `none` | `no` | Verify native ':' cmdline opens and closes cleanly |
 | `:JigDiagnostics` | `optional-one` | `no` | Find diagnostics with fallback behavior |
 | `:JigDocs` | `none` | `no` | Open Jig documentation index |
