@@ -1,5 +1,7 @@
 # plugin-manager.jig.nvim.md
 
+Canonical help: `:help jig`
+
 ## Backend Compatibility
 - Primary backend: `lazy.nvim`.
 - Fallback strategy: if `lazy.nvim` is absent, startup remains functional and provides explicit bootstrap command:

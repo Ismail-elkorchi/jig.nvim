@@ -1,5 +1,7 @@
 # profiling.jig.nvim.md
 
+Canonical help: `:help jig-testing`
+
 ## Startup Profiling
 Use Neovim built-in startup timing:
 

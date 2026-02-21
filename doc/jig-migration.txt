@@ -1,0 +1,27 @@
+*jig-migration*  jig.nvim migration guide
+
+MIGRATION CHECKLIST
+  1. backup current config
+  2. install Jig in isolated profile first
+  3. verify startup + health
+  4. verify keymaps/commands used daily
+  5. move to default profile if stable
+
+COMMANDS
+  :JigPluginRestore
+  :JigPluginRollback
+  :JigHealth
+  :JigDocs
+
+ROLLBACK
+  If migration breaks workflow:
+    NVIM_APPNAME=jig-safe nvim
+    :JigPluginRollback
+    nvim --headless -u ./init.lua '+checkhealth jig' '+qa'
+
+NOT GUARANTEED / BOUNDARIES
+  - Existing user customizations may conflict and require manual resolution.
+  - Third-party plugin behavior outside Jig defaults is not guaranteed.
+  - Migration does not auto-translate non-Jig keymaps/options.
+
+vim:tw=78:ts=8:noet:ft=help:norl:

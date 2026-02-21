@@ -1,5 +1,7 @@
 # install.jig.nvim.md
 
+Canonical help: `:help jig-install`
+
 ## Clean install
 ```bash
 mv ~/.config/nvim ~/.config/nvim.bak.$(date +%s) 2>/dev/null || true

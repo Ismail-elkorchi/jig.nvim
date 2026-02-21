@@ -226,6 +226,25 @@ jobs:
         run: |
           nvim --headless -u ./init.lua '+lua package.path="./lua/?.lua;./lua/?/init.lua;"..package.path; _G.__jig_repo_root=vim.fn.getcwd(); require("jig.core.keymap_docs").generate({ check = true })' '+qa'
 
+      - name: Generate and verify helptags
+        run: |
+          nvim --headless -u NONE -l tests/docs/update_helptags.lua
+          git diff --exit-code -- doc/tags
+
+      - name: Docs harness snapshot checks
+        run: |
+          tests/docs/run_harness.sh
+          test -f tests/docs/snapshots/latest-headless.json
+          rg -n '"required-vimdoc-set"' tests/docs/snapshots/latest-headless.json
+          rg -n '"docs-index-command-open-close"' tests/docs/snapshots/latest-headless.json
+          rg -n '"help-entrypoint"' tests/docs/snapshots/latest-headless.json
+          rg -n '"repro-command-surface"' tests/docs/snapshots/latest-headless.json
+          rg -n '"command-doc-sync-gate"' tests/docs/snapshots/latest-headless.json
+          rg -n '"command-doc-cross-reference"' tests/docs/snapshots/latest-headless.json
+          rg -n '"markdown-link-check"' tests/docs/snapshots/latest-headless.json
+          rg -n '"help-reference-check"' tests/docs/snapshots/latest-headless.json
+          rg -n '"issue-template-failure-surfaces"' tests/docs/snapshots/latest-headless.json
+
       - name: LSP harness snapshot checks
         run: |
           tests/lsp/run_harness.sh

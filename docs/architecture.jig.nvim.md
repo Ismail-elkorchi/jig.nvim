@@ -1,5 +1,7 @@
 # architecture.jig.nvim.md
 
+Canonical help: `:help jig`
+
 ## Modules
 - `spec/requirements.lua`: machine-readable contract registry + self-check.
 - `core/bootstrap.lua`: version gate, profile detection, safe-mode gating.

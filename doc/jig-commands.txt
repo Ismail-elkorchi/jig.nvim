@@ -1,0 +1,44 @@
+*jig-commands*  Jig command index
+
+Generated from the default runtime command surface. Do not edit manually.
+
+COMMANDS
+  :JigBisectGuide     none         Show deterministic bisect guidance
+  :JigBuffers         optional-one Find buffers filtered by deterministic root
+  :JigChannel         one          
+  :JigCmdlineCheck    none         Verify native ':' cmdline opens and closes cleanly
+  :JigDiagnostics     optional-one Find diagnostics with fallback behavior
+  :JigDocs            none         Open Jig documentation index
+  :JigExec            one-or-more  Run command via Jig system wrapper and show deterministic result
+  :JigFiles           optional-one Find files using deterministic root policy
+  :JigFloatDemo       none         Open demo floats using Jig float design policy
+  :JigGitChanges      optional-one Find git changes with fallback behavior
+  :JigHealth          none         Run Jig and provider health checks
+  :JigHistory         optional-one Find command history entries
+  :JigIconMode        optional-one Set icon mode (auto|nerd|ascii)
+  :JigKeys            none         Show keymap registry index
+  :JigLspHealth       none         Show Jig LSP health with remediation
+  :JigLspInfo         none         Show enabled LSP servers and current buffer attach state
+  :JigLspSnapshot     optional-one Print JSON snapshot or write LSP state to file
+  :JigMiller          optional-one Open optional Miller-column navigation mode
+  :JigPluginBootstrap none         Install lazy.nvim explicitly (no startup auto-install)
+  :JigPluginInstall   none         Install/sync plugins from lock state
+  :JigPluginRestore   none         Restore plugins from lazy-lock.json
+  :JigPluginRollback  none         Restore previous lockfile backup and run Lazy restore
+  :JigPluginUpdate    none         Preview then apply plugin updates (explicit confirm)
+  :JigRecent          optional-one Find recent files filtered by deterministic root
+  :JigRepro           none         Print deterministic minimal repro steps
+  :JigRootReset       none         Clear deterministic root override
+  :JigRootSet         optional-one Set deterministic root override
+  :JigSymbols         optional-one Find symbols with fallback behavior
+  :JigTerm            optional-one Open integrated terminal (default root or buffer directory)
+  :JigToolHealth      none         Show shell, provider, and external tool integration summary
+  :JigUiProfile       optional-one Set accessibility profile (default|high-contrast|reduced-decoration|reduced-motion)
+  :JigVerboseMap      one          Show keymap provenance via :verbose map <lhs>
+  :JigVerboseSet      one          Show option provenance via :verbose set <option>?
+
+BOUNDARIES
+  This file covers default-profile commands. Optional agent commands are
+  documented in |jig-agents| when agent module is explicitly enabled.
+
+vim:tw=78:ts=8:noet:ft=help:norl:

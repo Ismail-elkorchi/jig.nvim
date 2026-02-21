@@ -1,5 +1,7 @@
 # ui-testing.jig.nvim.md
 
+Canonical help: `:help jig-testing`
+
 ## Headless Child-UI Harness
 Run:
 ```bash

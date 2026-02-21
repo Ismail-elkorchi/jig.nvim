@@ -1,5 +1,7 @@
 # maintenance.jig.nvim.md
 
+Canonical help: `:help jig-migration`
+
 ## Release channels
 - `stable`: pinned plugin updates after CI pass.
 - `edge`: faster updates for compatibility validation.

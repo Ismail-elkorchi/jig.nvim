@@ -1,0 +1,36 @@
+*jig*  jig.nvim quick index
+
+OVERVIEW
+  Jig is a Neovim distribution focused on deterministic behavior, explicit
+  operations, and recoverable failure paths.
+
+START HERE
+  |jig-install|         installation and isolated profile setup
+  |jig-configuration|   profile/config boundaries
+  |jig-commands|        default :Jig* command index
+  |jig-keymaps|         default keymap registry output
+
+OPERATIONS
+  |jig-troubleshooting| recurring failure classes + next commands
+  |jig-migration|       migration checklist and rollback path
+  |jig-safety|          safety model and trust boundaries
+  |jig-testing|         harness/gate workflow
+  |jig-platform|        platform coverage and limits
+  |jig-lsp|             LSP runtime boundary
+  |jig-tools|           shell/tool integration boundary
+  |jig-security|        security controls and trust policy
+  |jig-agents|          optional agent interoperability module
+
+COMMAND DISCOVERY
+  :JigDocs
+      Open in-editor docs index.
+
+  :JigRepro
+      Print deterministic minimal repro workflow.
+
+NOT GUARANTEED / BOUNDARIES
+  - Jig documents default behavior and explicit optional features.
+  - Optional modules are not guaranteed in `NVIM_APPNAME=jig-safe`.
+  - Agent edit transactions are not part of WP-13 (see WP-17 scope).
+
+vim:tw=78:ts=8:noet:ft=help:norl:

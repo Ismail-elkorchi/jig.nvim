@@ -120,7 +120,7 @@ Updated at: `2026-02-21`
 - ADR(s): tbd
 
 ### WP-13: Documentation and In-Editor Knowledge Surface
-- Status: `not-started`
+- Status: `in-progress`
 - Depends on: `WP-12`
 - Issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/17
 - PR(s): tbd

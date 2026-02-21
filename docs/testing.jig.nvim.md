@@ -1,5 +1,7 @@
 # testing.jig.nvim.md
 
+Canonical help: `:help jig-testing`
+
 ## Scope
 WP-12 defines Jig test fabric contracts for determinism, failure injection, and CI gating.
 

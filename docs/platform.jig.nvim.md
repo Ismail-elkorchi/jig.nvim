@@ -1,5 +1,7 @@
 # platform.jig.nvim.md
 
+Canonical help: `:help jig-platform`
+
 ## Purpose
 WP-11 turns cross-platform behavior into a verified property using:
 - a dedicated platform abstraction layer (`lua/jig/platform/*`)

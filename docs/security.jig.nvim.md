@@ -1,5 +1,7 @@
 # security.jig.nvim.md
 
+Canonical help: `:help jig-security`
+
 ## Scope
 WP-10 adds trust-boundary controls for startup networking, local-config surfaces, MCP trust policy, and destructive execution safety.
 

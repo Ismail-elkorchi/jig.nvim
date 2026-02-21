@@ -1,5 +1,7 @@
 # navigation.jig.nvim.md
 
+Canonical help: `:help jig`
+
 ## Root Resolution Policy
 Jig resolves navigation root in deterministic order:
 1. `JIG_ROOT` environment variable (if set)

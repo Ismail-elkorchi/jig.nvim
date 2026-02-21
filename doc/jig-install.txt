@@ -1,0 +1,31 @@
+*jig-install*  jig.nvim installation
+
+DEFAULT INSTALL
+  git clone https://github.com/Ismail-elkorchi/jig.nvim ~/.config/nvim
+  nvim
+
+PLUGIN MANAGER BOOTSTRAP
+  Startup does not auto-install plugins.
+
+  Run explicitly:
+    :JigPluginBootstrap
+
+ISOLATED PROFILES
+  Default profile:
+    NVIM_APPNAME=jig nvim
+
+  Safe profile:
+    NVIM_APPNAME=jig-safe nvim
+
+  Safe profile keeps only mandatory core modules and help/docs commands.
+
+VERIFY
+  nvim --headless -u ./init.lua '+checkhealth jig' '+qa'
+  nvim --headless -u ./init.lua '+JigHealth' '+qa'
+
+NOT GUARANTEED / BOUNDARIES
+  - No automatic tool/plugin installation on startup.
+  - Shell/provider availability depends on host environment.
+  - Optional modules may remain unavailable until explicitly enabled.
+
+vim:tw=78:ts=8:noet:ft=help:norl:

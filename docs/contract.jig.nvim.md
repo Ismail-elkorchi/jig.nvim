@@ -1,5 +1,7 @@
 # contract.jig.nvim.md
 
+Canonical help: `:help jig`
+
 This document is the normative contract for Jig runtime behavior.
 `MUST`, `SHOULD`, and `MAY` are interpreted as RFC keywords.
 

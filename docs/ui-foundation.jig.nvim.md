@@ -1,5 +1,7 @@
 # ui-foundation.jig.nvim.md
 
+Canonical help: `:help jig`
+
 ## Stable Semantic Highlight API
 The following highlight groups are stable API:
 - `JigUiDiagnostics`
