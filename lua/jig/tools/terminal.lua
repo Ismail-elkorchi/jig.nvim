@@ -1,4 +1,4 @@
-local platform = require("jig.tools.platform")
+local platform = require("jig.platform")
 
 local M = {}
 

@@ -1,0 +1,42 @@
+*jig-platform*  Jig Cross-Platform Compatibility (WP-11)
+
+OVERVIEW
+  WP-11 introduces a platform abstraction layer and matrix verification.
+
+PLATFORM LAYER
+  Modules:
+    lua/jig/platform/os.lua
+    lua/jig/platform/path.lua
+    lua/jig/platform/fs.lua
+    lua/jig/platform/clipboard.lua
+    lua/jig/platform/shell.lua
+    lua/jig/platform/init.lua
+
+  Compatibility adapter:
+    lua/jig/tools/platform.lua
+
+HARNESS RUNNER
+  Cross-platform runner:
+    nvim --headless -u NONE -l tests/run_harness.lua -- --all
+
+  Core suites include:
+    startup, cmdline, ui, keymaps, nav, tools, security, platform
+
+WSL
+  Hosted runners may not provide deterministic WSL guarantees.
+  WSL lane is best-effort unless a self-hosted WSL runner is configured.
+
+  Manual verification command:
+    nvim --headless -u NONE -l tests/run_harness.lua -- --all
+
+SCOPE
+  Verified in CI:
+    Linux x86_64/arm64, macOS arm64/intel, Windows native
+
+  Best-effort:
+    WSL hosted lane
+
+SEE ALSO
+  docs/platform.jig.nvim.md
+
+vim:tw=78:ts=8:noet:ft=help:norl:

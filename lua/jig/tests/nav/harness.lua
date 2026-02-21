@@ -3,6 +3,7 @@ local fallback = require("jig.nav.fallback")
 local guardrails = require("jig.nav.guardrails")
 local miller = require("jig.nav.miller")
 local root = require("jig.nav.root")
+local platform_path = require("jig.platform.path")
 
 local M = {}
 
@@ -18,10 +19,8 @@ local function fixture_root()
   return repo_root() .. "/tests/fixtures/root_policy/workspace"
 end
 
-local function normalize(path)
-  local expanded = vim.fn.fnamemodify(path, ":p")
-  local real = vim.uv.fs_realpath(expanded)
-  return (real or expanded):gsub("/+$", "")
+local function normalize(value)
+  return platform_path.normalize(value, { slash = true })
 end
 
 local function write_snapshot(path, payload)
