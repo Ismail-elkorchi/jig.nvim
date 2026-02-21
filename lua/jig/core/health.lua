@@ -69,11 +69,13 @@ function M.check()
 
   if exrc_enabled and not secure_enabled then
     vim.health.warn(
-      "exrc is enabled without secure. What: local project configs may execute unsafe commands. Why: reduced isolation. Next: set secure or disable exrc."
+      "exrc is enabled without secure. What: local project configs may execute unsafe commands. "
+        .. "Why: reduced isolation. Next: set secure or disable exrc."
     )
   elseif exrc_enabled and secure_enabled then
     vim.health.warn(
-      "exrc is enabled. What: project-local configs execute with restrictions. Why: still increases local trust surface. Next: enable only for trusted projects."
+      "exrc is enabled. What: project-local configs execute with restrictions. "
+        .. "Why: still increases local trust surface. Next: enable only for trusted projects."
     )
   else
     vim.health.ok("exrc disabled by default")
@@ -81,7 +83,8 @@ function M.check()
 
   if modeline_enabled then
     vim.health.warn(
-      "modeline is enabled. What: file-local modelines can change editor behavior. Why: adds local parsing surface. Next: disable modeline for stricter posture if needed."
+      "modeline is enabled. What: file-local modelines can change editor behavior. "
+        .. "Why: adds local parsing surface. Next: disable modeline for stricter posture if needed."
     )
   else
     vim.health.ok("modeline disabled")

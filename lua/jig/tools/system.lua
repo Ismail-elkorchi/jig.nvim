@@ -78,7 +78,8 @@ local function mk_hint(reason)
     system_wait_nil = "This matches known Neovim wait() edge cases. Retry or increase timeout_ms.",
     system_wait_error = "wait() raised an error. Retry and inspect stderr for platform shell mismatch.",
     exit_nonzero = "Command exited non-zero. Inspect stderr and rerun manually if needed.",
-    startup_network_denied = "Startup network policy denied this command. Review trace and allowlist only trusted entries.",
+    startup_network_denied = "Startup network policy denied this command. "
+      .. "Review trace and allowlist only trusted entries.",
     ["destructive-requires-override"] = "Destructive command blocked. Re-run with :JigExec! only if intentional.",
     ["destructive-denied-non-user"] = "Destructive command denied for non-user actors.",
     destructive_requires_override = "Destructive command blocked. Re-run with :JigExec! only if intentional.",

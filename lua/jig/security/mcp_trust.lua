@@ -263,8 +263,7 @@ function M.revoke(server, opts)
   return true, existing
 end
 
-function M.authorize_server(server, ctx)
-  ctx = ctx or {}
+function M.authorize_server(server, _)
   local entry = M.get(server)
 
   if entry.trust == "allow" then
