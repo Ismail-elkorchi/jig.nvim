@@ -47,6 +47,13 @@ Commands:
 - `:JigMcpStop <server>|all`
 - `:JigMcpTools <server>`
 - `:JigMcpCall <server> <tool> <json_args>`
+- `:JigMcpTrust`
+- `:JigMcpTrust allow|ask|deny|revoke <server>`
+
+Trust notes:
+- discovered server sources are labeled (`project-config`, `user-config`, `builtin`, `unknown`)
+- project MCP configs are treated as untrusted by default (`ask`)
+- capability declarations are enforced per server/tool
 
 Failure classes are non-fatal and explicit:
 - missing binary

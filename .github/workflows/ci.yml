@@ -147,6 +147,7 @@ jobs:
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigExec")==2)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigToolHealth")==2)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigTerm")==2)' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigMcpTrust")==0)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigMcpList")==0)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigAgentContext")==0)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(package.loaded["jig.agent"]==nil)' '+qa'
@@ -168,6 +169,7 @@ jobs:
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigExec")==0)' '+qa'
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigToolHealth")==0)' '+qa'
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigTerm")==0)' '+qa'
+          NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigMcpTrust")==0)' '+qa'
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigMcpList")==0)' '+qa'
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigAgentContext")==0)' '+qa'
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(package.loaded["jig.agent"]==nil)' '+qa'
@@ -231,6 +233,16 @@ jobs:
           rg -n '"mcp-failure-injection"' tests/agent/snapshots/latest-headless.json
           rg -n '"acp-bridge-hook"' tests/agent/snapshots/latest-headless.json
           rg -n '"safe-profile-isolation"' tests/agent/snapshots/latest-headless.json
+
+      - name: Security harness snapshot checks
+        run: |
+          tests/security/run_harness.sh
+          test -f tests/security/snapshots/latest-headless.json
+          rg -n '"startup-network-trace-clean"' tests/security/snapshots/latest-headless.json
+          rg -n '"startup-network-trace-fixture"' tests/security/snapshots/latest-headless.json
+          rg -n '"mcp-trust-enforcement"' tests/security/snapshots/latest-headless.json
+          rg -n '"exec-safety-override-logging"' tests/security/snapshots/latest-headless.json
+          rg -n '"safe-profile-isolation"' tests/security/snapshots/latest-headless.json
 
       - name: Deprecated API gate
         run: tests/lsp/check_deprecated.sh

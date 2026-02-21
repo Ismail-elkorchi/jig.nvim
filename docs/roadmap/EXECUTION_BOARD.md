@@ -99,8 +99,8 @@ Updated at: `2026-02-20`
 - ADR(s): tbd
 
 ### WP-10: Security, Trust Boundaries, and Risk Controls
-- Status: `not-started`
+- Status: `in-progress`
 - Depends on: `WP-09`
-- Issue: tbd
+- Issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/14
 - PR(s): tbd
 - ADR(s): tbd

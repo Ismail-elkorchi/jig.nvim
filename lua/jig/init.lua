@@ -7,6 +7,7 @@ end
 require("jig.core.options")
 
 if not vim.g.jig_safe_profile then
+  require("jig.security").setup()
   require("jig.ui").setup()
 end
 

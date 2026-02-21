@@ -22,6 +22,8 @@ M.defaults = {
   },
   logging = {
     evidence_file = "events.jsonl",
+    max_file_bytes = 262144,
+    max_files = 4,
   },
   tasks = {
     metadata_file = "tasks.json",

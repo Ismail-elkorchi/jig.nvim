@@ -1,0 +1,55 @@
+*jig-security*  Jig Security and Trust Boundaries (WP-10)
+
+OVERVIEW
+  WP-10 adds operational security controls for:
+    - startup network policy (deny-by-default for non-essential network actions)
+    - local config execution risk visibility (`exrc`, `secure`, `modeline`)
+    - MCP trust registry and capability enforcement
+    - destructive execution safety with explicit user-only override
+
+STARTUP NETWORK POLICY
+  Optional startup tracing hooks:
+    JIG_TRACE_STARTUP_NET=1
+    JIG_STRICT_STARTUP_NET=1
+
+  strict mode blocks startup network-ish commands and records traces.
+  trace file:
+    stdpath('state')/jig/security/startup-net-trace.jsonl
+  override path:
+    JIG_STARTUP_NET_TRACE_PATH
+
+LOCAL CONFIG SURFACES
+  Relevant help topics:
+    :h 'exrc'
+    :h 'secure'
+    :h 'modeline'
+
+  Jig health reports current values and remediation guidance.
+
+MCP TRUST
+  Commands:
+    :JigMcpTrust
+    :JigMcpTrust allow <server>
+    :JigMcpTrust ask <server>
+    :JigMcpTrust deny <server>
+    :JigMcpTrust revoke <server>
+
+  Project MCP configs are untrusted by default.
+  Trust decisions are explicit, revocable, and logged.
+
+EXEC SAFETY
+  :JigExec blocks destructive commands by default.
+  user-only override:
+    :JigExec! <cmd ...>
+
+  Overrides are visible in output and logged.
+  Non-user actors cannot use destructive override.
+
+SAFE PROFILE
+  NVIM_APPNAME=jig-safe does not load optional security/agent command surfaces.
+
+CHECKS
+  tests/security/run_harness.sh
+  :checkhealth jig
+
+vim:tw=78:ts=8:noet:ft=help:norl:
