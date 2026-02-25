@@ -1,0 +1,80 @@
+entries:
+  - date: 2026-02-25
+    query: "SWE-bench ICLR 2024 issue-resolution benchmark baseline"
+    search_intent: confirming
+    target_categories: [B]
+    candidate_refs: [E-053, candidate-benchmark-001, candidate-benchmark-002]
+    included_ids: [E-053]
+    excluded_ids: [candidate-benchmark-001, candidate-benchmark-002]
+    exclude_reasons: [candidate-benchmark-001=duplicate, candidate-benchmark-002=low_quality]
+    what_new_failure_mode_or_metric_it_added: "Benchmark-grounding requirement for issue-resolution reproducibility."
+
+  - date: 2026-02-25
+    query: "SWE-agent NeurIPS 2024 agent-computer interface evidence"
+    search_intent: confirming
+    target_categories: [A, B]
+    candidate_refs: [E-054, candidate-aci-001, candidate-aci-002]
+    included_ids: [E-054]
+    excluded_ids: [candidate-aci-001, candidate-aci-002]
+    exclude_reasons: [candidate-aci-001=low_quality, candidate-aci-002=duplicate]
+    what_new_failure_mode_or_metric_it_added: "Interface-control surface and policy-mediated orchestration implications."
+
+  - date: 2026-02-25
+    query: "USENIX Security 2023 Trojan Source hidden Unicode code review mismatch"
+    search_intent: disconfirming
+    target_categories: [C, D]
+    candidate_refs: [E-063, candidate-trojan-001, candidate-trojan-002]
+    included_ids: [E-063]
+    excluded_ids: [candidate-trojan-001, candidate-trojan-002]
+    exclude_reasons: [candidate-trojan-001=not_peer_reviewed, candidate-trojan-002=duplicate]
+    what_new_failure_mode_or_metric_it_added: "Invisible Unicode attack class validates stricter hidden-character gate requirements."
+
+  - date: 2026-02-25
+    query: "USENIX Security 2024 backdoor attack code completion models"
+    search_intent: disconfirming
+    target_categories: [B, D]
+    candidate_refs: [E-064, candidate-backdoor-001, candidate-backdoor-002, candidate-backdoor-003]
+    included_ids: [E-064]
+    excluded_ids: [candidate-backdoor-001, candidate-backdoor-002, candidate-backdoor-003]
+    exclude_reasons: [candidate-backdoor-001=duplicate, candidate-backdoor-002=out_of_scope, candidate-backdoor-003=low_quality]
+    what_new_failure_mode_or_metric_it_added: "Completion-model backdoor pressure on candidate verification and trust boundary controls."
+
+  - date: 2026-02-25
+    query: "USENIX Security 2024 prompt injection benchmark defenses"
+    search_intent: disconfirming
+    target_categories: [A, D]
+    candidate_refs: [E-065, candidate-prompt-001, candidate-prompt-002]
+    included_ids: [E-065]
+    excluded_ids: [candidate-prompt-001, candidate-prompt-002]
+    exclude_reasons: [candidate-prompt-001=duplicate, candidate-prompt-002=paywalled]
+    what_new_failure_mode_or_metric_it_added: "Defense insufficiency signal for tool-integrated agent workflows."
+
+  - date: 2026-02-25
+    query: "ICSE 2024 code understanding verification burden replication"
+    search_intent: confirming
+    target_categories: [C]
+    candidate_refs: [E-055, candidate-verify-001, candidate-verify-002]
+    included_ids: [E-055]
+    excluded_ids: [candidate-verify-001, candidate-verify-002]
+    exclude_reasons: [candidate-verify-001=duplicate, candidate-verify-002=no_new_signal]
+    what_new_failure_mode_or_metric_it_added: none
+
+  - date: 2026-02-25
+    query: "agent prompt injection incident evidence contradictory to optimistic claims"
+    search_intent: disconfirming
+    target_categories: [D, A]
+    candidate_refs: [E-056, candidate-inject-001, candidate-inject-002, candidate-inject-003]
+    included_ids: [E-056]
+    excluded_ids: [candidate-inject-001, candidate-inject-002, candidate-inject-003]
+    exclude_reasons: [candidate-inject-001=low_quality, candidate-inject-002=duplicate, candidate-inject-003=not_peer_reviewed]
+    what_new_failure_mode_or_metric_it_added: none
+
+  - date: 2026-02-25
+    query: "longitudinal AI pair-programming evidence beyond short demos"
+    search_intent: confirming
+    target_categories: [E, C]
+    candidate_refs: [E-058, candidate-longitudinal-001, candidate-longitudinal-002]
+    included_ids: [E-058]
+    excluded_ids: [candidate-longitudinal-001, candidate-longitudinal-002]
+    exclude_reasons: [candidate-longitudinal-001=duplicate, candidate-longitudinal-002=low_quality]
+    what_new_failure_mode_or_metric_it_added: none

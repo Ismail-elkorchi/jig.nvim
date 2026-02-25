@@ -1,28 +1,90 @@
 tasks:
   - id: AGT-001
-    description: "Patch proposal + review + apply transaction for agent-generated edits."
+    description: "Patch proposal + review + apply transaction for multi-file agent edits."
+    success_criteria: "Agent output is represented as a reviewable patch and supports hunk-level accept/reject before apply."
+    failure_surfaces: [agent, security, ops]
     current_status: pending
     blocking_wp: WP-17
     test_oracle: "pending:agent:patch-diff-hunk-apply"
-    baseline_relevance: "Required for parity with agent ecosystems that claim safe edit review."
+    baseline_relevance: "Core parity requirement with modern agent tools that expose review before write."
 
   - id: AGT-002
-    description: "Deny rule blocks prohibited write actions in agent-mediated flows."
+    description: "Deny rules block prohibited write actions in agent-mediated flows."
+    success_criteria: "Policy deny decision prevents prohibited write command execution and emits audit log attribution."
+    failure_surfaces: [security, agent]
     current_status: implemented
     blocking_wp: null
     test_oracle: "suite:security case:exec-safety-override-logging; suite:agent case:permission-policy-unit"
-    baseline_relevance: "Prevents policy-bypass regressions reported across agent CLIs."
+    baseline_relevance: "Protects against permission bypass patterns reported in CLI agent ecosystems."
 
   - id: AGT-003
-    description: "Approval queue remains visible under multiple pending actions."
+    description: "Approval queue remains visible under multiple pending ask decisions."
+    success_criteria: "Pending approvals are visible via command/statusline signal and cannot stall silently."
+    failure_surfaces: [agent, ui]
     current_status: pending
     blocking_wp: WP-17
     test_oracle: "pending:agent:approval-notification-visible"
-    baseline_relevance: "Addresses approval-stall failure class observed in agent tools."
+    baseline_relevance: "Addresses hidden-approval UX regressions observed in real tools."
 
   - id: AGT-004
-    description: "Context ledger reflects transmitted context sources and budget usage."
+    description: "Context ledger reflects transmitted context sources with budget usage."
+    success_criteria: "Ledger lists context sources with size estimates and warns when configured budget threshold is crossed."
+    failure_surfaces: [agent, docs]
     current_status: implemented
     blocking_wp: null
     test_oracle: "suite:agent case:context-ledger-token-budget"
-    baseline_relevance: "Supports auditability for context provenance claims."
+    baseline_relevance: "Needed for auditability and user control under constrained context windows."
+
+  - id: AGT-005
+    description: "Subagent policy inheritance preserves deny/ask enforcement."
+    success_criteria: "Subagent tool requests cannot bypass parent deny rules; all actions are attributed and logged."
+    failure_surfaces: [security, agent]
+    current_status: implemented
+    blocking_wp: null
+    test_oracle: "suite:agent case:subagent-inheritance-enforced"
+    baseline_relevance: "Direct control against documented subagent permission inheritance failures."
+
+  - id: AGT-006
+    description: "Adversarial prompt injection cannot force undeclared MCP tool invocation."
+    success_criteria: "Injected tool name/capability mismatch is blocked by policy and recorded as denied event."
+    failure_surfaces: [security, integration, agent]
+    current_status: pending
+    blocking_wp: WP-18
+    test_oracle: "pending:security:mcp-injection-tool-routing"
+    baseline_relevance: "Maps to peer-reviewed prompt-injection attack evidence on tool-routing systems."
+
+  - id: AGT-007
+    description: "Tool output poisoning does not escalate to destructive shell actions without explicit user override."
+    success_criteria: "Poisoned output suggesting destructive command is denied/asked and cannot auto-execute."
+    failure_surfaces: [security, integration, agent]
+    current_status: pending
+    blocking_wp: WP-18
+    test_oracle: "pending:security:tool-output-poisoning"
+    baseline_relevance: "Prevents indirect command execution via untrusted tool output channels."
+
+  - id: AGT-008
+    description: "Repository navigation + test execution loop remains deterministic with policy mediation."
+    success_criteria: "Agent can request nav/test commands through policy-gated wrappers with reproducible logs and bounded timeouts."
+    failure_surfaces: [integration, performance, ops]
+    current_status: implemented
+    blocking_wp: null
+    test_oracle: "suite:tools case:run-sync-timeout; suite:nav case:fallback-backend"
+    baseline_relevance: "Captures practical day-to-day coding loop pressure in terminal agents."
+
+  - id: AGT-009
+    description: "Policy persistence and revocation controls remain explicit across sessions."
+    success_criteria: "Always-allow grants persist only with explicit scope and can be listed/revoked deterministically."
+    failure_surfaces: [agent, security, ops]
+    current_status: implemented
+    blocking_wp: null
+    test_oracle: "suite:agent case:policy-persistence-restart"
+    baseline_relevance: "Addresses approval persistence confusion failures in agent UX."
+
+  - id: AGT-010
+    description: "Multi-pending approval roundtrip latency remains within documented budget or marked pending with blocker."
+    success_criteria: "P95 ask-roundtrip metric is measured under harness or explicitly reported pending with WP blocker."
+    failure_surfaces: [agent, performance, ui]
+    current_status: pending
+    blocking_wp: WP-17
+    test_oracle: "pending:agent:approval-roundtrip-p95"
+    baseline_relevance: "Supports comparative gates without claiming unmeasured responsiveness."

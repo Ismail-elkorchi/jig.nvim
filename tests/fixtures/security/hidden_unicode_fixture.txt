@@ -1,0 +1,3 @@
+fixture line with RLO: start‮end
+fixture line with LRM: alpha‎beta
+fixture line with SOFT-HYPHEN: soft­hyphen

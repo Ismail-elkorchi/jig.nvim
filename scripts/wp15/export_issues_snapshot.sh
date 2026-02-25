@@ -27,11 +27,9 @@ jq '
       issue_count: length,
       issues: map({
         number,
-        title,
         state,
         created_at,
         updated_at,
-        closed_at,
         labels: [.labels[].name],
         html_url
       })

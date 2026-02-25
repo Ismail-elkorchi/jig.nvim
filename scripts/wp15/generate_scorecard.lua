@@ -217,12 +217,13 @@ local function render(data)
   local crash_rate = startup_ok and 100.0 or 0.0
   local crash_target = tonumber(data.budgets.crash_free_startup_target_percent) or 99.0
   local crash_status = crash_rate >= crash_target and "pass" or "fail"
+  local startup_rate_min_sample = 30
 
   local perf_block = data.tests.perf or {}
   local perf_metrics = perf_block.metrics or {}
   local picker = perf_metrics.time_to_first_picker_ms or {}
 
-  local nav_budgets = ((data.budgets.p95_latency_budgets or {}).nav) or {}
+  local nav_budgets = (data.budgets.p95_latency_budgets or {}).nav or {}
   local nav_rows = {
     {
       command = "JigFiles",
@@ -291,11 +292,16 @@ local function render(data)
   lines[#lines + 1] = ""
   lines[#lines + 1] = "## Universal Spec conformance"
   lines[#lines + 1] = ""
+  lines[#lines + 1] = string.format(
+    "- Jig contract registry validation: **%s**",
+    data.requirements_ok and "pass" or "fail"
+  )
   lines[#lines + 1] =
-    string.format("- Jig contract registry validation: **%s**", data.requirements_ok and "pass" or "fail")
-  lines[#lines + 1] = string.format("- Startup smoke (default profile): **%s**", bool_icon(startup_ok))
-  lines[#lines + 1] = string.format("- Startup evidence source: `%s`", coerce_string(startup_info.source))
-  lines[#lines + 1] = "- Baseline conformance is qualitative-only from evidence register; no numeric baseline score is claimed."
+    string.format("- Startup smoke (default profile): **%s**", bool_icon(startup_ok))
+  lines[#lines + 1] =
+    string.format("- Startup evidence source: `%s`", coerce_string(startup_info.source))
+  lines[#lines + 1] =
+    "- Baseline conformance is qualitative-only from evidence register; no numeric baseline score is claimed."
   if not data.requirements_ok then
     lines[#lines + 1] = "- Requirement validation errors:"
     for _, err in ipairs(data.requirement_errors or {}) do
@@ -306,13 +312,23 @@ local function render(data)
   lines[#lines + 1] = ""
   lines[#lines + 1] = "## Reliability metrics"
   lines[#lines + 1] = ""
-  lines[#lines + 1] = string.format(
-    "- Crash-free startup rate: `%s` (target `%s`) -> **%s** (sample size: `%d`)",
-    percent(crash_rate),
-    percent(crash_target),
-    crash_status,
-    startup_sample
-  )
+  if startup_sample < startup_rate_min_sample then
+    lines[#lines + 1] = string.format(
+      "- Startup smoke check: **%s** (sample size: `%d`; crash-free rate reporting begins at sample size >= `%d`)",
+      bool_icon(startup_ok),
+      startup_sample,
+      startup_rate_min_sample
+    )
+    lines[#lines + 1] = "- Crash-free startup rate: `insufficient-data`"
+  else
+    lines[#lines + 1] = string.format(
+      "- Crash-free startup rate: `%s` (target `%s`) -> **%s** (sample size: `%d`)",
+      percent(crash_rate),
+      percent(crash_target),
+      crash_status,
+      startup_sample
+    )
+  end
   lines[#lines + 1] = ""
   lines[#lines + 1] = "### Regression escape rate per lane"
   lines[#lines + 1] = ""
@@ -349,7 +365,7 @@ local function render(data)
       row.status
     )
   end
-  local agent_ui = ((data.budgets.p95_latency_budgets or {}).agent_ui) or {}
+  local agent_ui = (data.budgets.p95_latency_budgets or {}).agent_ui or {}
   for _, name in ipairs(common.sorted_keys(agent_ui)) do
     local config = agent_ui[name]
     if type(config) == "table" and config.status == "pending" then
@@ -410,14 +426,21 @@ local function render(data)
   lines[#lines + 1] = ""
   lines[#lines + 1] = "## Agent workflow comparative gates"
   lines[#lines + 1] = ""
-  lines[#lines + 1] = "| Task ID | Status | Blocking WP | Oracle |"
-  lines[#lines + 1] = "|---|---|---|---|"
+  lines[#lines + 1] =
+    "| Task ID | Status | Blocking WP | Failure surfaces | Success criteria | Oracle |"
+  lines[#lines + 1] = "|---|---|---|---|---|---|"
   for _, task in ipairs(data.tasks) do
+    local surfaces = coerce_string(task.failure_surfaces)
+    if type(task.failure_surfaces) == "table" then
+      surfaces = table.concat(task.failure_surfaces, ", ")
+    end
     lines[#lines + 1] = string.format(
-      "| `%s` | `%s` | `%s` | `%s` |",
+      "| `%s` | `%s` | `%s` | `%s` | %s | `%s` |",
       coerce_string(task.id),
       coerce_string(task.current_status),
       coerce_string(task.blocking_wp),
+      surfaces,
+      coerce_string(task.success_criteria),
       coerce_string(task.test_oracle)
     )
   end
@@ -440,10 +463,8 @@ local function render(data)
   end
 
   lines[#lines + 1] = ""
-  lines[#lines + 1] = string.format(
-    "Unresolved high-severity gaps (`sev0/sev1` and not done): **%d**",
-    #unresolved
-  )
+  lines[#lines + 1] =
+    string.format("Unresolved high-severity gaps (`sev0/sev1` and not done): **%d**", #unresolved)
   for _, gap in ipairs(unresolved) do
     lines[#lines + 1] = string.format(
       "- `%s` -> owner `%s`, issue: %s",
@@ -460,18 +481,16 @@ local function render(data)
     lines[#lines + 1] = "- None recorded."
   else
     for _, gap in ipairs(non_adopt) do
-      lines[#lines + 1] = string.format(
-        "- `%s`: %s",
-        coerce_string(gap.id),
-        coerce_string(gap.rationale)
-      )
+      lines[#lines + 1] =
+        string.format("- `%s`: %s", coerce_string(gap.id), coerce_string(gap.rationale))
     end
   end
 
   lines[#lines + 1] = ""
   lines[#lines + 1] = "## Boundaries"
   lines[#lines + 1] = ""
-  lines[#lines + 1] = "- Quantitative baseline comparisons are limited to pinned, reproducible artifacts."
+  lines[#lines + 1] =
+    "- Quantitative baseline comparisons are limited to pinned, reproducible artifacts."
   lines[#lines + 1] = "- Baselines marked `qualitative_only` are excluded from numeric scoring."
   lines[#lines + 1] =
     "- Agent transactional edit workflow remains pending until WP-17; current scorecard reports this as open high-severity gaps."
