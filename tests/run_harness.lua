@@ -145,6 +145,10 @@ local SUITES = {
     module = "jig.tests.perf.harness",
     snapshot = join(ROOT, "tests/perf/snapshots/latest-headless.json"),
   },
+  scorecard = {
+    module = "jig.tests.scorecard.harness",
+    snapshot = join(ROOT, "tests/scorecard/snapshots/latest-headless.json"),
+  },
   pending = {
     module = "jig.tests.pending.harness",
     snapshot = join(ROOT, "tests/pending/snapshots/latest-headless.json"),

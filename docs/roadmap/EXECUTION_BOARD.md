@@ -146,8 +146,27 @@ Updated at: `2026-02-21`
   - incident forms lack reproducible evidence fields
 
 ### WP-15: Comparative Evaluation and Gap Closure Loop
-- Status: `not-started` (`next`)
+- Status: `done`
 - Depends on: `WP-14`
 - Issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/19
+- PR(s): tbd (this PR)
+- ADR(s): tbd
+- Deliverables (excerpt):
+  - reproducible baseline and evidence datasets (`data/wp15/*`)
+  - generated comparative scorecard (`docs/roadmap/SCORECARD.md`)
+  - regression dashboard by failure surface (`docs/roadmap/REGRESSION_DASHBOARD.md`)
+  - enforced gap register ownership/test-plan gate (`scripts/wp15/check_gaps.lua`)
+- Verification commands (excerpt):
+  - `nvim --headless -u NONE -l tests/run_harness.lua -- --suite scorecard`
+  - `scripts/wp15/check_research_done.lua`
+  - `scripts/wp15/check_gaps.lua`
+- Falsifiers (excerpt):
+  - comparative claims without pinned baselines or reproducible inputs
+  - high-severity gap without owner or falsifier test plan
+
+### WP-16: Toolchain Lockfile and External Dependency Lifecycle
+- Status: `not-started` (`next`)
+- Depends on: `WP-15`
+- Issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/20
 - PR(s): tbd
 - ADR(s): tbd

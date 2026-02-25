@@ -15,6 +15,8 @@ Key policy checks:
   nvim --headless -u NONE -l tests/check_quarantine.lua
   nvim --headless -u NONE -l tests/check_pending.lua
   tests/check_hidden_unicode.sh
+  scripts/wp15/check_research_done.lua
+  scripts/wp15/check_gaps.lua
 
 ==============================================================================
 SNAPSHOTS                                                      *jig-testing-snapshots*
@@ -62,6 +64,28 @@ Metrics:
   - first diagnostic event
   - first completion fallback confirmation
   - first picker result batch under fixture tiers
+
+==============================================================================
+SCORECARD                                                  *jig-testing-scorecard*
+
+Scorecard harness:
+  tests/scorecard/run_harness.sh
+
+Cases:
+  - wp15-research-done-gate
+  - wp15-gaps-gate
+  - wp15-generate-scorecard
+  - wp15-generate-dashboard
+  - wp15-generated-sync-clean
+
+Outputs:
+  docs/roadmap/SCORECARD.md
+  docs/roadmap/REGRESSION_DASHBOARD.md
+  data/wp15/dashboard_snapshot.json
+
+Manual issue snapshot refresh (not CI):
+  scripts/wp15/export_issues_snapshot.sh
+  scripts/wp15/export_test_summary.lua
 
 ==============================================================================
 FIXTURE GENERATOR                                              *jig-testing-fixtures*

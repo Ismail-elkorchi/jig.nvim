@@ -1,0 +1,28 @@
+tasks:
+  - id: AGT-001
+    description: "Patch proposal + review + apply transaction for agent-generated edits."
+    current_status: pending
+    blocking_wp: WP-17
+    test_oracle: "pending:agent:patch-diff-hunk-apply"
+    baseline_relevance: "Required for parity with agent ecosystems that claim safe edit review."
+
+  - id: AGT-002
+    description: "Deny rule blocks prohibited write actions in agent-mediated flows."
+    current_status: implemented
+    blocking_wp: null
+    test_oracle: "suite:security case:exec-safety-override-logging; suite:agent case:permission-policy-unit"
+    baseline_relevance: "Prevents policy-bypass regressions reported across agent CLIs."
+
+  - id: AGT-003
+    description: "Approval queue remains visible under multiple pending actions."
+    current_status: pending
+    blocking_wp: WP-17
+    test_oracle: "pending:agent:approval-notification-visible"
+    baseline_relevance: "Addresses approval-stall failure class observed in agent tools."
+
+  - id: AGT-004
+    description: "Context ledger reflects transmitted context sources and budget usage."
+    current_status: implemented
+    blocking_wp: null
+    test_oracle: "suite:agent case:context-ledger-token-budget"
+    baseline_relevance: "Supports auditability for context provenance claims."

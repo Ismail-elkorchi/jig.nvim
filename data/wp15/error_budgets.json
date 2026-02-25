@@ -1,0 +1,32 @@
+{
+  "crash_free_startup_target_percent": 99.0,
+  "regression_escape_rate_target_per_lane": {
+    "required": 0.0,
+    "compat-matrix": 0.02,
+    "nightly-report": 0.1
+  },
+  "p95_latency_budgets": {
+    "nav": {
+      "JigFiles_ms": 1600,
+      "JigSymbols_ms": 1800,
+      "JigDiagnostics_ms": 1600
+    },
+    "agent_ui": {
+      "policy_ask_roundtrip": {
+        "status": "pending",
+        "blocking_wp": "WP-17",
+        "notes": "Approval queue UX is delivered in WP-17."
+      },
+      "mcp_list": {
+        "status": "pending",
+        "blocking_wp": "WP-17",
+        "notes": "Agent UX latency budgeting is finalized in WP-17."
+      },
+      "mcp_tools": {
+        "status": "pending",
+        "blocking_wp": "WP-17",
+        "notes": "Agent UX latency budgeting is finalized in WP-17."
+      }
+    }
+  }
+}
