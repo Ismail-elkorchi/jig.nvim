@@ -74,12 +74,21 @@ Test summary retrieved at: `2026-02-25T04:31:41Z`
 
 - Snapshot date: `2026-02-25`
 - Refreshing `snapshot_date` without refreshing evidence metadata is invalid and should fail research gates.
+- Refresh procedure: `docs/roadmap/WP15_REFRESH.md`.
 
 ### Stale evidence by type
 
 | Evidence type | Stale count | Stale ids |
 |---|---:|---|
 | `none` | `0` | - |
+
+### Snapshot input freshness
+
+| Snapshot input | Field | Max age days | Status | Notes |
+|---|---|---:|---|---|
+| `dashboard_snapshot` | `source_retrieved_at` | `30` | fresh | `ok (age=0d)` |
+| `issues_snapshot` | `retrieved_at` | `30` | fresh | `ok (age=0d)` |
+| `test_snapshot_summary` | `retrieved_at` | `30` | fresh | `ok (age=0d)` |
 
 ## Discoverability metrics
 

@@ -121,6 +121,40 @@ function M.run(opts)
       end,
     },
     {
+      id = "wp15-stale-issues-snapshot-detected",
+      run = function()
+        local env = vim.fn.environ()
+        env.WP15_ISSUES_SNAPSHOT_PATH = "tests/fixtures/wp15/stale_issues_snapshot.json"
+        return run_command_expect_failure(
+          { "scripts/wp15/check_research_done.lua" },
+          { env = env, marker = "stale snapshot inputs" }
+        )
+      end,
+    },
+    {
+      id = "wp15-stale-test-summary-detected",
+      run = function()
+        local env = vim.fn.environ()
+        env.WP15_TEST_SUMMARY_PATH = "tests/fixtures/wp15/stale_test_summary.json"
+        return run_command_expect_failure(
+          { "scripts/wp15/check_research_done.lua" },
+          { env = env, marker = "stale snapshot inputs" }
+        )
+      end,
+    },
+    {
+      id = "wp15-freshness-policy-missing-snapshot-rules-detected",
+      run = function()
+        local env = vim.fn.environ()
+        env.WP15_FRESHNESS_POLICY_PATH =
+          "tests/fixtures/wp15/freshness_policy_missing_snapshot.yaml"
+        return run_command_expect_failure(
+          { "scripts/wp15/check_research_done.lua" },
+          { env = env, marker = "missing snapshot_input rule" }
+        )
+      end,
+    },
+    {
       id = "wp15-gaps-gate",
       run = function()
         return run_command({ "scripts/wp15/check_gaps.lua" })

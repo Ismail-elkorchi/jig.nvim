@@ -1,0 +1,8 @@
+{
+  "retrieved_at": "2025-01-01T00:00:00Z",
+  "startup": {
+    "passed": true,
+    "sample_size": 1,
+    "source": "fixture"
+  }
+}

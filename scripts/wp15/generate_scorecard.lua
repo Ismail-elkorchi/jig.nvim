@@ -29,6 +29,43 @@ local function resolve_path(env_key, fallback)
   return common.join(ROOT, fallback)
 end
 
+local SNAPSHOT_INPUT_DEFAULTS = {
+  issues_snapshot = {
+    env_key = "WP15_ISSUES_SNAPSHOT_PATH",
+    fallback = "data/wp15/issues_snapshot.json",
+    retrieved_field = "retrieved_at",
+    max_age_days = 30,
+  },
+  test_snapshot_summary = {
+    env_key = "WP15_TEST_SUMMARY_PATH",
+    fallback = "data/wp15/test_snapshot_summary.json",
+    retrieved_field = "retrieved_at",
+    max_age_days = 30,
+  },
+  dashboard_snapshot = {
+    env_key = "WP15_DASHBOARD_SNAPSHOT_PATH",
+    fallback = "data/wp15/dashboard_snapshot.json",
+    retrieved_field = "source_retrieved_at",
+    max_age_days = 30,
+  },
+}
+
+local function normalize_date(raw)
+  local value = coerce_string(raw)
+  if value == "" then
+    return nil
+  end
+  local plain = value:match("^(%d%d%d%d%-%d%d%-%d%d)$")
+  if plain ~= nil then
+    return plain
+  end
+  local prefixed = value:match("^(%d%d%d%d%-%d%d%-%d%d)[T%s]")
+  if prefixed ~= nil then
+    return prefixed
+  end
+  return nil
+end
+
 local function load_snapshot_meta(path)
   local meta = common.parse_yaml_map(path)
   local snapshot_date = coerce_string(meta.snapshot_date)
@@ -43,15 +80,46 @@ end
 
 local function load_freshness_policy(path)
   local rows = common.parse_yaml_list(path)
-  local policy = {}
+  local policy = {
+    evidence_tiers = {},
+    snapshot_inputs = {},
+  }
   for _, row in ipairs(rows) do
     local tier = coerce_string(row.quality_tier)
     if tier ~= "" then
       if row.max_age_days ~= nil and row.max_age_days ~= vim.NIL then
-        policy[tier] = tonumber(row.max_age_days)
+        policy.evidence_tiers[tier] = tonumber(row.max_age_days)
       else
-        policy[tier] = nil
+        policy.evidence_tiers[tier] = nil
       end
+    end
+
+    local snapshot_input = coerce_string(row.snapshot_input)
+    if snapshot_input ~= "" then
+      local default = SNAPSHOT_INPUT_DEFAULTS[snapshot_input]
+      local retrieved_field = coerce_string(row.retrieved_field)
+      if retrieved_field == "" then
+        retrieved_field = default and default.retrieved_field or "retrieved_at"
+      end
+      local max_age_days = nil
+      if row.max_age_days ~= nil and row.max_age_days ~= vim.NIL then
+        max_age_days = tonumber(row.max_age_days)
+      elseif default ~= nil then
+        max_age_days = default.max_age_days
+      end
+      policy.snapshot_inputs[snapshot_input] = {
+        retrieved_field = retrieved_field,
+        max_age_days = max_age_days,
+      }
+    end
+  end
+
+  for name, default in pairs(SNAPSHOT_INPUT_DEFAULTS) do
+    if policy.snapshot_inputs[name] == nil then
+      policy.snapshot_inputs[name] = {
+        retrieved_field = default.retrieved_field,
+        max_age_days = default.max_age_days,
+      }
     end
   end
   return policy
@@ -65,8 +133,8 @@ local function summarize_staleness(evidence, snapshot, freshness_policy)
     local id = coerce_string(item.id)
     local evidence_type = coerce_string(item.type)
     local tier = coerce_string(item.quality_tier)
-    local max_age = freshness_policy[tier]
-    local retrieved_at = coerce_string(item.retrieved_at)
+    local max_age = freshness_policy.evidence_tiers[tier]
+    local retrieved_at = normalize_date(item.retrieved_at)
     local retrieved_days = common.date_to_epoch_days(retrieved_at)
 
     local is_stale = false
@@ -102,15 +170,76 @@ local function summarize_staleness(evidence, snapshot, freshness_policy)
   }
 end
 
+local function summarize_snapshot_staleness(snapshot_files, snapshot, freshness_policy)
+  local stale = {}
+
+  for name, config in pairs(snapshot_files) do
+    local payload = common.parse_json(config.path)
+    local policy = freshness_policy.snapshot_inputs[name] or {}
+    local retrieved_field = coerce_string(policy.retrieved_field)
+    if retrieved_field == "" then
+      retrieved_field = config.default_field
+    end
+
+    local max_age = tonumber(policy.max_age_days) or tonumber(config.default_max_age_days)
+    local normalized = normalize_date(payload[retrieved_field])
+    local retrieved_days = normalized and common.date_to_epoch_days(normalized) or nil
+
+    local age = nil
+    local is_stale = false
+    local reason = "ok"
+
+    if retrieved_days == nil then
+      is_stale = true
+      reason = "missing_or_invalid_retrieved_at"
+    elseif retrieved_days > snapshot.epoch_days then
+      is_stale = true
+      age = retrieved_days - snapshot.epoch_days
+      reason = "after_snapshot_date"
+    elseif type(max_age) == "number" then
+      age = snapshot.epoch_days - retrieved_days
+      if age > max_age then
+        is_stale = true
+        reason = "older_than_policy"
+      end
+    end
+
+    stale[#stale + 1] = {
+      id = name,
+      field = retrieved_field,
+      max_age_days = max_age,
+      stale = is_stale,
+      reason = reason,
+      age_days = age,
+    }
+  end
+
+  table.sort(stale, function(a, b)
+    return a.id < b.id
+  end)
+
+  return stale
+end
+
 local function load_inputs()
   local paths = {
     baselines = resolve_path("WP15_BASELINES_PATH", "data/wp15/baselines.yaml"),
     evidence = resolve_path("WP15_EVIDENCE_PATH", "data/wp15/evidence.jsonl"),
     budgets = resolve_path("WP15_ERROR_BUDGETS_PATH", "data/wp15/error_budgets.json"),
-    tests = resolve_path("WP15_TEST_SUMMARY_PATH", "data/wp15/test_snapshot_summary.json"),
+    tests = resolve_path(
+      SNAPSHOT_INPUT_DEFAULTS.test_snapshot_summary.env_key,
+      SNAPSHOT_INPUT_DEFAULTS.test_snapshot_summary.fallback
+    ),
     tasks = resolve_path("WP15_AGENT_TASKS_PATH", "data/wp15/agent_workflow_tasks.yaml"),
     gaps = resolve_path("WP15_GAPS_PATH", "data/wp15/gaps.yaml"),
-    issues = resolve_path("WP15_ISSUES_SNAPSHOT_PATH", "data/wp15/issues_snapshot.json"),
+    issues = resolve_path(
+      SNAPSHOT_INPUT_DEFAULTS.issues_snapshot.env_key,
+      SNAPSHOT_INPUT_DEFAULTS.issues_snapshot.fallback
+    ),
+    dashboard_snapshot = resolve_path(
+      SNAPSHOT_INPUT_DEFAULTS.dashboard_snapshot.env_key,
+      SNAPSHOT_INPUT_DEFAULTS.dashboard_snapshot.fallback
+    ),
     snapshot_meta = resolve_path("WP15_SNAPSHOT_META_PATH", "data/wp15/snapshot_meta.yaml"),
     freshness_policy = resolve_path(
       "WP15_FRESHNESS_POLICY_PATH",
@@ -139,6 +268,23 @@ local function load_inputs()
   local snapshot = load_snapshot_meta(paths.snapshot_meta)
   local freshness_policy = load_freshness_policy(paths.freshness_policy)
   local staleness = summarize_staleness(evidence, snapshot, freshness_policy)
+  local snapshot_file_staleness = summarize_snapshot_staleness({
+    issues_snapshot = {
+      path = paths.issues,
+      default_field = SNAPSHOT_INPUT_DEFAULTS.issues_snapshot.retrieved_field,
+      default_max_age_days = SNAPSHOT_INPUT_DEFAULTS.issues_snapshot.max_age_days,
+    },
+    test_snapshot_summary = {
+      path = paths.tests,
+      default_field = SNAPSHOT_INPUT_DEFAULTS.test_snapshot_summary.retrieved_field,
+      default_max_age_days = SNAPSHOT_INPUT_DEFAULTS.test_snapshot_summary.max_age_days,
+    },
+    dashboard_snapshot = {
+      path = paths.dashboard_snapshot,
+      default_field = SNAPSHOT_INPUT_DEFAULTS.dashboard_snapshot.retrieved_field,
+      default_max_age_days = SNAPSHOT_INPUT_DEFAULTS.dashboard_snapshot.max_age_days,
+    },
+  }, snapshot, freshness_policy)
 
   return {
     paths = paths,
@@ -154,6 +300,7 @@ local function load_inputs()
     snapshot = snapshot,
     freshness_policy = freshness_policy,
     staleness = staleness,
+    snapshot_file_staleness = snapshot_file_staleness,
   }
 end
 
@@ -493,6 +640,7 @@ local function render(data)
   lines[#lines + 1] = string.format("- Snapshot date: `%s`", coerce_string(data.snapshot.date))
   lines[#lines + 1] =
     "- Refreshing `snapshot_date` without refreshing evidence metadata is invalid and should fail research gates."
+  lines[#lines + 1] = "- Refresh procedure: `docs/roadmap/WP15_REFRESH.md`."
   lines[#lines + 1] = ""
   lines[#lines + 1] = "### Stale evidence by type"
   lines[#lines + 1] = ""
@@ -507,6 +655,27 @@ local function render(data)
       lines[#lines + 1] =
         string.format("| `%s` | `%d` | `%s` |", evidence_type, #ids, table.concat(ids, ", "))
     end
+  end
+
+  lines[#lines + 1] = ""
+  lines[#lines + 1] = "### Snapshot input freshness"
+  lines[#lines + 1] = ""
+  lines[#lines + 1] = "| Snapshot input | Field | Max age days | Status | Notes |"
+  lines[#lines + 1] = "|---|---|---:|---|---|"
+  for _, row in ipairs(data.snapshot_file_staleness or {}) do
+    local status = row.stale and "stale" or "fresh"
+    local notes = row.reason
+    if row.age_days ~= nil then
+      notes = string.format("%s (age=%dd)", notes, row.age_days)
+    end
+    lines[#lines + 1] = string.format(
+      "| `%s` | `%s` | `%s` | %s | `%s` |",
+      coerce_string(row.id),
+      coerce_string(row.field),
+      row.max_age_days and tostring(row.max_age_days) or "n/a",
+      status,
+      notes
+    )
   end
 
   lines[#lines + 1] = ""

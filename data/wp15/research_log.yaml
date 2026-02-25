@@ -98,3 +98,43 @@ entries:
     excluded_ids: [candidate-attention-001, candidate-attention-002]
     exclude_reasons: [candidate-attention-001=duplicate, candidate-attention-002=out_of_scope]
     what_new_failure_mode_or_metric_it_added: "Human-model attention misalignment risk informs review UX and verification workflow design."
+
+  - date: 2026-02-25
+    query: "NeurIPS 2025 SWE-Bench Illusion contamination and memorization risk"
+    search_intent: disconfirming
+    target_categories: [B, C]
+    candidate_refs: [E-068, candidate-illusion-001, candidate-illusion-002]
+    included_ids: [E-068]
+    excluded_ids: [candidate-illusion-001, candidate-illusion-002]
+    exclude_reasons: [candidate-illusion-001=duplicate, candidate-illusion-002=low_quality]
+    what_new_failure_mode_or_metric_it_added: "Benchmark contamination/memorization risk added as comparative-claim falsifier."
+
+  - date: 2026-02-25
+    query: "NeurIPS 2025 SWE-rebench decontaminated software engineering agent evaluation"
+    search_intent: confirming
+    target_categories: [B, C]
+    candidate_refs: [E-069, candidate-rebench-001, candidate-rebench-002, candidate-rebench-003]
+    included_ids: [E-069]
+    excluded_ids: [candidate-rebench-001, candidate-rebench-002, candidate-rebench-003]
+    exclude_reasons: [candidate-rebench-001=duplicate, candidate-rebench-002=no_new_signal, candidate-rebench-003=low_quality]
+    what_new_failure_mode_or_metric_it_added: "Decontaminated benchmark protocol requirement for comparative scorecard updates."
+
+  - date: 2026-02-25
+    query: "NeurIPS 2025 SWE-smith scaling data for software engineering agents"
+    search_intent: confirming
+    target_categories: [A, B]
+    candidate_refs: [E-070, candidate-smith-001, candidate-smith-002]
+    included_ids: [E-070]
+    excluded_ids: [candidate-smith-001, candidate-smith-002]
+    exclude_reasons: [candidate-smith-001=duplicate, candidate-smith-002=low_quality]
+    what_new_failure_mode_or_metric_it_added: "Data-scaling drift pressure informs pinned baseline update cadence."
+
+  - date: 2026-02-25
+    query: "USENIX Security 2024 code completion backdoor paper proceedings verification"
+    search_intent: disconfirming
+    target_categories: [B, D]
+    candidate_refs: [E-071, candidate-codebreaker-001, candidate-codebreaker-002]
+    included_ids: [E-071]
+    excluded_ids: [candidate-codebreaker-001, candidate-codebreaker-002]
+    exclude_reasons: [candidate-codebreaker-001=duplicate, candidate-codebreaker-002=no_new_signal]
+    what_new_failure_mode_or_metric_it_added: none

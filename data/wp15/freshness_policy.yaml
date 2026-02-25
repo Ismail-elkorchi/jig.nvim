@@ -1,11 +1,19 @@
-rules:
-  - quality_tier: peer_reviewed
-    max_age_days: 20000
-  - quality_tier: standards_spec
-    max_age_days: 3650
-  - quality_tier: official_docs
-    max_age_days: 365
-  - quality_tier: community_issues
-    max_age_days: 180
-  - quality_tier: incident
-    max_age_days: 180
+- quality_tier: peer_reviewed
+  max_age_days: 20000
+- quality_tier: standards_spec
+  max_age_days: 3650
+- quality_tier: official_docs
+  max_age_days: 365
+- quality_tier: community_issues
+  max_age_days: 180
+- quality_tier: incident
+  max_age_days: 180
+- snapshot_input: issues_snapshot
+  retrieved_field: retrieved_at
+  max_age_days: 30
+- snapshot_input: test_snapshot_summary
+  retrieved_field: retrieved_at
+  max_age_days: 30
+- snapshot_input: dashboard_snapshot
+  retrieved_field: source_retrieved_at
+  max_age_days: 30
