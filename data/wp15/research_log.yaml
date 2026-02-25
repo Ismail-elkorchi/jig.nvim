@@ -78,3 +78,23 @@ entries:
     excluded_ids: [candidate-longitudinal-001, candidate-longitudinal-002]
     exclude_reasons: [candidate-longitudinal-001=duplicate, candidate-longitudinal-002=low_quality]
     what_new_failure_mode_or_metric_it_added: none
+
+  - date: 2026-02-25
+    query: "CHI 2025 appropriate reliance LLM explanations sources inconsistencies"
+    search_intent: confirming
+    target_categories: [A, C]
+    candidate_refs: [E-066, candidate-reliance-001, candidate-reliance-002, candidate-reliance-003]
+    included_ids: [E-066]
+    excluded_ids: [candidate-reliance-001, candidate-reliance-002, candidate-reliance-003]
+    exclude_reasons: [candidate-reliance-001=duplicate, candidate-reliance-002=not_peer_reviewed, candidate-reliance-003=low_quality]
+    what_new_failure_mode_or_metric_it_added: "Calibration risk class: explanations can increase overreliance without uncertainty/source cues."
+
+  - date: 2026-02-25
+    query: "FSE 2024 attention alignment code generation human model misalignment evidence"
+    search_intent: disconfirming
+    target_categories: [C, B]
+    candidate_refs: [E-067, candidate-attention-001, candidate-attention-002]
+    included_ids: [E-067]
+    excluded_ids: [candidate-attention-001, candidate-attention-002]
+    exclude_reasons: [candidate-attention-001=duplicate, candidate-attention-002=out_of_scope]
+    what_new_failure_mode_or_metric_it_added: "Human-model attention misalignment risk informs review UX and verification workflow design."

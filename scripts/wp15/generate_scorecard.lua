@@ -487,6 +487,17 @@ local function render(data)
   end
 
   lines[#lines + 1] = ""
+  lines[#lines + 1] = "## Interpretation and Fair Use"
+  lines[#lines + 1] = ""
+  lines[#lines + 1] = "- This scorecard is not a ranking or leaderboard."
+  lines[#lines + 1] =
+    "- Baselines are pinned snapshots for reproducibility at retrieval time, not universal tool judgments."
+  lines[#lines + 1] =
+    "- Evidence is curated and fallible; corrections and counter-evidence should be submitted through PRs."
+  lines[#lines + 1] =
+    "- Any metric with insufficient sample size must be interpreted as `insufficient-data`, not as proof of advantage."
+
+  lines[#lines + 1] = ""
   lines[#lines + 1] = "## Boundaries"
   lines[#lines + 1] = ""
   lines[#lines + 1] =

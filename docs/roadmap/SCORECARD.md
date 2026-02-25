@@ -121,6 +121,13 @@ Unresolved high-severity gaps (`sev0/sev1` and not done): **4**
 - `GAP-006`: Non-adoption rationale: risk to baseline cmdline stability is higher than UX gain.
 - `GAP-007`: Non-adoption rationale: hidden mutation at startup violates determinism contract.
 
+## Interpretation and Fair Use
+
+- This scorecard is not a ranking or leaderboard.
+- Baselines are pinned snapshots for reproducibility at retrieval time, not universal tool judgments.
+- Evidence is curated and fallible; corrections and counter-evidence should be submitted through PRs.
+- Any metric with insufficient sample size must be interpreted as `insufficient-data`, not as proof of advantage.
+
 ## Boundaries
 
 - Quantitative baseline comparisons are limited to pinned, reproducible artifacts.

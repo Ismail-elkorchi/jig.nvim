@@ -298,6 +298,20 @@ local function validate_evidence_schema(evidence, errors)
           .. " peer_reviewed entry has invalid `year`"
       end
 
+      local title = to_string(item.title)
+      local claim = to_string(item.claim)
+      if title == claim then
+        errors[#errors + 1] = "schema violation: evidence "
+          .. to_string(item.id)
+          .. " peer_reviewed title must not equal claim string"
+      end
+      local title_lower = title:lower()
+      if title_lower:find("paper presents", 1, true) ~= nil then
+        errors[#errors + 1] = "schema violation: evidence "
+          .. to_string(item.id)
+          .. " peer_reviewed title contains placeholder phrase `paper presents`"
+      end
+
       local categories = to_set(coerce_array(item.research_categories))
       local category_hit = false
       for category, _ in pairs(CATEGORY_THRESHOLDS) do
