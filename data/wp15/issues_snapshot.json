@@ -1,0 +1,207 @@
+{
+  "retrieved_at": "2026-02-25T04:31:41Z",
+  "repo": "Ismail-elkorchi/jig.nvim",
+  "issue_count": 20,
+  "issues": [
+    {
+      "number": 23,
+      "title": "WP-19: Repository Governance, Workflow, and Codebase Standards",
+      "state": "closed",
+      "created_at": "2026-02-20T11:48:46Z",
+      "updated_at": "2026-02-20T11:58:33Z",
+      "closed_at": "2026-02-20T11:58:33Z",
+      "labels": [],
+      "html_url": "https://github.com/Ismail-elkorchi/jig.nvim/issues/23"
+    },
+    {
+      "number": 22,
+      "title": "WP-18: Agent Threat Model and Security Regression Suite",
+      "state": "open",
+      "created_at": "2026-02-20T11:48:45Z",
+      "updated_at": "2026-02-25T03:39:48Z",
+      "closed_at": null,
+      "labels": [],
+      "html_url": "https://github.com/Ismail-elkorchi/jig.nvim/issues/22"
+    },
+    {
+      "number": 21,
+      "title": "WP-17: Agent UX Surface, Transactional Edits, and Context Ledger",
+      "state": "open",
+      "created_at": "2026-02-20T11:48:43Z",
+      "updated_at": "2026-02-25T03:39:21Z",
+      "closed_at": null,
+      "labels": [],
+      "html_url": "https://github.com/Ismail-elkorchi/jig.nvim/issues/21"
+    },
+    {
+      "number": 20,
+      "title": "WP-16: Toolchain Lockfile and External Dependency Lifecycle",
+      "state": "open",
+      "created_at": "2026-02-20T11:48:42Z",
+      "updated_at": "2026-02-25T03:38:59Z",
+      "closed_at": null,
+      "labels": [],
+      "html_url": "https://github.com/Ismail-elkorchi/jig.nvim/issues/20"
+    },
+    {
+      "number": 19,
+      "title": "WP-15: Comparative Evaluation and Gap Closure Loop",
+      "state": "open",
+      "created_at": "2026-02-20T11:48:40Z",
+      "updated_at": "2026-02-25T03:38:37Z",
+      "closed_at": null,
+      "labels": [],
+      "html_url": "https://github.com/Ismail-elkorchi/jig.nvim/issues/19"
+    },
+    {
+      "number": 18,
+      "title": "WP-14: Release, Rollback, and Incident Operations",
+      "state": "closed",
+      "created_at": "2026-02-20T11:48:39Z",
+      "updated_at": "2026-02-25T03:47:46Z",
+      "closed_at": "2026-02-25T03:47:46Z",
+      "labels": [],
+      "html_url": "https://github.com/Ismail-elkorchi/jig.nvim/issues/18"
+    },
+    {
+      "number": 17,
+      "title": "WP-13: Documentation and In-Editor Knowledge Surface",
+      "state": "closed",
+      "created_at": "2026-02-20T11:48:37Z",
+      "updated_at": "2026-02-21T03:50:28Z",
+      "closed_at": "2026-02-21T03:50:28Z",
+      "labels": [],
+      "html_url": "https://github.com/Ismail-elkorchi/jig.nvim/issues/17"
+    },
+    {
+      "number": 16,
+      "title": "WP-12: CI, Test Fabric, and Failure Injection",
+      "state": "closed",
+      "created_at": "2026-02-20T11:48:35Z",
+      "updated_at": "2026-02-21T02:33:39Z",
+      "closed_at": "2026-02-21T02:33:39Z",
+      "labels": [],
+      "html_url": "https://github.com/Ismail-elkorchi/jig.nvim/issues/16"
+    },
+    {
+      "number": 15,
+      "title": "WP-11: Cross-Platform Compatibility Matrix",
+      "state": "closed",
+      "created_at": "2026-02-20T11:48:34Z",
+      "updated_at": "2026-02-21T01:35:50Z",
+      "closed_at": "2026-02-21T01:35:50Z",
+      "labels": [],
+      "html_url": "https://github.com/Ismail-elkorchi/jig.nvim/issues/15"
+    },
+    {
+      "number": 14,
+      "title": "WP-10: Security, Trust Boundaries, and Risk Controls",
+      "state": "closed",
+      "created_at": "2026-02-20T11:48:32Z",
+      "updated_at": "2026-02-21T00:17:14Z",
+      "closed_at": "2026-02-21T00:17:14Z",
+      "labels": [],
+      "html_url": "https://github.com/Ismail-elkorchi/jig.nvim/issues/14"
+    },
+    {
+      "number": 13,
+      "title": "WP-09: Multi-Agent Interoperability Layer",
+      "state": "closed",
+      "created_at": "2026-02-20T11:48:30Z",
+      "updated_at": "2026-02-20T23:34:21Z",
+      "closed_at": "2026-02-20T23:34:21Z",
+      "labels": [],
+      "html_url": "https://github.com/Ismail-elkorchi/jig.nvim/issues/13"
+    },
+    {
+      "number": 12,
+      "title": "WP-08: Terminal, Shell, and External Tool Integration",
+      "state": "closed",
+      "created_at": "2026-02-20T11:48:29Z",
+      "updated_at": "2026-02-20T22:39:32Z",
+      "closed_at": "2026-02-20T22:39:32Z",
+      "labels": [],
+      "html_url": "https://github.com/Ismail-elkorchi/jig.nvim/issues/12"
+    },
+    {
+      "number": 11,
+      "title": "WP-07: LSP, Diagnostics, and Language Runtime",
+      "state": "closed",
+      "created_at": "2026-02-20T11:48:27Z",
+      "updated_at": "2026-02-20T21:38:53Z",
+      "closed_at": "2026-02-20T21:38:53Z",
+      "labels": [],
+      "html_url": "https://github.com/Ismail-elkorchi/jig.nvim/issues/11"
+    },
+    {
+      "number": 10,
+      "title": "WP-06: Keymap Registry and Discoverability",
+      "state": "closed",
+      "created_at": "2026-02-20T11:48:26Z",
+      "updated_at": "2026-02-20T20:16:16Z",
+      "closed_at": "2026-02-20T20:16:16Z",
+      "labels": [],
+      "html_url": "https://github.com/Ismail-elkorchi/jig.nvim/issues/10"
+    },
+    {
+      "number": 9,
+      "title": "WP-05: Finder, Navigation, and Information Architecture",
+      "state": "closed",
+      "created_at": "2026-02-20T11:48:24Z",
+      "updated_at": "2026-02-20T20:05:21Z",
+      "closed_at": "2026-02-20T20:05:21Z",
+      "labels": [],
+      "html_url": "https://github.com/Ismail-elkorchi/jig.nvim/issues/9"
+    },
+    {
+      "number": 8,
+      "title": "WP-04: UI Foundation, Accessibility, and Visual Hierarchy",
+      "state": "closed",
+      "created_at": "2026-02-20T11:48:22Z",
+      "updated_at": "2026-02-20T19:05:04Z",
+      "closed_at": "2026-02-20T19:05:04Z",
+      "labels": [],
+      "html_url": "https://github.com/Ismail-elkorchi/jig.nvim/issues/8"
+    },
+    {
+      "number": 7,
+      "title": "WP-03: Observability, Doctor, and Recovery",
+      "state": "closed",
+      "created_at": "2026-02-20T11:48:21Z",
+      "updated_at": "2026-02-20T12:35:26Z",
+      "closed_at": "2026-02-20T12:35:26Z",
+      "labels": [],
+      "html_url": "https://github.com/Ismail-elkorchi/jig.nvim/issues/7"
+    },
+    {
+      "number": 6,
+      "title": "WP-02: Plugin State, Locking, and Rollback",
+      "state": "closed",
+      "created_at": "2026-02-20T11:48:19Z",
+      "updated_at": "2026-02-20T12:30:06Z",
+      "closed_at": "2026-02-20T12:30:06Z",
+      "labels": [],
+      "html_url": "https://github.com/Ismail-elkorchi/jig.nvim/issues/6"
+    },
+    {
+      "number": 5,
+      "title": "WP-01: Runtime Kernel and Safe Boot",
+      "state": "closed",
+      "created_at": "2026-02-20T11:48:18Z",
+      "updated_at": "2026-02-20T12:23:16Z",
+      "closed_at": "2026-02-20T12:23:16Z",
+      "labels": [],
+      "html_url": "https://github.com/Ismail-elkorchi/jig.nvim/issues/5"
+    },
+    {
+      "number": 4,
+      "title": "WP-00: Governance and Baseline Contract",
+      "state": "closed",
+      "created_at": "2026-02-20T11:48:16Z",
+      "updated_at": "2026-02-20T12:16:30Z",
+      "closed_at": "2026-02-20T12:16:30Z",
+      "labels": [],
+      "html_url": "https://github.com/Ismail-elkorchi/jig.nvim/issues/4"
+    }
+  ]
+}

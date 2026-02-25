@@ -1,0 +1,48 @@
+{
+  "retrieved_at": "2026-02-25T04:31:41Z",
+  "startup": {
+    "passed": true,
+    "sample_size": 1,
+    "source": "startup-suite-smoke"
+  },
+  "perf": {
+    "metrics": {
+      "time_to_first_diagnostic_ms": 21,
+      "time_to_first_completion_ms": 0,
+      "time_to_first_picker_ms": {
+        "small": {
+          "elapsed_ms": 14
+        },
+        "medium": {
+          "elapsed_ms": 35
+        },
+        "large": {
+          "elapsed_ms": 30
+        }
+      }
+    },
+    "budgets": {
+      "diagnostic_first_ms": 1600,
+      "completion_first_ms": 400,
+      "picker_first_ms": {
+        "small": 800,
+        "medium": 1600,
+        "large": 2600
+      }
+    }
+  },
+  "discoverability": {
+    "command_doc_cross_reference": true,
+    "keymap_docs_sync": true,
+    "help_entrypoint": true
+  },
+  "security": {
+    "startup_network_trace_clean": true,
+    "mcp_trust_enforcement": true,
+    "exec_safety_override_logging": true
+  },
+  "platform": {
+    "passed": true,
+    "notes": "WSL remains best-effort in hosted CI per WP-11."
+  }
+}

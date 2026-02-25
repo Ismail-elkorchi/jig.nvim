@@ -12,6 +12,8 @@ WP-12 defines Jig test fabric contracts for determinism, failure injection, and 
   - `nvim --headless -u NONE -l tests/run_harness.lua -- --suite ui`
 - Run perf probes:
   - `tests/perf/run_harness.sh`
+- Run scorecard and dashboard generation gate:
+  - `tests/scorecard/run_harness.sh`
 - Run release/rollback operations drill:
   - `tests/ops/run_harness.sh`
 - Validate timing-sensitive quarantine policy:
@@ -20,6 +22,10 @@ WP-12 defines Jig test fabric contracts for determinism, failure injection, and 
   - `nvim --headless -u NONE -l tests/check_pending.lua`
 - Validate hidden/bidi Unicode gate:
   - `tests/check_hidden_unicode.sh`
+- Validate WP-15 research coverage gate:
+  - `scripts/wp15/check_research_done.lua`
+- Validate WP-15 high-severity gap ownership/test-plan gate:
+  - `scripts/wp15/check_gaps.lua`
 
 ## Snapshot Contract
 Each suite writes `tests/<suite>/snapshots/latest-headless.json` with:
@@ -64,6 +70,23 @@ Ops suite: `lua/jig/tests/ops/harness.lua`
 - `channel-persistence`
 - `rollback-restore-without-lazy`
 - `staged-break-rollback-drill`
+
+## Scorecard Suite
+Scorecard suite: `lua/jig/tests/scorecard/harness.lua`
+- `wp15-research-done-gate`
+- `wp15-gaps-gate`
+- `wp15-generate-scorecard`
+- `wp15-generate-dashboard`
+- `wp15-generated-sync-clean`
+
+Generated outputs:
+- `docs/roadmap/SCORECARD.md`
+- `docs/roadmap/REGRESSION_DASHBOARD.md`
+- `data/wp15/dashboard_snapshot.json`
+
+Manual issue snapshot refresh (not CI):
+- `scripts/wp15/export_issues_snapshot.sh`
+- `scripts/wp15/export_test_summary.lua`
 
 ## Deterministic Large-Repo Fixture
 Generator module: `lua/jig/tests/fixtures/nav_repo.lua`

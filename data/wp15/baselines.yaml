@@ -1,0 +1,154 @@
+baselines:
+  - id: B-NV-001
+    name: LazyVim
+    category: nvim_distro
+    upstream_url: https://github.com/LazyVim/LazyVim
+    pinned_version: c64a61734fc9d45470a72603395c02137802bc6f
+    pin_evidence_url: https://github.com/LazyVim/LazyVim/commit/c64a61734fc9d45470a72603395c02137802bc6f
+    retrieved_at: 2026-02-25
+    short_scope: "Opinionated Neovim distro with lazy-loading defaults and integrated plugin stack."
+    positioning_tags: [distro, popular]
+    evidence_refs: [E-001, E-002, E-003]
+
+  - id: B-NV-002
+    name: AstroNvim
+    category: nvim_distro
+    upstream_url: https://github.com/AstroNvim/AstroNvim
+    pinned_version: 7fd58328e2bc91d5cad606ee48fdf924fca6ea3e
+    pin_evidence_url: https://github.com/AstroNvim/AstroNvim/commit/7fd58328e2bc91d5cad606ee48fdf924fca6ea3e
+    retrieved_at: 2026-02-25
+    short_scope: "Feature-rich Neovim distro with modular packs and community layer catalog."
+    positioning_tags: [distro, popular]
+    evidence_refs: [E-004, E-005, E-006]
+
+  - id: B-NV-003
+    name: NvChad
+    category: nvim_distro
+    upstream_url: https://github.com/NvChad/NvChad
+    pinned_version: f437558f23c8f50c36cd09748121ab2c822e8ec9
+    pin_evidence_url: https://github.com/NvChad/NvChad/commit/f437558f23c8f50c36cd09748121ab2c822e8ec9
+    retrieved_at: 2026-02-25
+    short_scope: "UI-forward Neovim distro emphasizing speed and curated defaults."
+    positioning_tags: [distro, ui_heavy]
+    evidence_refs: [E-007, E-008, E-009]
+
+  - id: B-NV-004
+    name: LunarVim
+    category: nvim_distro
+    upstream_url: https://github.com/LunarVim/LunarVim
+    pinned_version: aa51c20f3404cb482e9c6fd6e5e4a4bf5b1612aa
+    pin_evidence_url: https://github.com/LunarVim/LunarVim/commit/aa51c20f3404cb482e9c6fd6e5e4a4bf5b1612aa
+    retrieved_at: 2026-02-25
+    short_scope: "IDE-layer Neovim distro with batteries-included language tooling."
+    positioning_tags: [distro, ide_layer]
+    evidence_refs: [E-010, E-011, E-012]
+
+  - id: B-NV-005
+    name: kickstart.nvim
+    category: nvim_starter
+    upstream_url: https://github.com/nvim-lua/kickstart.nvim
+    pinned_version: e79572c9e6978787af2bca164a85ab6821caeb7b
+    pin_evidence_url: https://github.com/nvim-lua/kickstart.nvim/commit/e79572c9e6978787af2bca164a85ab6821caeb7b
+    retrieved_at: 2026-02-25
+    short_scope: "Minimal starter configuration intended as a user-owned launch point."
+    positioning_tags: [minimal_starter, stability_ops]
+    evidence_refs: [E-013, E-014, E-015]
+
+  - id: B-NV-006
+    name: NormalNvim
+    category: nvim_distro
+    upstream_url: https://github.com/NormalNvim/NormalNvim
+    pinned_version: 181dbe2114e2e49226f667bbc9b1c6d84ea0f0e1
+    pin_evidence_url: https://github.com/NormalNvim/NormalNvim/commit/181dbe2114e2e49226f667bbc9b1c6d84ea0f0e1
+    retrieved_at: 2026-02-25
+    short_scope: "Neovim distribution that aims for a balanced, low-drama default workflow."
+    positioning_tags: [distro]
+    evidence_refs: [E-016, E-017, E-018]
+
+  - id: B-NV-007
+    name: LazyVim starter template
+    category: nvim_starter
+    upstream_url: https://github.com/LazyVim/starter
+    pinned_version: 803bc181d7c0d6d5eeba9274d9be49b287294d99
+    pin_evidence_url: https://github.com/LazyVim/starter/commit/803bc181d7c0d6d5eeba9274d9be49b287294d99
+    retrieved_at: 2026-02-25
+    short_scope: "Starter template for users to build on LazyVim architecture with explicit ownership."
+    positioning_tags: [minimal_starter]
+    evidence_refs: [E-019, E-020, E-021]
+
+  - id: B-AG-001
+    name: Codex CLI
+    category: agent_cli
+    upstream_url: https://github.com/openai/codex
+    pinned_version: 16ca527c80ea3d863be5dcac64ba37b1f8c97e47
+    pin_evidence_url: https://github.com/openai/codex/commit/16ca527c80ea3d863be5dcac64ba37b1f8c97e47
+    retrieved_at: 2026-02-25
+    short_scope: "Terminal coding agent focused on patch-oriented execution flows."
+    positioning_tags: [agent_first, stability_ops]
+    evidence_refs: [E-022, E-023, E-024]
+
+  - id: B-AG-002
+    name: Claude Code
+    category: agent_cli
+    upstream_url: https://github.com/anthropics/claude-code
+    pinned_version: a0128f4a40952ce80cc7f5aba54334a74020a758
+    pin_evidence_url: https://github.com/anthropics/claude-code/commit/a0128f4a40952ce80cc7f5aba54334a74020a758
+    retrieved_at: 2026-02-25
+    short_scope: "Terminal coding agent with tool orchestration and sub-agent workflows."
+    positioning_tags: [agent_first]
+    evidence_refs: [E-025, E-026, E-027]
+
+  - id: B-AG-003
+    name: Gemini CLI
+    category: agent_cli
+    upstream_url: https://github.com/google-gemini/gemini-cli
+    pinned_version: bf278ef2b0e0b602983866893267d086fc429fae
+    pin_evidence_url: https://github.com/google-gemini/gemini-cli/commit/bf278ef2b0e0b602983866893267d086fc429fae
+    retrieved_at: 2026-02-25
+    short_scope: "Open-source terminal agent centered on Gemini model workflows and tool calls."
+    positioning_tags: [agent_first]
+    evidence_refs: [E-028, E-029, E-030]
+
+  - id: B-AG-004
+    name: aider
+    category: agent_cli
+    upstream_url: https://github.com/Aider-AI/aider
+    pinned_version: 7afaa26f8b8b7b56146f0674d2a67e795b616b7c
+    pin_evidence_url: https://github.com/Aider-AI/aider/commit/7afaa26f8b8b7b56146f0674d2a67e795b616b7c
+    retrieved_at: 2026-02-25
+    short_scope: "Git-oriented terminal coding assistant with explicit commit and diff operations."
+    positioning_tags: [agent_first, stability_ops]
+    evidence_refs: [E-031, E-032, E-033]
+
+  - id: B-AG-005
+    name: OpenCode
+    category: agent_cli
+    upstream_url: https://github.com/anomalyco/opencode
+    pinned_version: a487f11a30981f44896ac771f7ade87fba9d6092
+    pin_evidence_url: https://github.com/anomalyco/opencode/commit/a487f11a30981f44896ac771f7ade87fba9d6092
+    retrieved_at: 2026-02-25
+    short_scope: "Open-source coding agent emphasizing terminal-native interactions."
+    positioning_tags: [agent_first]
+    evidence_refs: [E-034, E-035, E-036]
+
+  - id: B-AG-006
+    name: Continue
+    category: agent_editor
+    upstream_url: https://github.com/continuedev/continue
+    pinned_version: 98c99d3a63624ea4cea5590730b746cb9fa4dea5
+    pin_evidence_url: https://github.com/continuedev/continue/commit/98c99d3a63624ea4cea5590730b746cb9fa4dea5
+    retrieved_at: 2026-02-25
+    short_scope: "AI coding workflows for editors and CI policy checks."
+    positioning_tags: [agent_first]
+    evidence_refs: [E-037, E-038, E-039]
+
+  - id: B-AG-007
+    name: Model Context Protocol
+    category: agent_protocol
+    upstream_url: https://github.com/modelcontextprotocol/modelcontextprotocol
+    pinned_version: 6147dff41300556b412302f0a31310491c2b7382
+    pin_evidence_url: https://github.com/modelcontextprotocol/modelcontextprotocol/commit/6147dff41300556b412302f0a31310491c2b7382
+    retrieved_at: 2026-02-25
+    short_scope: "Interoperability protocol for model-to-tool context exchange with explicit consent controls."
+    positioning_tags: [agent_first, stability_ops]
+    evidence_refs: [E-040, E-041, E-042]

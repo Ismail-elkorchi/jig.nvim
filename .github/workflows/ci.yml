@@ -187,6 +187,16 @@ jobs:
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigAgentContext")==0)' '+qa'
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(package.loaded["jig.agent"]==nil)' '+qa'
 
+      - name: Scorecard harness snapshot checks
+        run: |
+          tests/scorecard/run_harness.sh
+          test -f tests/scorecard/snapshots/latest-headless.json
+          rg -n '"wp15-research-done-gate"' tests/scorecard/snapshots/latest-headless.json
+          rg -n '"wp15-gaps-gate"' tests/scorecard/snapshots/latest-headless.json
+          rg -n '"wp15-generate-scorecard"' tests/scorecard/snapshots/latest-headless.json
+          rg -n '"wp15-generate-dashboard"' tests/scorecard/snapshots/latest-headless.json
+          rg -n '"wp15-generated-sync-clean"' tests/scorecard/snapshots/latest-headless.json
+
       - name: Cmdline open-close check
         run: nvim --headless -u ./init.lua '+JigCmdlineCheck' '+qa'
 

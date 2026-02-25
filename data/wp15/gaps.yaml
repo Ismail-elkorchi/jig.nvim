@@ -1,0 +1,70 @@
+gaps:
+  - id: GAP-001
+    title: "Transactional patch review pipeline is not yet shipped."
+    severity: sev1
+    failure_surface: agent
+    owner: Ismail-elkorchi
+    test_plan: "Implement multi-file and hunk-level apply/reject tests; falsifier: agent write path bypasses review artifact."
+    related_issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/21
+    status: open
+    rationale: "Deferred to WP-17 because direct writes are intentionally blocked in WP-09."
+
+  - id: GAP-002
+    title: "Approval queue visibility under multiple pending actions is not yet implemented."
+    severity: sev1
+    failure_surface: agent
+    owner: Ismail-elkorchi
+    test_plan: "Ship queue indicator and queue list tests; falsifier: pending approval can block workflow without visible signal."
+    related_issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/21
+    status: open
+    rationale: "Deferred to WP-17 to avoid partial UX with hidden state."
+
+  - id: GAP-003
+    title: "Agent threat-regression suite coverage is incomplete for boundary-escape classes."
+    severity: sev1
+    failure_surface: security
+    owner: Ismail-elkorchi
+    test_plan: "Add failure-injection suite for workspace escape, injection payloads, and consent confusion; falsifier: simulated escape succeeds without explicit allow."
+    related_issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/22
+    status: open
+    rationale: "Deferred to WP-18 where threat model and regression pack are first-class deliverables."
+
+  - id: GAP-004
+    title: "Toolchain lockfile and reproducible external dependency lifecycle are not yet available."
+    severity: sev1
+    failure_surface: integration
+    owner: Ismail-elkorchi
+    test_plan: "Implement toolchain install/update/restore/rollback probes with version equality checks; falsifier: restore cannot reproduce pinned tool versions."
+    related_issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/20
+    status: open
+    rationale: "Deferred to WP-16 to avoid implicit installer behavior in current releases."
+
+  - id: GAP-005
+    title: "Comparative issue labels are sparse, reducing lane-level escape-rate confidence."
+    severity: sev2
+    failure_surface: ops
+    owner: Ismail-elkorchi
+    test_plan: "Apply severity/failure-surface labels to triaged issues and enforce label completeness on incidents."
+    related_issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/19
+    status: in_progress
+    rationale: "Current snapshot has low label density; dashboard reports this as reduced confidence."
+
+  - id: GAP-006
+    title: "Non-adoption: default cmdline hijack overlays remain disabled."
+    severity: sev3
+    failure_surface: cmdline
+    owner: Ismail-elkorchi
+    test_plan: "Keep cmdline open/close stability check in required lane; falsifier: ':' path regresses due optional overlay defaults."
+    related_issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/8
+    status: done
+    rationale: "Non-adoption rationale: risk to baseline cmdline stability is higher than UX gain."
+
+  - id: GAP-007
+    title: "Non-adoption: startup auto-install remains disabled."
+    severity: sev3
+    failure_surface: startup
+    owner: Ismail-elkorchi
+    test_plan: "Keep startup side-effect smoke check required; falsifier: cold startup clones/fetches dependencies."
+    related_issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/6
+    status: done
+    rationale: "Non-adoption rationale: hidden mutation at startup violates determinism contract."
