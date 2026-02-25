@@ -1,0 +1,4 @@
+snapshot_date: 2026-02-25
+refreshed_by: Ismail-elkorchi
+refresh_reason: "WP-15 snapshot staleness protocol initialization"
+notes: "Offline deterministic snapshot; no live network reads in CI."

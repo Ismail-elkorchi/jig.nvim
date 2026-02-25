@@ -43,7 +43,7 @@ function M.parse_inline_array(raw)
   local out = {}
   for token in body:gmatch("[^,]+") do
     local item = vim.trim(token)
-    item = item:gsub('^"', ""):gsub('"$', "")
+    item = item:gsub("^\"", ""):gsub("\"$", "")
     if item ~= "" then
       out[#out + 1] = item
     end
@@ -68,7 +68,7 @@ function M.parse_scalar(raw)
   if value:match("^%-?%d+%.%d+$") then
     return tonumber(value)
   end
-  if value:match('^".*"$') then
+  if value:match("^\".*\"$") then
     return value:sub(2, -2)
   end
   return value
@@ -98,6 +98,47 @@ function M.parse_yaml_list(path)
   end
 
   return out
+end
+
+function M.parse_yaml_map(path)
+  local lines = assert(M.read_lines(path), "missing yaml map file: " .. path)
+  local out = {}
+
+  for _, line in ipairs(lines) do
+    if not line:match("^%s*#") and not line:match("^%s*$") then
+      local key, raw = line:match("^%s*([%w_]+):%s*(.-)%s*$")
+      if key and raw then
+        local arr = M.parse_inline_array(raw)
+        out[key] = arr ~= nil and arr or M.parse_scalar(raw)
+      end
+    end
+  end
+
+  return out
+end
+
+function M.date_to_epoch_days(raw)
+  if type(raw) ~= "string" then
+    return nil
+  end
+
+  local year, month, day = raw:match("^(%d%d%d%d)%-(%d%d)%-(%d%d)$")
+  if year == nil then
+    return nil
+  end
+
+  local ts = os.time({
+    year = tonumber(year),
+    month = tonumber(month),
+    day = tonumber(day),
+    hour = 12,
+    min = 0,
+    sec = 0,
+  })
+  if type(ts) ~= "number" then
+    return nil
+  end
+  return math.floor(ts / 86400)
 end
 
 function M.parse_json(path)
@@ -131,7 +172,8 @@ function M.sorted_keys(map)
 end
 
 local function has_wp15_dataset(path)
-  return M.exists(join(path, "data/wp15/baselines.yaml")) and M.exists(join(path, "data/wp15/evidence.jsonl"))
+  return M.exists(join(path, "data/wp15/baselines.yaml"))
+    and M.exists(join(path, "data/wp15/evidence.jsonl"))
 end
 
 local function upward_candidates(path)

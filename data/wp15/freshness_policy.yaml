@@ -1,0 +1,11 @@
+rules:
+  - quality_tier: peer_reviewed
+    max_age_days: 20000
+  - quality_tier: standards_spec
+    max_age_days: 3650
+  - quality_tier: official_docs
+    max_age_days: 365
+  - quality_tier: community_issues
+    max_age_days: 180
+  - quality_tier: incident
+    max_age_days: 180

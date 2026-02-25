@@ -124,6 +124,17 @@ local function domain(url)
   return url:match("^https?://([^/%?#]+)")
 end
 
+local function resolve_path(env_key, fallback)
+  local value = vim.env[env_key]
+  if type(value) == "string" and value ~= "" then
+    if value:match("^/") then
+      return value
+    end
+    return common.join(ROOT, value)
+  end
+  return common.join(ROOT, fallback)
+end
+
 local function choose_dossier_path()
   local default_offrepo =
     "/home/ismail-el-korchi/Documents/Projects/tse-workbench/research/jig.nvim/wp-15/2026-02-25--wp-15-research-dossier.md"
@@ -426,6 +437,127 @@ local function validate_evidence_coverage(baselines, evidence, errors)
   return domain_count
 end
 
+local function load_snapshot_meta(path, errors)
+  if vim.fn.filereadable(path) ~= 1 then
+    errors[#errors + 1] = "R8 violation: missing snapshot meta file " .. path
+    return nil
+  end
+
+  local meta = common.parse_yaml_map(path)
+  local required_keys = { "snapshot_date", "refreshed_by", "refresh_reason" }
+  for _, key in ipairs(required_keys) do
+    if to_string(meta[key]) == "" then
+      errors[#errors + 1] = "R8 violation: snapshot meta missing `" .. key .. "`"
+    end
+  end
+
+  local snapshot_date = to_string(meta.snapshot_date)
+  if snapshot_date:match("^%d%d%d%d%-%d%d%-%d%d$") == nil then
+    errors[#errors + 1] = "R8 violation: snapshot_date must use YYYY-MM-DD"
+    return nil
+  end
+
+  local snapshot_days = common.date_to_epoch_days(snapshot_date)
+  if snapshot_days == nil then
+    errors[#errors + 1] = "R8 violation: snapshot_date is not parseable: " .. snapshot_date
+    return nil
+  end
+
+  return {
+    date = snapshot_date,
+    epoch_days = snapshot_days,
+  }
+end
+
+local function load_freshness_policy(path, errors)
+  if vim.fn.filereadable(path) ~= 1 then
+    errors[#errors + 1] = "R8 violation: missing freshness policy file " .. path
+    return {}
+  end
+
+  local rows = common.parse_yaml_list(path)
+  if #rows == 0 then
+    errors[#errors + 1] = "R8 violation: freshness policy is empty"
+    return {}
+  end
+
+  local policy = {}
+  for _, row in ipairs(rows) do
+    local quality_tier = to_string(row.quality_tier)
+    if quality_tier == "" then
+      errors[#errors + 1] = "R8 violation: freshness rule missing quality_tier"
+    else
+      local raw_days = row.max_age_days
+      local max_age_days = nil
+      if raw_days ~= nil and raw_days ~= vim.NIL then
+        if type(raw_days) ~= "number" then
+          errors[#errors + 1] = "R8 violation: freshness rule max_age_days must be numeric for quality_tier "
+            .. quality_tier
+        elseif raw_days < 0 then
+          errors[#errors + 1] = "R8 violation: freshness rule max_age_days must be >= 0 for quality_tier "
+            .. quality_tier
+        else
+          max_age_days = math.floor(raw_days)
+        end
+      end
+      policy[quality_tier] = max_age_days
+    end
+  end
+
+  return policy
+end
+
+local function validate_evidence_freshness(evidence, snapshot, freshness_policy, errors)
+  if snapshot == nil then
+    return
+  end
+
+  local stale = {}
+  local future = {}
+
+  for _, item in ipairs(evidence) do
+    local id = to_string(item.id)
+    local retrieved_at = to_string(item.retrieved_at)
+    if retrieved_at:match("^%d%d%d%d%-%d%d%-%d%d$") == nil then
+      errors[#errors + 1] = "R8 violation: evidence " .. id .. " retrieved_at must use YYYY-MM-DD"
+    else
+      local retrieved_days = common.date_to_epoch_days(retrieved_at)
+      if retrieved_days == nil then
+        errors[#errors + 1] = "R8 violation: evidence " .. id .. " retrieved_at is not parseable"
+      else
+        if retrieved_days > snapshot.epoch_days then
+          future[#future + 1] = id
+        end
+
+        local quality_tier = to_string(item.quality_tier)
+        local max_age_days = freshness_policy[quality_tier]
+        if type(max_age_days) == "number" and retrieved_days <= snapshot.epoch_days then
+          local age = snapshot.epoch_days - retrieved_days
+          if age > max_age_days then
+            stale[#stale + 1] =
+              string.format("%s(age=%dd, tier=%s, max=%dd)", id, age, quality_tier, max_age_days)
+          end
+        end
+      end
+    end
+  end
+
+  if #future > 0 then
+    table.sort(future)
+    errors[#errors + 1] = "R8 violation: evidence retrieved_at after snapshot_date ("
+      .. snapshot.date
+      .. "): "
+      .. table.concat(future, ", ")
+  end
+
+  if #stale > 0 then
+    table.sort(stale)
+    errors[#errors + 1] = "R8 violation: stale evidence ids: "
+      .. table.concat(stale, "; ")
+      .. ". Suggested action: refresh retrieved_at + re-verify metadata, or downgrade confidence / adjust quality_tier / move to off-repo dossier."
+  end
+end
+
 local function validate_research_log(path, evidence_by_id, errors)
   if vim.fn.filereadable(path) ~= 1 then
     errors[#errors + 1] = "R7 violation: missing research log file " .. path
@@ -620,18 +752,26 @@ end
 
 local function main()
   local paths = {
-    baselines = common.join(ROOT, "data/wp15/baselines.yaml"),
-    evidence = common.join(ROOT, "data/wp15/evidence.jsonl"),
-    research_log = common.join(ROOT, "data/wp15/research_log.yaml"),
+    baselines = resolve_path("WP15_BASELINES_PATH", "data/wp15/baselines.yaml"),
+    evidence = resolve_path("WP15_EVIDENCE_PATH", "data/wp15/evidence.jsonl"),
+    research_log = resolve_path("WP15_RESEARCH_LOG_PATH", "data/wp15/research_log.yaml"),
+    snapshot_meta = resolve_path("WP15_SNAPSHOT_META_PATH", "data/wp15/snapshot_meta.yaml"),
+    freshness_policy = resolve_path(
+      "WP15_FRESHNESS_POLICY_PATH",
+      "data/wp15/freshness_policy.yaml"
+    ),
   }
 
   local baselines = common.parse_yaml_list(paths.baselines)
   local evidence = common.parse_jsonl(paths.evidence)
   local errors = {}
+  local snapshot = load_snapshot_meta(paths.snapshot_meta, errors)
+  local freshness_policy = load_freshness_policy(paths.freshness_policy, errors)
 
   validate_baselines(baselines, errors)
   local evidence_by_id = validate_evidence_schema(evidence, errors)
   local domain_count = validate_evidence_coverage(baselines, evidence, errors)
+  validate_evidence_freshness(evidence, snapshot, freshness_policy, errors)
   validate_research_log(paths.research_log, evidence_by_id, errors)
   validate_disconfirming(errors)
 

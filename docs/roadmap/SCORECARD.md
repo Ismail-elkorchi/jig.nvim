@@ -2,6 +2,8 @@
 
 Generated deterministically from committed WP-15 artifacts.
 
+This scorecard is an offline snapshot as of `2026-02-25`.
+
 Inputs:
 - `data/wp15/baselines.yaml`
 - `data/wp15/evidence.jsonl`
@@ -10,6 +12,8 @@ Inputs:
 - `data/wp15/agent_workflow_tasks.yaml`
 - `data/wp15/gaps.yaml`
 - `data/wp15/issues_snapshot.json`
+- `data/wp15/snapshot_meta.yaml`
+- `data/wp15/freshness_policy.yaml`
 
 Issue snapshot retrieved at: `2026-02-25T04:31:41Z`
 Test summary retrieved at: `2026-02-25T04:31:41Z`
@@ -65,6 +69,17 @@ Test summary retrieved at: `2026-02-25T04:31:41Z`
 | agent_ui | `mcp_list` | `n/a` | `n/a` | pending (WP-17) |
 | agent_ui | `mcp_tools` | `n/a` | `n/a` | pending (WP-17) |
 | agent_ui | `policy_ask_roundtrip` | `n/a` | `n/a` | pending (WP-17) |
+
+## Snapshot semantics
+
+- Snapshot date: `2026-02-25`
+- Refreshing `snapshot_date` without refreshing evidence metadata is invalid and should fail research gates.
+
+### Stale evidence by type
+
+| Evidence type | Stale count | Stale ids |
+|---|---:|---|
+| `none` | `0` | - |
 
 ## Discoverability metrics
 

@@ -18,16 +18,105 @@ local function as_boolean(value)
   return value == true
 end
 
+local function resolve_path(env_key, fallback)
+  local value = vim.env[env_key]
+  if type(value) == "string" and value ~= "" then
+    if value:match("^/") then
+      return value
+    end
+    return common.join(ROOT, value)
+  end
+  return common.join(ROOT, fallback)
+end
+
+local function load_snapshot_meta(path)
+  local meta = common.parse_yaml_map(path)
+  local snapshot_date = coerce_string(meta.snapshot_date)
+  assert(snapshot_date:match("^%d%d%d%d%-%d%d%-%d%d$") ~= nil, "invalid snapshot_date in " .. path)
+  local days = common.date_to_epoch_days(snapshot_date)
+  assert(type(days) == "number", "unparseable snapshot_date in " .. path)
+  return {
+    date = snapshot_date,
+    epoch_days = days,
+  }
+end
+
+local function load_freshness_policy(path)
+  local rows = common.parse_yaml_list(path)
+  local policy = {}
+  for _, row in ipairs(rows) do
+    local tier = coerce_string(row.quality_tier)
+    if tier ~= "" then
+      if row.max_age_days ~= nil and row.max_age_days ~= vim.NIL then
+        policy[tier] = tonumber(row.max_age_days)
+      else
+        policy[tier] = nil
+      end
+    end
+  end
+  return policy
+end
+
+local function summarize_staleness(evidence, snapshot, freshness_policy)
+  local stale_ids = {}
+  local by_type = {}
+
+  for _, item in ipairs(evidence) do
+    local id = coerce_string(item.id)
+    local evidence_type = coerce_string(item.type)
+    local tier = coerce_string(item.quality_tier)
+    local max_age = freshness_policy[tier]
+    local retrieved_at = coerce_string(item.retrieved_at)
+    local retrieved_days = common.date_to_epoch_days(retrieved_at)
+
+    local is_stale = false
+    if retrieved_days and retrieved_days > snapshot.epoch_days then
+      is_stale = true
+    elseif
+      type(max_age) == "number"
+      and retrieved_days
+      and snapshot.epoch_days >= retrieved_days
+    then
+      local age = snapshot.epoch_days - retrieved_days
+      if age > max_age then
+        is_stale = true
+      end
+    end
+
+    if is_stale then
+      stale_ids[#stale_ids + 1] = id
+      by_type[evidence_type] = by_type[evidence_type] or {}
+      by_type[evidence_type][#by_type[evidence_type] + 1] = id
+    end
+  end
+
+  table.sort(stale_ids)
+  for _, ids in pairs(by_type) do
+    table.sort(ids)
+  end
+
+  return {
+    count = #stale_ids,
+    ids = stale_ids,
+    by_type = by_type,
+  }
+end
+
 local function load_inputs()
   local paths = {
-    baselines = common.join(ROOT, "data/wp15/baselines.yaml"),
-    evidence = common.join(ROOT, "data/wp15/evidence.jsonl"),
-    budgets = common.join(ROOT, "data/wp15/error_budgets.json"),
-    tests = common.join(ROOT, "data/wp15/test_snapshot_summary.json"),
-    tasks = common.join(ROOT, "data/wp15/agent_workflow_tasks.yaml"),
-    gaps = common.join(ROOT, "data/wp15/gaps.yaml"),
-    issues = common.join(ROOT, "data/wp15/issues_snapshot.json"),
-    out = common.join(ROOT, "docs/roadmap/SCORECARD.md"),
+    baselines = resolve_path("WP15_BASELINES_PATH", "data/wp15/baselines.yaml"),
+    evidence = resolve_path("WP15_EVIDENCE_PATH", "data/wp15/evidence.jsonl"),
+    budgets = resolve_path("WP15_ERROR_BUDGETS_PATH", "data/wp15/error_budgets.json"),
+    tests = resolve_path("WP15_TEST_SUMMARY_PATH", "data/wp15/test_snapshot_summary.json"),
+    tasks = resolve_path("WP15_AGENT_TASKS_PATH", "data/wp15/agent_workflow_tasks.yaml"),
+    gaps = resolve_path("WP15_GAPS_PATH", "data/wp15/gaps.yaml"),
+    issues = resolve_path("WP15_ISSUES_SNAPSHOT_PATH", "data/wp15/issues_snapshot.json"),
+    snapshot_meta = resolve_path("WP15_SNAPSHOT_META_PATH", "data/wp15/snapshot_meta.yaml"),
+    freshness_policy = resolve_path(
+      "WP15_FRESHNESS_POLICY_PATH",
+      "data/wp15/freshness_policy.yaml"
+    ),
+    out = resolve_path("WP15_SCORECARD_OUT_PATH", "docs/roadmap/SCORECARD.md"),
   }
 
   if vim.fn.filereadable(paths.issues) ~= 1 then
@@ -47,6 +136,9 @@ local function load_inputs()
   local gaps = common.parse_yaml_list(paths.gaps)
   local tests = common.parse_json(paths.tests)
   local issues = common.parse_json(paths.issues)
+  local snapshot = load_snapshot_meta(paths.snapshot_meta)
+  local freshness_policy = load_freshness_policy(paths.freshness_policy)
+  local staleness = summarize_staleness(evidence, snapshot, freshness_policy)
 
   return {
     paths = paths,
@@ -59,6 +151,9 @@ local function load_inputs()
     tasks = tasks,
     gaps = gaps,
     issues = issues,
+    snapshot = snapshot,
+    freshness_policy = freshness_policy,
+    staleness = staleness,
   }
 end
 
@@ -259,6 +354,11 @@ local function render(data)
     "",
     "Generated deterministically from committed WP-15 artifacts.",
     "",
+    string.format(
+      "This scorecard is an offline snapshot as of `%s`.",
+      coerce_string(data.snapshot.date)
+    ),
+    "",
     "Inputs:",
     "- `data/wp15/baselines.yaml`",
     "- `data/wp15/evidence.jsonl`",
@@ -267,6 +367,8 @@ local function render(data)
     "- `data/wp15/agent_workflow_tasks.yaml`",
     "- `data/wp15/gaps.yaml`",
     "- `data/wp15/issues_snapshot.json`",
+    "- `data/wp15/snapshot_meta.yaml`",
+    "- `data/wp15/freshness_policy.yaml`",
     "",
     string.format("Issue snapshot retrieved at: `%s`", coerce_string(data.issues.retrieved_at)),
     string.format("Test summary retrieved at: `%s`", coerce_string(data.tests.retrieved_at)),
@@ -382,6 +484,28 @@ local function render(data)
         tostring(config),
         "pending"
       )
+    end
+  end
+
+  lines[#lines + 1] = ""
+  lines[#lines + 1] = "## Snapshot semantics"
+  lines[#lines + 1] = ""
+  lines[#lines + 1] = string.format("- Snapshot date: `%s`", coerce_string(data.snapshot.date))
+  lines[#lines + 1] =
+    "- Refreshing `snapshot_date` without refreshing evidence metadata is invalid and should fail research gates."
+  lines[#lines + 1] = ""
+  lines[#lines + 1] = "### Stale evidence by type"
+  lines[#lines + 1] = ""
+  lines[#lines + 1] = "| Evidence type | Stale count | Stale ids |"
+  lines[#lines + 1] = "|---|---:|---|"
+  if data.staleness.count == 0 then
+    lines[#lines + 1] = "| `none` | `0` | - |"
+  else
+    local types = common.sorted_keys(data.staleness.by_type or {})
+    for _, evidence_type in ipairs(types) do
+      local ids = data.staleness.by_type[evidence_type] or {}
+      lines[#lines + 1] =
+        string.format("| `%s` | `%d` | `%s` |", evidence_type, #ids, table.concat(ids, ", "))
     end
   end
 
