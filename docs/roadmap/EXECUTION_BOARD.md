@@ -127,10 +127,10 @@ Updated at: `2026-02-21`
 - ADR(s): tbd
 
 ### WP-14: Release, Rollback, and Incident Operations
-- Status: `in-progress` (`current`)
+- Status: `done`
 - Depends on: `WP-13`
 - Issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/18
-- PR(s): tbd
+- PR(s): https://github.com/Ismail-elkorchi/jig.nvim/pull/40
 - ADR(s): tbd
 - Deliverables (excerpt):
   - stable/edge release channel policy with persisted metadata
