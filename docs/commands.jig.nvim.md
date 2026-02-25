@@ -6,7 +6,7 @@ Generated from the default runtime command surface. Do not edit manually.
 |---|---|---|---|
 | `:JigBisectGuide` | `none` | `no` | Show deterministic bisect guidance |
 | `:JigBuffers` | `optional-one` | `no` | Find buffers filtered by deterministic root |
-| `:JigChannel` | `one` | `no` | Set update channel metadata (stable|edge) |
+| `:JigChannel` | `optional-one` | `no` | Set or show update channel metadata (stable|edge) |
 | `:JigCmdlineCheck` | `none` | `no` | Verify native ':' cmdline opens and closes cleanly |
 | `:JigDiagnostics` | `optional-one` | `no` | Find diagnostics with fallback behavior |
 | `:JigDocs` | `none` | `no` | Open Jig documentation index |
@@ -25,7 +25,7 @@ Generated from the default runtime command surface. Do not edit manually.
 | `:JigPluginBootstrap` | `none` | `no` | Install lazy.nvim explicitly (no startup auto-install) |
 | `:JigPluginInstall` | `none` | `no` | Install/sync plugins from lock state |
 | `:JigPluginRestore` | `none` | `no` | Restore plugins from lazy-lock.json |
-| `:JigPluginRollback` | `none` | `no` | Restore previous lockfile backup and run Lazy restore |
+| `:JigPluginRollback` | `none` | `no` | Restore previous lockfile backup; run Lazy restore when available |
 | `:JigPluginUpdate` | `none` | `no` | Preview then apply plugin updates (explicit confirm) |
 | `:JigRecent` | `optional-one` | `no` | Find recent files filtered by deterministic root |
 | `:JigRepro` | `none` | `no` | Print deterministic minimal repro steps |

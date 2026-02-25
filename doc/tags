@@ -2,11 +2,14 @@ jig	jig.txt	/*jig*
 jig-agents	jig-agents.txt	/*jig-agents*
 jig-commands	jig-commands.txt	/*jig-commands*
 jig-configuration	jig-configuration.txt	/*jig-configuration*
+jig-incidents	jig-incidents.txt	/*jig-incidents*
 jig-install	jig-install.txt	/*jig-install*
 jig-keymaps	jig-keymaps.txt	/*jig-keymaps*
 jig-lsp	jig-lsp.txt	/*jig-lsp*
 jig-migration	jig-migration.txt	/*jig-migration*
 jig-platform	jig-platform.txt	/*jig-platform*
+jig-release	jig-release.txt	/*jig-release*
+jig-rollback	jig-rollback.txt	/*jig-rollback*
 jig-safety	jig-safety.txt	/*jig-safety*
 jig-security	jig-security.txt	/*jig-security*
 jig-testing	jig-testing.txt	/*jig-testing*

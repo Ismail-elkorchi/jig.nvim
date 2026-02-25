@@ -244,6 +244,7 @@ jobs:
           rg -n '"markdown-link-check"' tests/docs/snapshots/latest-headless.json
           rg -n '"help-reference-check"' tests/docs/snapshots/latest-headless.json
           rg -n '"issue-template-failure-surfaces"' tests/docs/snapshots/latest-headless.json
+          rg -n '"labels-manifest-controls"' tests/docs/snapshots/latest-headless.json
 
       - name: LSP harness snapshot checks
         run: |
@@ -284,6 +285,14 @@ jobs:
           rg -n '"mcp-trust-enforcement"' tests/security/snapshots/latest-headless.json
           rg -n '"exec-safety-override-logging"' tests/security/snapshots/latest-headless.json
           rg -n '"safe-profile-isolation"' tests/security/snapshots/latest-headless.json
+
+      - name: Ops harness snapshot checks
+        run: |
+          tests/ops/run_harness.sh
+          test -f tests/ops/snapshots/latest-headless.json
+          rg -n '"channel-persistence"' tests/ops/snapshots/latest-headless.json
+          rg -n '"rollback-restore-without-lazy"' tests/ops/snapshots/latest-headless.json
+          rg -n '"staged-break-rollback-drill"' tests/ops/snapshots/latest-headless.json
 
       - name: Platform harness snapshot checks
         run: |

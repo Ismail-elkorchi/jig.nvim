@@ -1,10 +1,16 @@
 # maintenance.jig.nvim.md
 
 Canonical help: `:help jig-migration`
+Primary runbooks:
+- `docs/runbooks/RELEASE.md`
+- `docs/runbooks/ROLLBACK.md`
+- `docs/runbooks/INCIDENTS.md`
+- `docs/runbooks/MIGRATION_CONTRACT.md`
 
 ## Release channels
-- `stable`: pinned plugin updates after CI pass.
-- `edge`: faster updates for compatibility validation.
+- `stable`: release-tag oriented updates after required CI lanes pass.
+- `edge`: main-branch tracking for compatibility validation.
+- Channel persistence path: `${stdpath("state")}/jig/channel.json`.
 - Startup side-effect policy: do not auto-install or auto-update plugins/toolchains.
 
 ## Update process
@@ -28,3 +34,4 @@ Canonical help: `:help jig-migration`
 - LSP attaches on known filetypes.
 - Icons degrade to ASCII when Nerd Font missing.
 - Keymap docs/vimdoc are synchronized with registry (`tests/keymaps/run_harness.sh`).
+- Run release drill suite (`tests/ops/run_harness.sh`) before release tagging.

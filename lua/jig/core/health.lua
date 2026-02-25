@@ -54,6 +54,26 @@ function M.check()
     vim.health.info("Nerd Font not detected; ASCII icon fallback active")
   end
 
+  local ok_channel, channel = pcall(require, "jig.core.channel")
+  if ok_channel then
+    local loaded = channel.load()
+    vim.health.info(
+      string.format(
+        "release channel: %s (source=%s path=%s)",
+        loaded.channel,
+        loaded.source,
+        loaded.path
+      )
+    )
+    if loaded.error ~= nil then
+      vim.health.warn(
+        "channel state file invalid; fallback to stable. next: run :JigChannel stable to repair."
+      )
+    end
+  else
+    vim.health.warn("channel state module unavailable")
+  end
+
   local exrc_enabled = vim.o.exrc == true
   local secure_enabled = vim.o.secure == true
   local modeline_enabled = vim.o.modeline == true

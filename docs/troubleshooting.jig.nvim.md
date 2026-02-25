@@ -16,6 +16,7 @@ Use this sequence under failure:
 ```bash
 NVIM_APPNAME=jig-safe nvim
 nvim --startuptime /tmp/jig.startuptime.log -u ./init.lua '+qa'
+tests/ops/run_harness.sh
 ```
 
 ### cmdline
@@ -100,6 +101,11 @@ nvim --headless -u NONE -l tests/run_harness.lua -- --suite security
 2. Re-enable optional layers in halves.
 3. Keep failing half, repeat.
 4. Capture evidence with `:JigHealth` and `:JigRepro`.
+
+## Operations References
+- `:help jig-rollback`
+- `:help jig-release`
+- `:help jig-incidents`
 
 ## Not Guaranteed / Boundaries
 - Some failures require project-specific reproductions.

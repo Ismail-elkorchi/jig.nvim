@@ -5,7 +5,7 @@ Generated from the default runtime command surface. Do not edit manually.
 COMMANDS
   :JigBisectGuide     none         Show deterministic bisect guidance
   :JigBuffers         optional-one Find buffers filtered by deterministic root
-  :JigChannel         one          Set update channel metadata (stable|edge)
+  :JigChannel         optional-one Set or show update channel metadata (stable|edge)
   :JigCmdlineCheck    none         Verify native ':' cmdline opens and closes cleanly
   :JigDiagnostics     optional-one Find diagnostics with fallback behavior
   :JigDocs            none         Open Jig documentation index
@@ -24,7 +24,7 @@ COMMANDS
   :JigPluginBootstrap none         Install lazy.nvim explicitly (no startup auto-install)
   :JigPluginInstall   none         Install/sync plugins from lock state
   :JigPluginRestore   none         Restore plugins from lazy-lock.json
-  :JigPluginRollback  none         Restore previous lockfile backup and run Lazy restore
+  :JigPluginRollback  none         Restore previous lockfile backup; run Lazy restore when available
   :JigPluginUpdate    none         Preview then apply plugin updates (explicit confirm)
   :JigRecent          optional-one Find recent files filtered by deterministic root
   :JigRepro           none         Print deterministic minimal repro steps

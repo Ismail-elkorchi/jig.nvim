@@ -1,0 +1,38 @@
+*jig-rollback*  Jig rollback runbook
+
+PANIC PATH (3 STEPS)
+  1. Start safe profile:
+     `NVIM_APPNAME=jig-safe nvim`
+  2. Restore lockfile backup:
+     `:JigPluginRollback`
+  3. Verify:
+     `nvim --headless -u ./init.lua '+checkhealth jig' '+qa'`
+
+DETAILS
+  Rollback lockfile backup path:
+    `${stdpath("state")}/jig/lazy-lock.previous.json`
+
+  Current lockfile path:
+    `${stdpath("config")}/lazy-lock.json`
+
+  If `lazy.nvim` is missing:
+    - `:JigPluginBootstrap`
+    - restart Neovim
+    - `:Lazy restore`
+
+CHANNEL DOWNGRADE
+  Set stable channel metadata:
+    `:JigChannel stable`
+
+ROLLBACK DRILL
+  Run deterministic drill:
+    `tests/ops/run_harness.sh`
+
+SEE ALSO
+  |jig-migration|
+  |jig-release|
+
+NOT GUARANTEED / BOUNDARIES
+  - Rollback restores lock state only; unrelated local user config changes are not reverted automatically.
+
+vim:tw=78:ts=8:noet:ft=help:norl:

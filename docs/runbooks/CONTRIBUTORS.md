@@ -11,6 +11,7 @@ cd jig.nvim
 stylua --check --config-path .stylua.toml $(rg --files lua tests -g '*.lua')
 nvim --headless -u ./init.lua '+checkhealth jig' '+qa'
 nvim --headless -u NONE -l tests/run_harness.lua -- --all
+tests/ops/run_harness.sh
 ```
 
 ## Adding a New `:Jig*` Command
@@ -29,3 +30,4 @@ nvim --headless -u NONE -l tests/run_harness.lua -- --all
 - no startup implicit network side effects
 - keep `jig-safe` isolated
 - do not bypass quarantine/pending CI gates
+- include reproducible evidence and permanent-fix reference updates for incident-linked fixes

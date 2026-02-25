@@ -1,0 +1,42 @@
+*jig-release*  Jig release operations
+
+OVERVIEW
+  Release operations are explicit and deterministic.
+  No startup-time install, update, or network mutation is introduced by release policy.
+
+CHANNELS
+  stable
+      release-tag oriented publication (`vX.Y.Z`).
+
+  edge
+      branch-tracking publication on `main`.
+
+  Channel metadata command:
+    :JigChannel [stable|edge]
+  Persisted at:
+    ${stdpath("state")}/jig/channel.json
+
+RELEASE CHECKLIST
+  1. Required CI lanes pass:
+     - stable + previous stable matrix in required job
+  2. Local deterministic verification:
+     - `nvim --headless -u NONE -l tests/run_harness.lua -- --all`
+     - `tests/ops/run_harness.sh`
+     - `tests/perf/run_harness.sh`
+  3. Docs sync and helptags:
+     - `nvim --headless -u NONE -l tests/docs/update_helptags.lua`
+     - `git diff --exit-code -- doc/tags`
+  4. Tag publication:
+     - `git tag -a vX.Y.Z -m "jig.nvim vX.Y.Z"`
+     - `git push origin vX.Y.Z`
+
+SEE ALSO
+  |jig-migration|
+  |jig-rollback|
+  |jig-incidents|
+
+NOT GUARANTEED / BOUNDARIES
+  - Release checklist reduces regression risk; it does not eliminate all environment-specific failures.
+  - Hosted CI cannot represent every terminal/font/shell variant.
+
+vim:tw=78:ts=8:noet:ft=help:norl:

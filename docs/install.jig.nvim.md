@@ -23,6 +23,30 @@ NVIM_APPNAME=jig-safe nvim
 
 `jig-safe` loads only mandatory core modules for recovery/debugging.
 
+## Channel selection (stable vs edge)
+Jig supports explicit operational channels:
+- `stable` (default): release-tag oriented maintenance.
+- `edge`: main-branch tracking for early validation.
+
+Choose git ref explicitly:
+```bash
+# stable: pin to a release tag
+cd ~/.config/nvim
+git fetch --tags
+git checkout vX.Y.Z
+
+# edge: track main
+git checkout main
+git pull --ff-only
+```
+
+Set Jig channel metadata (persisted):
+```vim
+:JigChannel stable
+:JigChannel edge
+:JigChannel
+```
+
 Optional UI profile tuning:
 ```vim
 :JigUiProfile high-contrast

@@ -13,6 +13,7 @@ Canonical help: `:help jig`
 - `core/autocmd.lua`: diagnostics/yank UX behaviors.
 - `core/doctor.lua`: health/provenance/bisect command entrypoints.
 - `core/lazy.lua`: plugin bootstrap and channel command.
+- `core/channel.lua`: persisted stable/edge channel state (`stdpath("state")/jig/channel.json`).
 - `core/plugin_state.lua`: install/update/restore/rollback lifecycle commands.
 - `core/health.lua`: health provider used by `:checkhealth jig`.
 - `nav/root.lua`: deterministic root resolution policy.
@@ -79,6 +80,7 @@ Canonical help: `:help jig`
 - `tests/check_pending.lua`: pending-test allowlist gate for roadmap-blocked checks.
 - `lua/jig/tests/fixtures/nav_repo.lua`: deterministic tiered repository generator for nav/perf probes.
 - `lua/jig/tests/perf/harness.lua`: deterministic perf probes and extreme-regression budgets.
+- `lua/jig/tests/ops/harness.lua`: release/rollback/incident operations drill suite.
 
 ## Policy
 - Stability-first defaults.
