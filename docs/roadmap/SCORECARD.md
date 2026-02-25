@@ -42,7 +42,8 @@ Test summary retrieved at: `2026-02-25T04:31:41Z`
 
 ## Reliability metrics
 
-- Crash-free startup rate: `100.00%` (target `99.00%`) -> **pass** (sample size: `1`)
+- Startup smoke check: **pass** (sample size: `1`; crash-free rate reporting begins at sample size >= `30`)
+- Crash-free startup rate: `insufficient-data`
 
 ### Regression escape rate per lane
 
@@ -84,12 +85,18 @@ Test summary retrieved at: `2026-02-25T04:31:41Z`
 
 ## Agent workflow comparative gates
 
-| Task ID | Status | Blocking WP | Oracle |
-|---|---|---|---|
-| `AGT-001` | `pending` | `WP-17` | `pending:agent:patch-diff-hunk-apply` |
-| `AGT-002` | `implemented` | `` | `suite:security case:exec-safety-override-logging; suite:agent case:permission-policy-unit` |
-| `AGT-003` | `pending` | `WP-17` | `pending:agent:approval-notification-visible` |
-| `AGT-004` | `implemented` | `` | `suite:agent case:context-ledger-token-budget` |
+| Task ID | Status | Blocking WP | Failure surfaces | Success criteria | Oracle |
+|---|---|---|---|---|---|
+| `AGT-001` | `pending` | `WP-17` | `agent, security, ops` | Agent output is represented as a reviewable patch and supports hunk-level accept/reject before apply. | `pending:agent:patch-diff-hunk-apply` |
+| `AGT-002` | `implemented` | `` | `security, agent` | Policy deny decision prevents prohibited write command execution and emits audit log attribution. | `suite:security case:exec-safety-override-logging; suite:agent case:permission-policy-unit` |
+| `AGT-003` | `pending` | `WP-17` | `agent, ui` | Pending approvals are visible via command/statusline signal and cannot stall silently. | `pending:agent:approval-notification-visible` |
+| `AGT-004` | `implemented` | `` | `agent, docs` | Ledger lists context sources with size estimates and warns when configured budget threshold is crossed. | `suite:agent case:context-ledger-token-budget` |
+| `AGT-005` | `implemented` | `` | `security, agent` | Subagent tool requests cannot bypass parent deny rules; all actions are attributed and logged. | `suite:agent case:subagent-inheritance-enforced` |
+| `AGT-006` | `pending` | `WP-18` | `security, integration, agent` | Injected tool name/capability mismatch is blocked by policy and recorded as denied event. | `pending:security:mcp-injection-tool-routing` |
+| `AGT-007` | `pending` | `WP-18` | `security, integration, agent` | Poisoned output suggesting destructive command is denied/asked and cannot auto-execute. | `pending:security:tool-output-poisoning` |
+| `AGT-008` | `implemented` | `` | `integration, performance, ops` | Agent can request nav/test commands through policy-gated wrappers with reproducible logs and bounded timeouts. | `suite:tools case:run-sync-timeout; suite:nav case:fallback-backend` |
+| `AGT-009` | `implemented` | `` | `agent, security, ops` | Always-allow grants persist only with explicit scope and can be listed/revoked deterministically. | `suite:agent case:policy-persistence-restart` |
+| `AGT-010` | `pending` | `WP-17` | `agent, performance, ui` | P95 ask-roundtrip metric is measured under harness or explicitly reported pending with WP blocker. | `pending:agent:approval-roundtrip-p95` |
 
 ## Gap register summary
 
