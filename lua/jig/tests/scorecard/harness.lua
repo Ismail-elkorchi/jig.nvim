@@ -17,11 +17,12 @@ local function snapshot_path(opts)
   )
 end
 
-local function run_command(argv, timeout_ms)
+local function run_command(argv, timeout_ms, env)
   local result = vim
     .system(argv, {
       cwd = repo_root(),
       text = true,
+      env = env,
     })
     :wait(timeout_ms or 120000)
 
@@ -52,12 +53,71 @@ local function run_command(argv, timeout_ms)
   }
 end
 
+local function run_command_expect_failure(argv, opts)
+  opts = opts or {}
+  local result = vim
+    .system(argv, {
+      cwd = repo_root(),
+      text = true,
+      env = opts.env,
+    })
+    :wait(opts.timeout_ms or 120000)
+
+  if result == nil then
+    return false,
+      {
+        reason = "wait_nil",
+        argv = argv,
+        hint = "increase timeout or inspect command runtime",
+      }
+  end
+
+  if result.code == 0 then
+    return false,
+      {
+        reason = "expected_nonzero_exit",
+        argv = argv,
+        stdout = result.stdout,
+        stderr = result.stderr,
+      }
+  end
+
+  local output = (result.stdout or "") .. "\n" .. (result.stderr or "")
+  local marker = tostring(opts.marker or "")
+  if marker ~= "" and output:lower():find(marker:lower(), 1, true) == nil then
+    return false,
+      {
+        reason = "expected_marker_missing",
+        marker = marker,
+        argv = argv,
+        stdout = result.stdout,
+        stderr = result.stderr,
+      }
+  end
+
+  return true, {
+    code = result.code,
+    marker = marker,
+  }
+end
+
 function M.run(opts)
   local report = fabric.run_cases({
     {
       id = "wp15-research-done-gate",
       run = function()
         return run_command({ "scripts/wp15/check_research_done.lua" })
+      end,
+    },
+    {
+      id = "wp15-stale-fixture-detected",
+      run = function()
+        local env = vim.fn.environ()
+        env.WP15_EVIDENCE_PATH = "tests/fixtures/wp15/stale_evidence.jsonl"
+        return run_command_expect_failure(
+          { "scripts/wp15/check_research_done.lua" },
+          { env = env, marker = "stale evidence ids" }
+        )
       end,
     },
     {
