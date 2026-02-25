@@ -1,0 +1,51 @@
+*jig-incidents*  Jig incident operations
+
+FAILURE SURFACES
+  startup
+  cmdline
+  completion
+  lsp
+  ui
+  performance
+  platform
+  integration
+  agent
+  security
+
+SEVERITY
+  sev0
+      critical impact or security/data-loss active incident.
+  sev1
+      major workflow failure, no practical workaround.
+  sev2
+      degraded behavior with workaround.
+  sev3
+      low-impact defect or documentation mismatch.
+
+REPORTING
+  Use issue forms:
+    `.github/ISSUE_TEMPLATE/bug_report.yml`
+    `.github/ISSUE_TEMPLATE/incident_report.yml`
+
+  Required fields:
+    - failure surface
+    - severity
+    - exact reproduction steps
+    - evidence
+    - permanent fix reference (or `TBD`)
+
+LABELS
+  Manifest:
+    `.github/labels.md`
+  Sync script:
+    `.github/scripts/sync_labels.sh`
+
+SEE ALSO
+  |jig-troubleshooting|
+  |jig-security|
+  |jig-rollback|
+
+NOT GUARANTEED / BOUNDARIES
+  - Incident process improves consistency; it does not imply complete prevention of future regressions.
+
+vim:tw=78:ts=8:noet:ft=help:norl:

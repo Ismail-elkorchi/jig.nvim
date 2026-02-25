@@ -13,6 +13,9 @@ START HERE
 OPERATIONS
   |jig-troubleshooting| recurring failure classes + next commands
   |jig-migration|       migration checklist and rollback path
+  |jig-release|         release checklist and channel publication workflow
+  |jig-rollback|        panic-path rollback and recovery drill
+  |jig-incidents|       incident taxonomy, severity, and reporting controls
   |jig-safety|          safety model and trust boundaries
   |jig-testing|         harness/gate workflow
   |jig-platform|        platform coverage and limits

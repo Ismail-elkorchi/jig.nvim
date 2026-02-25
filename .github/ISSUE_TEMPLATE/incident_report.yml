@@ -1,0 +1,61 @@
+name: Incident Report
+description: Track a high-signal operational incident with reproducible evidence and permanent fix linkage.
+title: "incident: "
+labels:
+  - incident
+body:
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - sev0
+        - sev1
+        - sev2
+        - sev3
+    validations:
+      required: true
+  - type: dropdown
+    id: failure_surface
+    attributes:
+      label: Failure Surface
+      options:
+        - startup
+        - cmdline
+        - completion
+        - lsp
+        - ui
+        - performance
+        - platform
+        - integration
+        - agent
+        - security
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Exact reproduction steps
+      description: Include exact commands, environment variables, and profile used.
+    validations:
+      required: true
+  - type: textarea
+    id: expected_actual
+    attributes:
+      label: Expected vs Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Include logs, snapshots, CI links, and test/harness outputs.
+    validations:
+      required: true
+  - type: input
+    id: permanent_fix_reference
+    attributes:
+      label: Permanent fix reference
+      placeholder: "PR/commit/issue link or TBD"
+    validations:
+      required: true

@@ -137,6 +137,10 @@ local SUITES = {
     module = "jig.tests.security.harness",
     snapshot = join(ROOT, "tests/security/snapshots/latest-headless.json"),
   },
+  ops = {
+    module = "jig.tests.ops.harness",
+    snapshot = join(ROOT, "tests/ops/snapshots/latest-headless.json"),
+  },
   perf = {
     module = "jig.tests.perf.harness",
     snapshot = join(ROOT, "tests/perf/snapshots/latest-headless.json"),
@@ -161,6 +165,7 @@ local DEFAULT_SUITES = {
   "nav",
   "tools",
   "security",
+  "ops",
   "platform",
 }
 

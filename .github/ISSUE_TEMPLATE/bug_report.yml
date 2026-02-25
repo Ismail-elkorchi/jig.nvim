@@ -5,6 +5,17 @@ labels:
   - bug
 body:
   - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - sev0
+        - sev1
+        - sev2
+        - sev3
+    validations:
+      required: true
+  - type: dropdown
     id: failure_surface
     attributes:
       label: Failure Surface
@@ -64,6 +75,13 @@ body:
     validations:
       required: true
   - type: textarea
+    id: repro_commands
+    attributes:
+      label: Reproduction command output
+      description: Paste command outputs used for reproduction (`:JigRepro`, `:checkhealth jig`, harness command, etc.).
+    validations:
+      required: true
+  - type: textarea
     id: expected_actual
     attributes:
       label: Expected vs Actual
@@ -85,5 +103,12 @@ body:
     attributes:
       label: Evidence
       description: Attach logs, traces, screenshots, CI links.
+    validations:
+      required: true
+  - type: input
+    id: permanent_fix_reference
+    attributes:
+      label: Permanent fix reference
+      placeholder: "issue/PR/commit or TBD"
     validations:
       required: true

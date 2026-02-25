@@ -24,6 +24,9 @@ Canonical in-editor entrypoint: `:help jig`
 - Keymaps: `:help jig-keymaps`
 - Troubleshooting: `:help jig-troubleshooting`
 - Migration: `:help jig-migration`
+- Release operations: `:help jig-release`
+- Rollback runbook: `:help jig-rollback`
+- Incident operations: `:help jig-incidents`
 - Safety model: `:help jig-safety`
 - LSP: `:help jig-lsp`
 - Tools: `:help jig-tools`
@@ -31,6 +34,12 @@ Canonical in-editor entrypoint: `:help jig`
 - Platform: `:help jig-platform`
 - Testing: `:help jig-testing`
 - Agents (optional): `:help jig-agents`
+
+## Maintainer runbooks
+- Release checklist: [runbooks/RELEASE.md](runbooks/RELEASE.md)
+- Rollback drill: [runbooks/ROLLBACK.md](runbooks/ROLLBACK.md)
+- Incident taxonomy and severity: [runbooks/INCIDENTS.md](runbooks/INCIDENTS.md)
+- Migration compatibility contract: [runbooks/MIGRATION_CONTRACT.md](runbooks/MIGRATION_CONTRACT.md)
 
 ## Boundaries
 - This index documents default-profile behavior unless stated otherwise.

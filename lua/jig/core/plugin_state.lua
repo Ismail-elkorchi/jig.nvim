@@ -87,10 +87,6 @@ function M.update()
 end
 
 function M.rollback()
-  if not require_lazy_or_prompt() then
-    return
-  end
-
   local backup = rollback_path()
   local lockfile = lockfile_path()
   if not file_exists(backup) then
@@ -100,7 +96,17 @@ function M.rollback()
 
   copy_file(backup, lockfile)
   vim.notify("Rollback lockfile restored to " .. lockfile, vim.log.levels.INFO)
-  vim.cmd("Lazy restore")
+  if lazy_available() then
+    vim.cmd("Lazy restore")
+    return
+  end
+
+  vim.notify(
+    "lazy.nvim not installed. Lockfile restore completed; next: run :"
+      .. state.bootstrap_command
+      .. ", restart Neovim, then run :Lazy restore.",
+    vim.log.levels.WARN
+  )
 end
 
 function M.register(opts)
@@ -131,7 +137,7 @@ function M.register(opts)
     {
       name = brand.command("PluginRollback"),
       fn = M.rollback,
-      desc = "Restore previous lockfile backup and run Lazy restore",
+      desc = "Restore previous lockfile backup; run Lazy restore when available",
     },
   }
 

@@ -12,6 +12,8 @@ WP-12 defines Jig test fabric contracts for determinism, failure injection, and 
   - `nvim --headless -u NONE -l tests/run_harness.lua -- --suite ui`
 - Run perf probes:
   - `tests/perf/run_harness.sh`
+- Run release/rollback operations drill:
+  - `tests/ops/run_harness.sh`
 - Validate timing-sensitive quarantine policy:
   - `nvim --headless -u NONE -l tests/check_quarantine.lua`
 - Validate pending-test allowlist policy:
@@ -56,6 +58,12 @@ Perf suite: `lua/jig/tests/perf/harness.lua`
 Budgets: `tests/perf/budgets.json`
 - thresholds are conservative and serve as extreme-regression gates
 - output snapshots are uploaded as CI artifacts
+
+## Operations Drill Suite
+Ops suite: `lua/jig/tests/ops/harness.lua`
+- `channel-persistence`
+- `rollback-restore-without-lazy`
+- `staged-break-rollback-drill`
 
 ## Deterministic Large-Repo Fixture
 Generator module: `lua/jig/tests/fixtures/nav_repo.lua`

@@ -1,8 +1,11 @@
 local brand = require("jig.core.brand")
+local channel_state = require("jig.core.channel")
 local plugin_state = require("jig.core.plugin_state")
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-local lazy_available = vim.uv.fs_stat(lazypath) ~= nil
+local function lazy_available()
+  return vim.uv.fs_stat(lazypath) ~= nil
+end
 
 local function install_lazy()
   local system = require("jig.tools.system")
@@ -30,6 +33,18 @@ local function install_lazy()
   vim.notify("lazy.nvim installed. Restart Neovim, then run :Lazy sync.", vim.log.levels.INFO)
 end
 
+local channel_boot = channel_state.initialize()
+if channel_boot.error ~= nil then
+  vim.notify(
+    string.format(
+      "Invalid persisted channel state (%s). Falling back to '%s'.",
+      channel_boot.error,
+      channel_boot.channel
+    ),
+    vim.log.levels.WARN
+  )
+end
+
 -- boundary: allow-vim-api
 -- Justification: user command registration is part of Neovim host integration.
 vim.api.nvim_create_user_command(brand.command("PluginBootstrap"), function()
@@ -50,31 +65,51 @@ plugin_state.register({
 -- boundary: allow-vim-api
 -- Justification: user command registration is part of Neovim host integration.
 vim.api.nvim_create_user_command(brand.command("Channel"), function(opts)
-  local channel = opts.args
-  if channel ~= "stable" and channel ~= "edge" then
-    vim.notify("Usage: :" .. brand.command("Channel") .. " stable|edge", vim.log.levels.ERROR)
+  local channel = vim.trim(opts.args or "")
+  if channel == "" then
+    local source = vim.fn.filereadable(channel_state.path()) == 1 and "state" or "default"
+    vim.notify(
+      string.format(
+        "%s channel: %s (source=%s path=%s)",
+        brand.brand,
+        channel_state.current(),
+        source,
+        channel_state.path()
+      ),
+      vim.log.levels.INFO
+    )
     return
   end
-  vim.g[brand.namespace .. "_channel"] = channel
-  if not lazy_available then
+
+  local ok, result = channel_state.set(channel, { persist = true })
+  if not ok then
+    vim.notify("Usage: :" .. brand.command("Channel") .. " [stable|edge]", vim.log.levels.ERROR)
+    return
+  end
+
+  if not lazy_available() then
     vim.notify(
-      "Channel stored, but lazy.nvim is not installed. Run :"
+      "Channel persisted to "
+        .. result.path
+        .. ", but lazy.nvim is not installed. Run :"
         .. brand.command("PluginBootstrap")
         .. ".",
       vim.log.levels.WARN
     )
     return
   end
-  vim.notify(brand.brand .. " channel set to " .. channel .. ". Restart Neovim.")
+  vim.notify(
+    brand.brand .. " channel set to " .. result.channel .. ". Persisted at " .. result.path .. "."
+  )
 end, {
-  nargs = 1,
+  nargs = "?",
   complete = function()
     return { "stable", "edge" }
   end,
-  desc = "Set update channel metadata (stable|edge)",
+  desc = "Set or show update channel metadata (stable|edge)",
 })
 
-if not lazy_available then
+if not lazy_available() then
   vim.notify(
     "lazy.nvim not found. Run :" .. brand.command("PluginBootstrap") .. " to install plugins.",
     vim.log.levels.WARN

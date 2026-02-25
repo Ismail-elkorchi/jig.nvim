@@ -156,6 +156,9 @@ local function required_vimdoc_ok()
     "jig-keymaps",
     "jig-troubleshooting",
     "jig-migration",
+    "jig-release",
+    "jig-rollback",
+    "jig-incidents",
     "jig-safety",
     "jig-commands",
   }
@@ -171,6 +174,9 @@ local function required_vimdoc_ok()
     "doc/jig-keymaps.txt",
     "doc/jig-troubleshooting.txt",
     "doc/jig-migration.txt",
+    "doc/jig-release.txt",
+    "doc/jig-rollback.txt",
+    "doc/jig-incidents.txt",
     "doc/jig-safety.txt",
     "doc/jig-commands.txt",
   }
@@ -189,6 +195,7 @@ end
 
 local function issue_template_ok()
   local bug = read_or_empty(repo_root() .. "/.github/ISSUE_TEMPLATE/bug_report.yml")
+  local incident = read_or_empty(repo_root() .. "/.github/ISSUE_TEMPLATE/incident_report.yml")
 
   local required_surface = {
     "startup",
@@ -207,6 +214,7 @@ local function issue_template_ok()
   end
 
   local required_tokens = {
+    "Severity",
     "Neovim version",
     "OS",
     "Terminal",
@@ -215,10 +223,30 @@ local function issue_template_ok()
     "reproduced in jig-safe",
     ":checkhealth jig",
     ":JigHealth",
+    "Permanent fix reference",
   }
 
   for _, token in ipairs(required_tokens) do
     assert(bug:lower():find(token:lower(), 1, true) ~= nil, "bug template missing field: " .. token)
+  end
+
+  assert(incident ~= "", "incident_report.yml missing")
+  for _, token in ipairs(required_surface) do
+    assert(
+      incident:find("- " .. token, 1, true) ~= nil,
+      "incident template missing failure surface: " .. token
+    )
+  end
+  for _, token in ipairs({
+    "Severity",
+    "Exact reproduction steps",
+    "Evidence",
+    "Permanent fix reference",
+  }) do
+    assert(
+      incident:lower():find(token:lower(), 1, true) ~= nil,
+      "incident template missing field: " .. token
+    )
   end
 
   return {
@@ -248,6 +276,10 @@ local function runbooks_ok()
   local files = {
     root .. "/docs/runbooks/MAINTAINERS.md",
     root .. "/docs/runbooks/CONTRIBUTORS.md",
+    root .. "/docs/runbooks/RELEASE.md",
+    root .. "/docs/runbooks/ROLLBACK.md",
+    root .. "/docs/runbooks/INCIDENTS.md",
+    root .. "/docs/runbooks/MIGRATION_CONTRACT.md",
   }
 
   for _, path in ipairs(files) do
@@ -256,6 +288,31 @@ local function runbooks_ok()
 
   return {
     files = #files,
+  }
+end
+
+local function labels_manifest_ok()
+  local root = repo_root()
+  local manifest = read_or_empty(root .. "/.github/labels.md")
+  local sync_script = root .. "/.github/scripts/sync_labels.sh"
+
+  assert(manifest ~= "", "labels manifest missing")
+  assert(vim.fn.filereadable(sync_script) == 1, "sync_labels.sh missing")
+  for _, token in ipairs({
+    "incident",
+    "sev0",
+    "sev1",
+    "sev2",
+    "sev3",
+    "surface:startup",
+    "surface:security",
+  }) do
+    assert(manifest:find(token, 1, true) ~= nil, "labels manifest missing token: " .. token)
+  end
+
+  return {
+    manifest = ".github/labels.md",
+    sync_script = ".github/scripts/sync_labels.sh",
   }
 end
 
@@ -364,6 +421,10 @@ local cases = {
   {
     id = "runbooks-present",
     run = runbooks_ok,
+  },
+  {
+    id = "labels-manifest-controls",
+    run = labels_manifest_ok,
   },
 }
 

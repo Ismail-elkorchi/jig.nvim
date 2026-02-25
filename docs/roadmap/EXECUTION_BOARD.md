@@ -127,8 +127,27 @@ Updated at: `2026-02-21`
 - ADR(s): tbd
 
 ### WP-14: Release, Rollback, and Incident Operations
-- Status: `not-started` (`next`)
+- Status: `in-progress` (`current`)
 - Depends on: `WP-13`
 - Issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/18
+- PR(s): tbd
+- ADR(s): tbd
+- Deliverables (excerpt):
+  - stable/edge release channel policy with persisted metadata
+  - rollback runbook + deterministic staged break/rollback drill
+  - incident taxonomy/severity + issue template controls
+  - maintainer release and migration contract runbooks
+- Verification commands (excerpt):
+  - `tests/ops/run_harness.sh`
+  - `nvim --headless -u NONE -l tests/run_harness.lua -- --suite ops`
+  - `nvim --headless -u ./init.lua '+checkhealth jig' '+qa'`
+- Falsifiers (excerpt):
+  - rollback drill cannot restore known-good lockfile
+  - incident forms lack reproducible evidence fields
+
+### WP-15: Comparative Evaluation and Gap Closure Loop
+- Status: `not-started` (`next`)
+- Depends on: `WP-14`
+- Issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/19
 - PR(s): tbd
 - ADR(s): tbd

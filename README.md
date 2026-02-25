@@ -84,7 +84,7 @@ NVIM_APPNAME=jig-safe nvim
 - `:JigPluginUpdate` preview (`Lazy check`) then apply update with explicit confirm.
 - `:JigPluginRestore` restore plugin state from `lazy-lock.json`.
 - `:JigPluginRollback` restore previous lockfile backup + `Lazy restore`.
-- `:JigChannel stable|edge` set update channel metadata.
+- `:JigChannel [stable|edge]` show or set persistent update channel metadata.
 
 ## Profiles
 - `NVIM_APPNAME=jig` uses the default profile.
@@ -92,6 +92,12 @@ NVIM_APPNAME=jig-safe nvim
 - Agent layer is disabled by default in `jig` and absent in `jig-safe`.
 - Enable agent module explicitly with trusted config:
   `vim.g.jig_agent = { enabled = true }`
+
+## Release Channels
+- `stable` (default): release-tag oriented operations and conservative upgrade cadence.
+- `edge`: branch-tracking operations for compatibility validation and early changes.
+- Channel state persists at `${stdpath("state")}/jig/channel.json`.
+- Jig does not auto-switch git refs; channel is explicit metadata used by operational workflows.
 
 ## Verification
 ```bash

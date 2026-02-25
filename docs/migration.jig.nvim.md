@@ -1,6 +1,7 @@
 # migration.jig.nvim.md
 
 Canonical help: `:help jig-migration`
+Contract details: `docs/runbooks/MIGRATION_CONTRACT.md`
 
 ## Workflow
 1. Backup current config.
@@ -28,3 +29,4 @@ Then:
 ## Boundaries
 - Migration cannot automatically reconcile unrelated user plugins/config.
 - Third-party plugin behavior outside Jig defaults is not guaranteed.
+- Deprecation grace windows and compatibility scope are defined in migration contract.
