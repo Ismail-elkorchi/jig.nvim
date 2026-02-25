@@ -149,7 +149,7 @@ Updated at: `2026-02-21`
 - Status: `done`
 - Depends on: `WP-14`
 - Issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/19
-- PR(s): tbd (this PR)
+- PR(s): https://github.com/Ismail-elkorchi/jig.nvim/pull/42
 - ADR(s): tbd
 - Deliverables (excerpt):
   - reproducible baseline and evidence datasets (`data/wp15/*`)
