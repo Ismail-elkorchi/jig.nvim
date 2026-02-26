@@ -370,6 +370,42 @@ local function keymap_docs_linked_ok()
   }
 end
 
+local function execution_board_tracking_ok()
+  local board = read_or_empty(repo_root() .. "/docs/roadmap/EXECUTION_BOARD.md")
+  assert(board ~= "", "execution board missing")
+
+  assert(
+    board:find("Updated at:%s*`%d%d%d%d%-%d%d%-%d%d`", 1, false) ~= nil,
+    "execution board missing deterministic Updated at timestamp"
+  )
+  assert(
+    board:find("### WP%-16: Toolchain Lockfile and External Dependency Lifecycle", 1, false) ~= nil,
+    "execution board missing WP-16 section"
+  )
+  assert(
+    board:find("### WP%-16:.-%- Status: `done`", 1, false) ~= nil,
+    "execution board must mark WP-16 as done"
+  )
+  assert(
+    board:find("https://github.com/Ismail%-elkorchi/jig%.nvim/pull/47", 1, false) ~= nil,
+    "execution board missing WP-16 PR reference"
+  )
+  assert(
+    board:find("### WP%-17: Agent UX Surface, Transactional Edits, and Context Ledger", 1, false)
+      ~= nil,
+    "execution board missing WP-17 section"
+  )
+  assert(
+    board:find("### WP%-17:.-%- Status: `not%-started` %(`next`%)", 1, false) ~= nil,
+    "execution board must mark WP-17 as next"
+  )
+
+  return {
+    wp16 = "done",
+    wp17 = "next",
+  }
+end
+
 local cases = {
   {
     id = "required-vimdoc-set",
@@ -425,6 +461,10 @@ local cases = {
   {
     id = "labels-manifest-controls",
     run = labels_manifest_ok,
+  },
+  {
+    id = "execution-board-wp16-wp17-tracking",
+    run = execution_board_tracking_ok,
   },
 }
 

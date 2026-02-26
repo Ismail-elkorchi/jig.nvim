@@ -263,6 +263,7 @@ jobs:
           rg -n '"help-reference-check"' tests/docs/snapshots/latest-headless.json
           rg -n '"issue-template-failure-surfaces"' tests/docs/snapshots/latest-headless.json
           rg -n '"labels-manifest-controls"' tests/docs/snapshots/latest-headless.json
+          rg -n '"execution-board-wp16-wp17-tracking"' tests/docs/snapshots/latest-headless.json
 
       - name: LSP harness snapshot checks
         run: |
