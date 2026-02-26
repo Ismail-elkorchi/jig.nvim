@@ -10,6 +10,18 @@ local function filename(bufnr)
   return vim.fn.fnamemodify(name, ":t")
 end
 
+local function pending_approvals_segment()
+  local pending = tonumber(vim.g.jig_agent_pending_approvals) or 0
+  if pending <= 0 then
+    return ""
+  end
+  return string.format(
+    " %%#JigUiWarning#%s approvals:%d%%#JigUiNeutral#",
+    icons.get("warning"),
+    pending
+  )
+end
+
 function M.render_statusline(active, bufnr)
   local mode_icon = icons.get("action")
   local diag_icon = icons.get("health")
@@ -19,6 +31,7 @@ function M.render_statusline(active, bufnr)
       mode_icon,
       " %#JigUiNeutral# ",
       filename(bufnr),
+      pending_approvals_segment(),
       "%m",
       "%r",
       "%=",
@@ -31,6 +44,7 @@ function M.render_statusline(active, bufnr)
   return table.concat({
     "%#JigStatuslineInactive# ",
     filename(bufnr),
+    pending_approvals_segment(),
     "%m%r",
     "%=",
     "%#JigUiInactive# %l:%c ",
@@ -39,18 +53,22 @@ end
 
 function M.render_winbar(active, bufnr)
   local warning_icon = icons.get("warning")
+  local pending = tonumber(vim.g.jig_agent_pending_approvals) or 0
+  local pending_chunk = pending > 0 and (" " .. warning_icon .. pending) or ""
   if active then
     return table.concat({
       "%#JigWinbarActive# ",
       warning_icon,
       " ",
       filename(bufnr),
+      pending_chunk,
       " ",
     })
   end
   return table.concat({
     "%#JigWinbarInactive# ",
     filename(bufnr),
+    pending_chunk,
     " ",
   })
 end

@@ -38,13 +38,7 @@ local function run_safe_assertions()
       "--headless",
       "-u",
       root .. "/init.lua",
-      "+lua assert(vim.fn.exists(':JigMcpList')==0)",
-      "+lua assert(vim.fn.exists(':JigMcpStart')==0)",
-      "+lua assert(vim.fn.exists(':JigMcpStop')==0)",
-      "+lua assert(vim.fn.exists(':JigMcpTools')==0)",
-      "+lua assert(vim.fn.exists(':JigMcpCall')==0)",
-      "+lua assert(vim.fn.exists(':JigAgentContext')==0)",
-      "+lua assert(package.loaded['jig.agent']==nil)",
+      [[+lua local names={'JigMcpList','JigMcpStart','JigMcpStop','JigMcpTools','JigMcpCall','JigAgentContext','JigAgentApprovals','JigAgentApprovalResolve','JigPatchCreate','JigPatchReview','JigPatchApply','JigPatchRollback','JigAgentInstructionDisable','JigAgentInstructionEnable','JigAgentContextAdd','JigAgentContextRemove'}; for _,name in ipairs(names) do assert(vim.fn.exists(':'..name)==0,name) end; assert(package.loaded['jig.agent']==nil)]],
       "+qa",
     }, {
       env = safe_env(),
@@ -197,6 +191,16 @@ local cases = {
       assert(command_exists("JigMcpTools"), "JigMcpTools missing")
       assert(command_exists("JigMcpCall"), "JigMcpCall missing")
       assert(command_exists("JigAgentContext"), "JigAgentContext missing")
+      assert(command_exists("JigAgentApprovals"), "JigAgentApprovals missing")
+      assert(command_exists("JigAgentApprovalResolve"), "JigAgentApprovalResolve missing")
+      assert(command_exists("JigPatchCreate"), "JigPatchCreate missing")
+      assert(command_exists("JigPatchReview"), "JigPatchReview missing")
+      assert(command_exists("JigPatchApply"), "JigPatchApply missing")
+      assert(command_exists("JigPatchRollback"), "JigPatchRollback missing")
+      assert(command_exists("JigAgentInstructionDisable"), "JigAgentInstructionDisable missing")
+      assert(command_exists("JigAgentInstructionEnable"), "JigAgentInstructionEnable missing")
+      assert(command_exists("JigAgentContextAdd"), "JigAgentContextAdd missing")
+      assert(command_exists("JigAgentContextRemove"), "JigAgentContextRemove missing")
       return {
         enabled = status.enabled,
       }

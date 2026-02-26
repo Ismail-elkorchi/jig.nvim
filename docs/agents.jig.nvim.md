@@ -3,12 +3,17 @@
 Canonical help: `:help jig-agents`
 
 ## Scope
-WP-09 adds an optional multi-agent interoperability layer with policy routing, MCP governance, ACP bridge hooks, and auditable task lifecycle controls.
+WP-17 extends the optional agent layer with:
+- approval queue visibility and statusline indicator
+- transactional patch/diff pipeline (hunk-level controls + rollback checkpoint)
+- context ledger source management with hard budget guard
+- instruction source disable/enable with audit logging
 
 ## Defaults
 - Agent module is disabled by default.
 - `NVIM_APPNAME=jig-safe` never loads `jig.agent.*` modules.
 - Jig does not auto-start MCP servers or external agent processes on startup.
+- Agent edits are candidates first; direct writes are denied outside patch pipeline.
 
 ## Enablement
 Enable in trusted user config before Jig setup:
@@ -22,91 +27,79 @@ vim.g.jig_agent = {
 Optional root-scoped overrides are supported via `vim.g.jig_agent.projects["/abs/project/root"] = { ... }`.
 Jig does not execute untrusted local config files automatically.
 
-## Policy Model
-All tool actions use allow/ask/deny routing through `lua/jig/agent/policy.lua`.
-
-Defaults:
-- `read`: `allow`
-- `write|net|git|shell|unknown`: `ask`
-
-Persistence:
-- explicit grants/revokes are stored in Jig state dir (`policy.json`)
-- revocation is explicit and auditable
+## Approval UX
+Policy `ask` decisions always enqueue pending approvals and update statusline/winbar indicators.
 
 Commands:
-- `:JigAgentPolicyList`
-- `:JigAgentPolicyGrant <allow|ask|deny> <tool> <action_class> <target> <scope> [scope_value]`
+- `:JigAgentApprovals`
+- `:JigAgentApprovalResolve <approval_id> <allow|deny|allow-always|deny-always> [global|project|task] [scope_value]`
+
+Policy persistence and revocation remain explicit via:
+- `:JigAgentPolicyGrant ...`
 - `:JigAgentPolicyRevoke <rule_id>`
 
-## MCP Governance
-Config discovery precedence:
-1. `.mcp.json`
-2. `mcp.json`
+## Transactional Edit Pipeline
+Agent edits are applied only through patch sessions.
 
 Commands:
-- `:JigMcpList`
-- `:JigMcpStart <server>`
-- `:JigMcpStop <server>|all`
-- `:JigMcpTools <server>`
-- `:JigMcpCall <server> <tool> <json_args>`
-- `:JigMcpTrust`
-- `:JigMcpTrust allow|ask|deny|revoke <server>`
+- `:JigPatchCreate <json_patch_spec>`
+- `:JigPatchSessions`
+- `:JigPatchReview [session_id]`
+- `:JigPatchHunkShow <session_id> <file_index> <hunk_index>`
+- `:JigPatchHunkAccept <session_id> <file_index> <hunk_index>`
+- `:JigPatchHunkReject <session_id> <file_index> <hunk_index>`
+- `:JigPatchApplyAll [session_id]`
+- `:JigPatchDiscardAll [session_id]`
+- `:JigPatchApply [session_id]`
+- `:JigPatchRollback [session_id]`
 
-Trust notes:
-- discovered server sources are labeled (`project-config`, `user-config`, `builtin`, `unknown`)
-- project MCP configs are treated as untrusted by default (`ask`)
-- capability declarations are enforced per server/tool
+Hard boundary:
+- direct file/buffer writes via agent path are denied and logged (`patch_pipeline_required`).
 
-Failure classes are non-fatal and explicit:
-- missing binary
-- early exit
-- timeout/no response
-- malformed JSON-RPC response
-- tool not found
+## Diff Legibility View
+`JigPatchReview` shows:
+- file list
+- hunk line ranges
+- intent + summary metadata
 
-## Task Lifecycle and Evidence
-Task handles are Jig-level metadata handles, not model-state replay.
+`JigPatchHunkShow` opens drill-down hunk view with unified diff markers.
 
+ASCII mode support is preserved via `:JigIconMode ascii`.
+
+## Context Ledger
 Commands:
-- `:JigAgentTaskStart [title]`
-- `:JigAgentTaskCancel <task_id>`
-- `:JigAgentTaskResume <task_id>`
-- `:JigAgentTasks`
-- `:JigAgentLogTail [count]`
+- `:JigAgentContext`
+- `:JigAgentContextAdd <id> <bytes> [kind] [label]`
+- `:JigAgentContextRemove <source_id>`
+- `:JigAgentContextReset`
 
-Evidence log:
-- append-only JSONL in Jig state dir (`events.jsonl`)
-- records timestamp, session id, task id, request, policy decision, and result summary
+Ledger behavior:
+- source provenance list (instructions, buffers, tool outputs, manual sources)
+- byte/char sizes + token estimates (best-effort)
+- hard budget enforcement on source additions
 
-## Instruction Interoperability + Context Ledger
-Instruction files are text-ingested only (never executed):
-- `AGENTS.md`
-- `CLAUDE.md`
-- `GEMINI.md`
-- additional user/global paths via config
+## Instruction Interoperability
+Instruction sources are merged by precedence and can be toggled with audit logs.
 
 Commands:
 - `:JigAgentInstructions`
-- `:JigAgentContext`
-- `:JigAgentContextReset`
+- `:JigAgentInstructionDisable <source_id|path>`
+- `:JigAgentInstructionEnable <source_id|path>`
 
-Context ledger provides source listing + byte/char estimates + budget warnings.
-Token counts are best-effort and only shown when supplied by backend metadata.
+Supported source types include:
+- `AGENTS.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- user/global configured files
 
-## ACP Bridge Hooks
-`lua/jig/agent/backends/acp_stdio.lua` provides a minimal ACP-stdio handshake/prompt skeleton for candidate outputs.
-
-Commands:
-- `:JigAcpHandshake <json_spec>`
-- `:JigAcpPrompt <json_spec> <prompt>`
-
-## Explicit Boundary
-WP-09 does **not** apply edits to files or buffers.
-Agent outputs are candidates only. Transactional patch/diff application is deferred to WP-17.
+## Existing WP-09 surfaces (unchanged)
+- MCP governance: `:JigMcpList`, `:JigMcpStart`, `:JigMcpStop`, `:JigMcpTools`, `:JigMcpCall`, `:JigMcpTrust`
+- Task lifecycle + evidence log: `:JigAgentTaskStart`, `:JigAgentTaskCancel`, `:JigAgentTaskResume`, `:JigAgentTasks`, `:JigAgentLogTail`
+- ACP hooks: `:JigAcpHandshake`, `:JigAcpPrompt`
 
 ## Verification
 ```bash
 tests/agent/run_harness.sh
-nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigMcpList")==0)' '+qa'
-NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigMcpList")==0)' '+qa'
+tests/agent_ui/run_harness.sh
+NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigPatchReview")==0)' '+qa'
 ```

@@ -106,6 +106,9 @@ function M.handshake(spec, opts)
     ancestor_task_ids = opts.ancestor_task_ids,
   }, {
     log = true,
+    origin = "acp.handshake",
+    summary = string.format("target=%s", tostring(spec.name or spec.command or "acp")),
+    notify = true,
   })
 
   if not decision.allowed then
@@ -134,6 +137,9 @@ function M.prompt(spec, prompt, opts)
     ancestor_task_ids = opts.ancestor_task_ids,
   }, {
     log = true,
+    origin = "acp.prompt",
+    summary = string.format("target=%s", tostring(spec.name or "acp")),
+    notify = true,
   })
 
   if not decision.allowed then

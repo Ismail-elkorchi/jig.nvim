@@ -20,6 +20,9 @@ M.defaults = {
     },
     persistence_file = "policy.json",
   },
+  approvals = {
+    persistence_file = "approvals.json",
+  },
   logging = {
     evidence_file = "events.jsonl",
     max_file_bytes = 262144,
@@ -28,6 +31,9 @@ M.defaults = {
   tasks = {
     metadata_file = "tasks.json",
     default_timeout_ms = 5000,
+  },
+  patch = {
+    persistence_file = "patch-sessions.json",
   },
   instructions = {
     precedence = { "project", "user", "global" },
@@ -38,6 +44,7 @@ M.defaults = {
     },
     user_paths = {},
     global_paths = {},
+    disabled_file = "instructions-disabled.json",
   },
   observability = {
     budget_bytes = 120000,

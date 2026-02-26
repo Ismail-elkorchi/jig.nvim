@@ -1,7 +1,9 @@
+local approvals = require("jig.agent.approvals")
 local agent_config = require("jig.agent.config")
 local instructions = require("jig.agent.instructions")
 local log = require("jig.agent.log")
 local mcp_config = require("jig.agent.mcp.config")
+local patch = require("jig.agent.patch")
 local policy = require("jig.agent.policy")
 
 local M = {}
@@ -15,7 +17,10 @@ function M.summary(opts)
     enabled = cfg.enabled == true,
     root = cfg.root,
     policy_path = policy.path(),
+    approvals_path = approvals.path(),
     log_path = log.path(),
+    patch_path = patch.path(),
+    instructions_state_path = instructions.path(),
     instruction_sources = instruction_report.sources,
     mcp_files = mcp_report.files,
     mcp_server_count = vim.tbl_count(mcp_report.servers),
@@ -33,6 +38,9 @@ function M.checkhealth(opts)
   end
 
   vim.health.info("policy store: " .. report.policy_path)
+  vim.health.info("approval queue store: " .. report.approvals_path)
+  vim.health.info("patch session store: " .. report.patch_path)
+  vim.health.info("instruction state store: " .. report.instructions_state_path)
   vim.health.info("evidence log: " .. report.log_path)
   vim.health.info("mcp discovered servers: " .. tostring(report.mcp_server_count))
 
