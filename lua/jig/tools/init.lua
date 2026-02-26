@@ -2,6 +2,7 @@ local brand = require("jig.core.brand")
 local health = require("jig.tools.health")
 local system = require("jig.tools.system")
 local terminal = require("jig.tools.terminal")
+local toolchain = require("jig.tools.toolchain")
 
 local M = {}
 
@@ -89,6 +90,52 @@ local function cmd_term(opts)
   }
 end
 
+local function open_toolchain_report(title, report)
+  local lines = toolchain.render_action_lines(report)
+  local state = open_scratch(title, lines)
+  state.report = report
+  vim.g.jig_toolchain_last = state
+  if report.ok ~= true then
+    vim.notify(
+      title .. " failed; inspect report buffer or run :JigToolHealth for drift details",
+      vim.log.levels.WARN
+    )
+  end
+  return state
+end
+
+local function cmd_toolchain_install()
+  local report = toolchain.install({
+    actor = "user",
+    origin = "jig.toolchain.install",
+  })
+  open_toolchain_report("JigToolchainInstall", report)
+end
+
+local function cmd_toolchain_update()
+  local report = toolchain.update({
+    actor = "user",
+    origin = "jig.toolchain.update",
+  })
+  open_toolchain_report("JigToolchainUpdate", report)
+end
+
+local function cmd_toolchain_restore()
+  local report = toolchain.restore({
+    actor = "user",
+    origin = "jig.toolchain.restore",
+  })
+  open_toolchain_report("JigToolchainRestore", report)
+end
+
+local function cmd_toolchain_rollback()
+  local report = toolchain.rollback({
+    actor = "user",
+    origin = "jig.toolchain.rollback",
+  })
+  open_toolchain_report("JigToolchainRollback", report)
+end
+
 local function create_command(name, callback, opts)
   if vim.fn.exists(":" .. name) == 2 then
     return
@@ -123,6 +170,26 @@ function M.setup()
       return { "root", "buffer" }
     end,
     desc = "Open integrated terminal (default root or buffer directory)",
+  })
+
+  create_command(brand.command("ToolchainInstall"), cmd_toolchain_install, {
+    nargs = 0,
+    desc = "Install toolchain from manifest and write toolchain lockfile",
+  })
+
+  create_command(brand.command("ToolchainUpdate"), cmd_toolchain_update, {
+    nargs = 0,
+    desc = "Update toolchain lock state from manifest with explicit command",
+  })
+
+  create_command(brand.command("ToolchainRestore"), cmd_toolchain_restore, {
+    nargs = 0,
+    desc = "Restore toolchain to versions pinned in toolchain lockfile",
+  })
+
+  create_command(brand.command("ToolchainRollback"), cmd_toolchain_rollback, {
+    nargs = 0,
+    desc = "Restore previous toolchain lock backup and re-apply",
   })
 
   commands_registered = true

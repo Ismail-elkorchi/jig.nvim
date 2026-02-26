@@ -61,10 +61,15 @@ local function run_startup_smoke()
   assert(vim.fn.exists(":JigKeys") == 2, "JigKeys missing")
   assert(vim.fn.exists(":JigFiles") == 2, "JigFiles missing")
   assert(vim.fn.exists(":JigExec") == 2, "JigExec missing")
+  assert(vim.fn.exists(":JigToolchainInstall") == 2, "JigToolchainInstall missing")
+  assert(vim.fn.exists(":JigToolchainUpdate") == 2, "JigToolchainUpdate missing")
+  assert(vim.fn.exists(":JigToolchainRestore") == 2, "JigToolchainRestore missing")
+  assert(vim.fn.exists(":JigToolchainRollback") == 2, "JigToolchainRollback missing")
 
   local tmp = vim.fn.tempname()
   vim.fn.mkdir(tmp, "p")
   local env = vim.fn.environ()
+  env.XDG_CONFIG_HOME = join(tmp, "config")
   env.XDG_DATA_HOME = join(tmp, "data")
   env.XDG_STATE_HOME = join(tmp, "state")
   env.XDG_CACHE_HOME = join(tmp, "cache")
@@ -79,6 +84,14 @@ local function run_startup_smoke()
   assert(
     vim.fn.isdirectory(tmp .. "/data/jig-ci/lazy/lazy.nvim") == 0,
     "startup auto-install side effect"
+  )
+  assert(
+    vim.fn.filereadable(tmp .. "/config/jig-ci/jig-toolchain-manifest.json") == 0,
+    "startup auto-created toolchain manifest"
+  )
+  assert(
+    vim.fn.filereadable(tmp .. "/config/jig-ci/jig-toolchain-lock.json") == 0,
+    "startup auto-created toolchain lockfile"
   )
   vim.fn.delete(tmp, "rf")
 

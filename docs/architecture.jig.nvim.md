@@ -40,8 +40,9 @@ Canonical help: `:help jig`
 - `tools/registry.lua`: required/recommended/optional external tool registry and install hints.
 - `tools/system.lua`: deterministic `vim.system` wrappers (timeouts, nil handling, capture queue).
 - `tools/terminal.lua`: terminal integration with mode visibility and command-state feedback.
+- `tools/toolchain.lua`: manifest+lockfile lifecycle for external toolchain install/update/restore/rollback and drift reporting.
 - `tools/health.lua`: shell/provider/tool health summaries and checkhealth integration.
-- `tools/init.lua`: command orchestration + `:JigExec`, `:JigToolHealth`, `:JigTerm`.
+- `tools/init.lua`: command orchestration + `:JigExec`, `:JigToolHealth`, `:JigTerm`, and `:JigToolchain*` lifecycle commands.
 - `security/config.lua`: runtime security policy defaults + override merge.
 - `security/startup_phase.lua`: startup phase boundary tracking (`startup` -> `done`).
 - `security/net_guard.lua`: startup network classification, deny-by-default, and trace hooks.

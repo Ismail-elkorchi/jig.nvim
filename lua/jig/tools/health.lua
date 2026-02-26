@@ -1,5 +1,6 @@
 local platform = require("jig.platform")
 local registry = require("jig.tools.registry")
+local toolchain = require("jig.tools.toolchain")
 
 local M = {}
 
@@ -48,14 +49,17 @@ local function shell_status()
   }
 end
 
-function M.summary()
+function M.summary(opts)
+  opts = opts or {}
   local shell = shell_status()
   local tools = registry.status({ os_class = shell.os.class })
+  local toolchain_report = toolchain.health_report(opts.toolchain_opts)
 
   return {
     generated_at = os.date("!%Y-%m-%dT%H:%M:%SZ"),
     shell = shell,
     tools = tools,
+    toolchain = toolchain_report,
     providers = provider_status(),
     execution_policy = {
       argv_first = true,
@@ -67,8 +71,8 @@ function M.summary()
   }
 end
 
-function M.lines()
-  local report = M.summary()
+function M.lines(opts)
+  local report = M.summary(opts)
   local lines = {
     "Jig Tool Health",
     string.rep("=", 48),
@@ -116,6 +120,46 @@ function M.lines()
   end
 
   table.insert(lines, "")
+  table.insert(lines, "Toolchain lock/drift:")
+  table.insert(
+    lines,
+    string.format(
+      "- lockfile_present: %s",
+      tostring(report.toolchain and report.toolchain.lockfile_present == true)
+    )
+  )
+  if report.toolchain and report.toolchain.lockfile_present == true then
+    table.insert(
+      lines,
+      string.format("- drift_count: %d", tonumber(report.toolchain.drift_count) or 0)
+    )
+    table.insert(
+      lines,
+      string.format("- lockfile_path: %s", tostring(report.toolchain.lockfile_path or ""))
+    )
+    if tonumber(report.toolchain.drift_count) and tonumber(report.toolchain.drift_count) > 0 then
+      for _, item in ipairs(report.toolchain.tools or {}) do
+        if item.drift == true then
+          table.insert(
+            lines,
+            string.format(
+              "  * drift %s expected=%s detected=%s",
+              tostring(item.name),
+              tostring(item.expected_version or ""),
+              tostring(item.detected_version or "<probe-failed>")
+            )
+          )
+        end
+      end
+    end
+  else
+    table.insert(
+      lines,
+      "- no lockfile yet; run :JigToolchainInstall (explicit command, no startup auto-update)"
+    )
+  end
+
+  table.insert(lines, "")
   table.insert(lines, "Jig does not auto-install tools or run startup network actions.")
 
   return lines, report
@@ -157,6 +201,23 @@ function M.checkhealth()
     else
       vim.health.info(string.format("%s missing (%s); %s", tool.name, tool.level, tool.hint))
     end
+  end
+
+  if report.toolchain and report.toolchain.lockfile_present == true then
+    if tonumber(report.toolchain.drift_count) and tonumber(report.toolchain.drift_count) > 0 then
+      vim.health.warn(
+        string.format(
+          "toolchain drift detected (%d entries). Run :JigToolchainRestore or :JigToolchainRollback.",
+          tonumber(report.toolchain.drift_count) or 0
+        )
+      )
+    else
+      vim.health.ok("toolchain lockfile present and no drift detected")
+    end
+  else
+    vim.health.info(
+      "toolchain lockfile missing; run :JigToolchainInstall to initialize explicit lock state"
+    )
   end
 
   vim.health.info(table.concat(lines, "\n"))

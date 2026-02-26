@@ -69,6 +69,30 @@ Health output provides:
 - `:JigExec {cmd...}`
 - `:JigToolHealth`
 - `:JigTerm [root|buffer]`
+- `:JigToolchainInstall`
+- `:JigToolchainUpdate`
+- `:JigToolchainRestore`
+- `:JigToolchainRollback`
+
+## Toolchain Lockfile Lifecycle (WP-16)
+Toolchain lifecycle state is independent from plugin lockfiles.
+
+Default paths:
+- manifest: `stdpath("config")/jig-toolchain-manifest.json`
+- lockfile: `stdpath("config")/jig-toolchain-lock.json`
+- rollback backup: `stdpath("state")/jig/toolchain-lock.previous.json`
+- managed install root: `stdpath("data")/jig/toolchain/bin`
+
+Lifecycle behavior:
+- `:JigToolchainInstall`: initialize/apply manifest and write lockfile.
+- `:JigToolchainUpdate`: explicit update path; writes backup before lock changes.
+- `:JigToolchainRestore`: reconcile current tool versions to lockfile versions.
+- `:JigToolchainRollback`: restore previous lock backup and re-apply.
+
+Operational policy:
+- no startup auto-install/update
+- no startup network actions
+- drift is reported by `:JigHealth` / `:JigToolHealth` when lockfile and probed versions diverge.
 
 All commands are disabled in `NVIM_APPNAME=jig-safe`.
 
