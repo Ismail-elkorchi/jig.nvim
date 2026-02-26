@@ -53,6 +53,9 @@ end
 local function policy_decision(subject, opts)
   local result = policy.authorize(subject, {
     log = opts.log_policy ~= false,
+    origin = opts.origin or subject.tool,
+    summary = opts.summary or "",
+    notify = opts.notify ~= false,
   })
 
   if result.allowed then
@@ -368,14 +371,20 @@ function M.tools(name, opts)
     return result
   end
 
-  local allowed, decision = policy_decision({
-    tool = "mcp.tools",
-    action_class = "read",
-    target = name,
-    project_root = opts.project_root,
-    task_id = opts.task_id,
-    ancestor_task_ids = opts.ancestor_task_ids,
-  }, opts)
+  local allowed, decision = policy_decision(
+    {
+      tool = "mcp.tools",
+      action_class = "read",
+      target = name,
+      project_root = opts.project_root,
+      task_id = opts.task_id,
+      ancestor_task_ids = opts.ancestor_task_ids,
+    },
+    vim.tbl_deep_extend("force", opts, {
+      origin = "mcp.tools",
+      summary = string.format("server=%s", tostring(name)),
+    })
+  )
 
   if not allowed then
     local result = normalize_result(false, decision, "blocked_by_policy")
@@ -489,14 +498,20 @@ function M.call(name, tool_name, arguments, opts)
     end
   end
 
-  local allowed, decision = policy_decision({
-    tool = "mcp.call." .. tostring(tool_name),
-    action_class = action_class,
-    target = target,
-    project_root = opts.project_root,
-    task_id = opts.task_id,
-    ancestor_task_ids = opts.ancestor_task_ids,
-  }, opts)
+  local allowed, decision = policy_decision(
+    {
+      tool = "mcp.call." .. tostring(tool_name),
+      action_class = action_class,
+      target = target,
+      project_root = opts.project_root,
+      task_id = opts.task_id,
+      ancestor_task_ids = opts.ancestor_task_ids,
+    },
+    vim.tbl_deep_extend("force", opts, {
+      origin = "mcp.call",
+      summary = string.format("server=%s tool=%s", tostring(name), tostring(tool_name)),
+    })
+  )
 
   if not allowed then
     local result = normalize_result(false, decision, "blocked_by_policy")

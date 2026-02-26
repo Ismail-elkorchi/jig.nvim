@@ -16,7 +16,7 @@ Generated deterministically from committed artifacts.
 
 | Surface | Count |
 |---|---:|
-| `agent` | `2` |
+| `none` | `0` |
 
 ## Perf budget status
 

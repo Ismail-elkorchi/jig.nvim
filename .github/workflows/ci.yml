@@ -167,6 +167,8 @@ jobs:
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigMcpTrust")==0)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigMcpList")==0)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigAgentContext")==0)' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigAgentApprovals")==0)' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigPatchReview")==0)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(package.loaded["jig.agent"]==nil)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigRootSet")==2)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigRootReset")==2)' '+qa'
@@ -193,6 +195,16 @@ jobs:
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigMcpTrust")==0)' '+qa'
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigMcpList")==0)' '+qa'
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigAgentContext")==0)' '+qa'
+          NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigAgentApprovals")==0)' '+qa'
+          NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigAgentApprovalResolve")==0)' '+qa'
+          NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigPatchCreate")==0)' '+qa'
+          NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigPatchReview")==0)' '+qa'
+          NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigPatchApply")==0)' '+qa'
+          NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigPatchRollback")==0)' '+qa'
+          NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigAgentInstructionDisable")==0)' '+qa'
+          NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigAgentInstructionEnable")==0)' '+qa'
+          NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigAgentContextAdd")==0)' '+qa'
+          NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigAgentContextRemove")==0)' '+qa'
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(package.loaded["jig.agent"]==nil)' '+qa'
 
       - name: Scorecard harness snapshot checks
@@ -299,6 +311,17 @@ jobs:
           rg -n '"context-ledger-token-budget"' tests/agent/snapshots/latest-headless.json
           rg -n '"safe-profile-isolation"' tests/agent/snapshots/latest-headless.json
 
+      - name: Agent UI harness snapshot checks
+        run: |
+          tests/agent_ui/run_harness.sh
+          test -f tests/agent_ui/snapshots/latest-headless.json
+          rg -n '"approval-notification-visible"' tests/agent_ui/snapshots/latest-headless.json
+          rg -n '"patch-pipeline-multifile-hunk-apply"' tests/agent_ui/snapshots/latest-headless.json
+          rg -n '"patch-direct-write-blocked-and-logged"' tests/agent_ui/snapshots/latest-headless.json
+          rg -n '"context-ledger-add-remove-budget-reset"' tests/agent_ui/snapshots/latest-headless.json
+          rg -n '"instruction-precedence-disable-persist-revoke"' tests/agent_ui/snapshots/latest-headless.json
+          rg -n '"safe-profile-wp17-command-isolation"' tests/agent_ui/snapshots/latest-headless.json
+
       - name: Security harness snapshot checks
         run: |
           tests/security/run_harness.sh
@@ -333,7 +356,11 @@ jobs:
           test -f tests/pending/snapshots/latest-headless.json
           rg -n '"agent:approval-notification-visible"' tests/pending/snapshots/latest-headless.json
           rg -n '"agent:patch-diff-hunk-apply"' tests/pending/snapshots/latest-headless.json
-          rg -n '"status":"pending"' tests/pending/snapshots/latest-headless.json
+          rg -n '"status":"implemented"' tests/pending/snapshots/latest-headless.json
+          if rg -n '"status":"pending"' tests/pending/snapshots/latest-headless.json; then
+            echo "pending status is no longer expected for resolved WP-17 probes"
+            exit 1
+          fi
 
       - name: Quarantine and pending allowlist gates
         run: |

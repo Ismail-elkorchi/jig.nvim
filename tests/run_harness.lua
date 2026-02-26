@@ -65,6 +65,12 @@ local function run_startup_smoke()
   assert(vim.fn.exists(":JigToolchainUpdate") == 2, "JigToolchainUpdate missing")
   assert(vim.fn.exists(":JigToolchainRestore") == 2, "JigToolchainRestore missing")
   assert(vim.fn.exists(":JigToolchainRollback") == 2, "JigToolchainRollback missing")
+  assert(vim.fn.exists(":JigMcpTrust") == 0, "JigMcpTrust should be absent by default")
+  assert(vim.fn.exists(":JigMcpList") == 0, "JigMcpList should be absent by default")
+  assert(vim.fn.exists(":JigAgentContext") == 0, "JigAgentContext should be absent by default")
+  assert(vim.fn.exists(":JigAgentApprovals") == 0, "JigAgentApprovals should be absent by default")
+  assert(vim.fn.exists(":JigPatchReview") == 0, "JigPatchReview should be absent by default")
+  assert(package.loaded["jig.agent"] == nil, "agent module should not autoload")
 
   local tmp = vim.fn.tempname()
   vim.fn.mkdir(tmp, "p")
@@ -145,6 +151,10 @@ local SUITES = {
   agent = {
     module = "jig.tests.agent.harness",
     snapshot = join(ROOT, "tests/agent/snapshots/latest-headless.json"),
+  },
+  agent_ui = {
+    module = "jig.tests.agent_ui.harness",
+    snapshot = join(ROOT, "tests/agent_ui/snapshots/latest-headless.json"),
   },
   security = {
     module = "jig.tests.security.harness",

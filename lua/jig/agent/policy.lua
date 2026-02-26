@@ -1,3 +1,4 @@
+local approvals = require("jig.agent.approvals")
 local config = require("jig.agent.config")
 local log = require("jig.agent.log")
 local state = require("jig.agent.state")
@@ -222,6 +223,19 @@ end
 
 function M.evaluate(subject)
   local normalized = normalize_subject(subject)
+  if approvals.consume_once_allowance(normalized) then
+    local report = {
+      allowed = true,
+      decision = "allow",
+      rule = nil,
+      source = "approval_once",
+      subject = normalized,
+      destructive = normalized.destructive,
+      hint = "allowed (once)",
+    }
+    return report
+  end
+
   local matches = matching_rules(normalized)
 
   local rule = pick_rule(matches, "deny")
@@ -235,6 +249,7 @@ function M.evaluate(subject)
     allowed = allowed,
     decision = decision,
     rule = rule,
+    source = rule and "rule" or "default",
     subject = normalized,
     destructive = normalized.destructive,
   }
@@ -246,8 +261,21 @@ function M.authorize(subject, opts)
   opts = opts or {}
   local report = M.evaluate(subject)
 
+  if report.decision == "ask" and opts.queue ~= false then
+    local pending, _ = approvals.enqueue(report.subject, {
+      decision = report.decision,
+      reason = tostring(opts.reason or "policy_ask"),
+      hint = report.hint,
+      origin = tostring(opts.origin or "policy"),
+      summary = tostring(opts.summary or ""),
+      notify = opts.notify ~= false,
+    })
+    report.pending = pending
+    report.pending_id = pending and pending.id or nil
+  end
+
   if opts.log ~= false then
-    local policy_source = report.rule and "rule" or "default"
+    local policy_source = report.source or (report.rule and "rule" or "default")
     log.record({
       event = "policy_decision",
       task_id = report.subject.task_id,
@@ -392,6 +420,7 @@ end
 
 function M.reset_for_test()
   state.delete(policy_file())
+  approvals.reset_for_test()
 end
 
 return M

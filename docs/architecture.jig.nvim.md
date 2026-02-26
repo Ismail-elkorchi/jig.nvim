@@ -51,16 +51,18 @@ Canonical help: `:help jig`
 - `security/init.lua`: security setup orchestration for default profile.
 - `agent/config.lua`: optional multi-agent feature flags and trusted override merging.
 - `agent/policy.lua`: allow/ask/deny engine with persistent revocable grants.
+- `agent/approvals.lua`: pending-approval queue, status indicator sync, and resolution state.
+- `agent/patch.lua`: transactional patch sessions, hunk-level accept/reject, apply, and rollback checkpoints.
 - `agent/log.lua`: append-only JSONL evidence logging.
 - `agent/health.lua`: optional health summary for agent state and MCP discovery.
 - `agent/task.lua`: task handles with cancel/resume and evidence continuity.
-- `agent/instructions.lua`: instruction artifact discovery and precedence merge.
-- `agent/observability.lua`: context ledger capture, budget warnings, and panel rendering.
+- `agent/instructions.lua`: instruction artifact discovery, precedence merge, disable/enable persistence, and audit logging.
+- `agent/observability.lua`: context ledger source management, budget enforcement, and panel rendering.
 - `agent/mcp/config.lua`: MCP config discovery (`.mcp.json`, `mcp.json`) and normalization.
 - `agent/mcp/transport.lua`: minimal stdio JSON-RPC transport for deterministic MCP tests.
 - `agent/mcp/client.lua`: MCP lifecycle/list/call orchestration with policy routing.
 - `agent/backends/acp_stdio.lua`: ACP-stdio handshake/prompt skeleton for candidate outputs.
-- `agent/init.lua`: optional command-first surface for `:JigMcp*`, `:JigAgent*`, and `:JigAcp*`.
+- `agent/init.lua`: optional command-first surface for `:JigMcp*`, `:JigAgent*`, `:JigPatch*`, and `:JigAcp*`.
 - `ui/init.lua`: UI policy wiring (tokens, profiles, chrome, cmdline checks).
 - `ui/tokens.lua`: semantic highlight token system.
 - `ui/chrome.lua`: active/inactive statusline + winbar policy.
@@ -82,6 +84,7 @@ Canonical help: `:help jig`
 - `lua/jig/tests/fixtures/nav_repo.lua`: deterministic tiered repository generator for nav/perf probes.
 - `lua/jig/tests/perf/harness.lua`: deterministic perf probes and extreme-regression budgets.
 - `lua/jig/tests/ops/harness.lua`: release/rollback/incident operations drill suite.
+- `lua/jig/tests/agent_ui/harness.lua`: WP-17 approval/pipeline/context/instruction UX regression suite.
 
 ## Policy
 - Stability-first defaults.

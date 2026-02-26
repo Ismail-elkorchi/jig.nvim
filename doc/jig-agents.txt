@@ -1,12 +1,11 @@
-*jig-agents*  Jig Agent Interoperability (WP-09)
+*jig-agents*  Jig Agent UX + Transactional Edit Surface (WP-17)
 
 OVERVIEW
-  WP-09 adds an optional, vendor-neutral multi-agent layer focused on:
-    - policy-routed tool actions (allow/ask/deny)
-    - MCP governance and failure isolation
-    - task lifecycle handles (start/cancel/resume)
-    - append-only evidence logging
-    - instruction interoperability and context ledger observability
+  WP-17 extends the optional agent layer with:
+    - approval queue visibility + statusline indicator
+    - transactional patch/diff pipeline
+    - context ledger source management and budget enforcement
+    - instruction source precedence + disable/enable controls
 
 DEFAULTS
   - agent module disabled by default
@@ -18,45 +17,68 @@ ENABLEMENT
   Set in trusted user config:
     vim.g.jig_agent = { enabled = true }
 
-COMMANDS
-  :JigMcpList
-  :JigMcpTrust
-  :JigMcpStart <server>
-  :JigMcpStop <server>|all
-  :JigMcpTools <server>
-  :JigMcpCall <server> <tool> <json_args>
+APPROVAL UX
+  :JigAgentApprovals
+  :JigAgentApprovalResolve <approval_id> <allow|deny|allow-always|deny-always> [global|project|task] [scope_value]
 
-  :JigAgentPolicyList
-  :JigAgentPolicyGrant <allow|ask|deny> <tool> <action_class> <target> <scope> [scope_value]
-  :JigAgentPolicyRevoke <rule_id>
+  Any policy `ask` result enqueues a pending approval and updates chrome indicator.
 
-  :JigAgentTaskStart [title]
-  :JigAgentTaskCancel <task_id>
-  :JigAgentTaskResume <task_id>
-  :JigAgentTasks
-  :JigAgentLogTail [count]
+TRANSACTIONAL PATCH PIPELINE
+  :JigPatchCreate <json_patch_spec>
+  :JigPatchSessions
+  :JigPatchReview [session_id]
+  :JigPatchHunkShow <session_id> <file_index> <hunk_index>
+  :JigPatchHunkAccept <session_id> <file_index> <hunk_index>
+  :JigPatchHunkReject <session_id> <file_index> <hunk_index>
+  :JigPatchApplyAll [session_id]
+  :JigPatchDiscardAll [session_id]
+  :JigPatchApply [session_id]
+  :JigPatchRollback [session_id]
 
-  :JigAgentInstructions
+  Boundary: direct writes outside patch pipeline are denied and logged.
+
+CONTEXT LEDGER
   :JigAgentContext
+  :JigAgentContextAdd <id> <bytes> [kind] [label]
+  :JigAgentContextRemove <source_id>
   :JigAgentContextReset
 
-  :JigAcpHandshake <json_spec>
-  :JigAcpPrompt <json_spec> <prompt>
+INSTRUCTION INTEROPERABILITY
+  :JigAgentInstructions
+  :JigAgentInstructionDisable <source_id|path>
+  :JigAgentInstructionEnable <source_id|path>
 
-POLICY
-  default decisions:
-    read -> allow
-    write/net/git/shell/unknown -> ask
+  Precedence defaults: project > user > global.
+  Source toggles are persisted and auditable.
 
-  grants are persisted and revocable.
-  subagent task inheritance is enforced via task ancestry checks.
+WP-09 SURFACES (UNCHANGED)
+  MCP:
+    :JigMcpList
+    :JigMcpTrust
+    :JigMcpStart <server>
+    :JigMcpStop <server>|all
+    :JigMcpTools <server>
+    :JigMcpCall <server> <tool> <json_args>
 
-BOUNDARY
-  WP-09 never writes files/buffers from agent output.
-  output is candidate-only. Transactional patch/diff edits are WP-17.
+  Policy:
+    :JigAgentPolicyList
+    :JigAgentPolicyGrant <allow|ask|deny> <tool> <action_class> <target> <scope> [scope_value]
+    :JigAgentPolicyRevoke <rule_id>
+
+  Tasks and logs:
+    :JigAgentTaskStart [title]
+    :JigAgentTaskCancel <task_id>
+    :JigAgentTaskResume <task_id>
+    :JigAgentTasks
+    :JigAgentLogTail [count]
+
+  ACP hooks:
+    :JigAcpHandshake <json_spec>
+    :JigAcpPrompt <json_spec> <prompt>
 
 CHECKS
   tests/agent/run_harness.sh
+  tests/agent_ui/run_harness.sh
   :checkhealth jig
 
 vim:tw=78:ts=8:noet:ft=help:norl:
