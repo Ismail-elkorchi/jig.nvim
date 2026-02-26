@@ -396,13 +396,26 @@ local function execution_board_tracking_ok()
     "execution board missing WP-17 section"
   )
   assert(
-    board:find("### WP%-17:.-%- Status: `not%-started` %(`next`%)", 1, false) ~= nil,
-    "execution board must mark WP-17 as next"
+    board:find("### WP%-17:.-%- Status: `done`", 1, false) ~= nil,
+    "execution board must mark WP-17 as done"
+  )
+  assert(
+    board:find("https://github.com/Ismail%-elkorchi/jig%.nvim/pull/49", 1, false) ~= nil,
+    "execution board missing WP-17 PR reference"
+  )
+  assert(
+    board:find("### WP%-18: Agent Threat Model and Security Regression Suite", 1, false) ~= nil,
+    "execution board missing WP-18 section"
+  )
+  assert(
+    board:find("### WP%-18:.-%- Status: `not%-started` %(`next`%)", 1, false) ~= nil,
+    "execution board must mark WP-18 as next"
   )
 
   return {
     wp16 = "done",
-    wp17 = "next",
+    wp17 = "done",
+    wp18 = "next",
   }
 end
 
@@ -463,7 +476,7 @@ local cases = {
     run = labels_manifest_ok,
   },
   {
-    id = "execution-board-wp16-wp17-tracking",
+    id = "execution-board-wp16-wp18-tracking",
     run = execution_board_tracking_ok,
   },
 }
