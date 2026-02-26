@@ -84,11 +84,14 @@ local function mk_hint(reason)
     ["destructive-denied-non-user"] = "Destructive command denied for non-user actors.",
     destructive_requires_override = "Destructive command blocked. Re-run with :JigExec! only if intentional.",
     destructive_denied_non_user = "Destructive command denied for non-user actors.",
-    workspace_boundary_escape = "Target is outside project root. Use explicit outside-root approval token only when required.",
+    workspace_boundary_escape = "Target is outside project root. "
+      .. "Use explicit outside-root approval token only when required.",
     unicode_trojan_source = "Hidden/bidi unicode was detected in patch payload; inspect and sanitize content.",
     argument_injection_pattern = "Suspicious argument-injection pattern detected; rewrite command as safe argv tokens.",
-    prompt_injection_tool_misuse = "Prompt/tool-output matched injection pattern on high-risk action; request explicit review.",
-    consent_identity_confusion = "Approval identity mismatch detected; request a fresh approval for this actor/tool pair.",
+    prompt_injection_tool_misuse = "Prompt/tool-output matched injection pattern on high-risk action; "
+      .. "request explicit review.",
+    consent_identity_confusion = "Approval identity mismatch detected; "
+      .. "request a fresh approval for this actor/tool pair.",
     pre_hook_error = "Security pre-tool hook failed; inspect hook implementation and retry.",
     pre_hook_denied = "Security pre-tool hook denied this action.",
   }
