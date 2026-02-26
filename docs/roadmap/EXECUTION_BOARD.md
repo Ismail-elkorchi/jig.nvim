@@ -173,8 +173,16 @@ Updated at: `2026-02-26`
 - ADR(s): tbd
 
 ### WP-17: Agent UX Surface, Transactional Edits, and Context Ledger
-- Status: `not-started` (`next`)
+- Status: `done`
 - Depends on: `WP-16`
 - Issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/21
+- PR(s): https://github.com/Ismail-elkorchi/jig.nvim/pull/49
+- Completed at: `2026-02-26`
+- ADR(s): tbd
+
+### WP-18: Agent Threat Model and Security Regression Suite
+- Status: `not-started` (`next`)
+- Depends on: `WP-17`
+- Issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/22
 - PR(s): tbd
 - ADR(s): tbd
