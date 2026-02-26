@@ -408,14 +408,14 @@ local function execution_board_tracking_ok()
     "execution board missing WP-18 section"
   )
   assert(
-    board:find("### WP%-18:.-%- Status: `not%-started` %(`next`%)", 1, false) ~= nil,
-    "execution board must mark WP-18 as next"
+    board:find("### WP%-18:.-%- Status: `done`", 1, false) ~= nil,
+    "execution board must mark WP-18 as done"
   )
 
   return {
     wp16 = "done",
     wp17 = "done",
-    wp18 = "next",
+    wp18 = "done",
   }
 end
 

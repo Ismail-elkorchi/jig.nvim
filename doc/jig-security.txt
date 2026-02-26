@@ -1,4 +1,4 @@
-*jig-security*  Jig Security and Trust Boundaries (WP-10)
+*jig-security*  Jig Security and Trust Boundaries (WP-10/WP-18)
 
 OVERVIEW
   WP-10 adds operational security controls for:
@@ -6,6 +6,28 @@ OVERVIEW
     - local config execution risk visibility (`exrc`, `secure`, `modeline`)
     - MCP trust registry and capability enforcement
     - destructive execution safety with explicit user-only override
+
+  WP-18 adds:
+    - deterministic threat model artifacts under data/wp18/
+    - pre-tool-call + post-tool-call security gates for tool and patch workflows
+    - offline security regression fixtures for workspace escape, injection, consent, and unicode classes
+
+THREAT MODEL (WP-18)
+  Committed artifacts:
+    data/wp18/threat_model.json
+    data/wp18/evidence.jsonl
+    data/wp18/fixtures_manifest.json
+
+  Threat classes:
+    - workspace boundary escape (path traversal/symlink escape)
+    - argument injection patterns
+    - consent/identity confusion
+    - prompt-injection tool misuse
+    - hidden/bidi unicode patch payloads
+
+  Security audit events:
+    security_pre_tool_call
+    security_post_tool_call
 
 STARTUP NETWORK POLICY
   Optional startup tracing hooks:
@@ -48,8 +70,13 @@ EXEC SAFETY
 SAFE PROFILE
   NVIM_APPNAME=jig-safe does not load optional security/agent command surfaces.
 
+NOT GUARANTEED
+  Jig enforces containment controls and auditability, not perfect prevention.
+  Remote server integrity and human approval quality remain external risk factors.
+
 CHECKS
   tests/security/run_harness.sh
+  nvim --headless -u NONE -l tests/run_harness.lua -- --suite security
   :checkhealth jig
 
 vim:tw=78:ts=8:noet:ft=help:norl:

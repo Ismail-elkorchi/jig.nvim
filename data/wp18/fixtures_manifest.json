@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "fixtures": [
+    {
+      "id": "workspace-path-traversal",
+      "path": "tests/fixtures/security/workspace/root/README.md",
+      "threat_class": "workspace_boundary_escape",
+      "expected": "deny"
+    },
+    {
+      "id": "workspace-symlink-escape",
+      "path": "tests/fixtures/security/workspace/root/symlink_escape_target.txt",
+      "threat_class": "workspace_boundary_escape",
+      "expected": "deny"
+    },
+    {
+      "id": "argv-injection-sample",
+      "path": "tests/fixtures/security/argv_injection_samples.json",
+      "threat_class": "argument_injection_patterns",
+      "expected": "deny"
+    },
+    {
+      "id": "prompt-injection-sample",
+      "path": "tests/fixtures/security/prompt_injection_sample.txt",
+      "threat_class": "prompt_injection_tool_misuse",
+      "expected": "deny"
+    },
+    {
+      "id": "unicode-bidi-patch-sample",
+      "path": "tests/fixtures/security/unicode_patch_fixture.json",
+      "threat_class": "unicode_trojan_source",
+      "expected": "deny"
+    }
+  ]
+}

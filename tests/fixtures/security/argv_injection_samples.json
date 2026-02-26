@@ -1,0 +1,13 @@
+{
+  "shell_like": [
+    "bash",
+    "-lc",
+    "echo safe && rm -rf /tmp/jig-fixture"
+  ],
+  "token_injection": [
+    "git",
+    "status;rm",
+    "-rf",
+    "/tmp/jig-fixture"
+  ]
+}

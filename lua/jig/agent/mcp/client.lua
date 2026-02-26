@@ -2,6 +2,7 @@ local log = require("jig.agent.log")
 local mcp_config = require("jig.agent.mcp.config")
 local net_guard = require("jig.security.net_guard")
 local mcp_trust = require("jig.security.mcp_trust")
+local security_gate = require("jig.security.gate")
 local policy = require("jig.agent.policy")
 local transport = require("jig.agent.mcp.transport")
 
@@ -76,9 +77,31 @@ local function response_hint(result)
     blocked_by_policy = "Use :JigAgentPolicyGrant allow ... or revoke deny rules.",
     blocked_by_trust = "Use :JigMcpTrust to grant explicit trust after reviewing source and capabilities.",
     blocked_by_net_guard = "Startup network policy denied this operation.",
+    blocked_by_security_gate = "Security gate denied the request. Review audit logs and approval identity.",
   }
 
   return hints[result] or "Inspect :JigMcpList and evidence log for details."
+end
+
+local function gate_result(reason, report)
+  return {
+    ok = false,
+    reason = reason or "blocked_by_security_gate",
+    payload = report or {},
+    hint = response_hint(reason or "blocked_by_security_gate"),
+  }
+end
+
+local function post_gate(report, result, extra)
+  if type(report) ~= "table" then
+    return
+  end
+  security_gate.post_tool_call(report, {
+    ok = result.ok == true,
+    code = result.code or -1,
+    reason = result.reason,
+    hint = result.hint,
+  }, extra or {})
 end
 
 local function normalize_result(ok, payload, reason)
@@ -183,6 +206,46 @@ function M.start(name, opts)
   end
 
   local actor = opts.actor or "agent"
+  local gate_report = security_gate.pre_tool_call({
+    actor = actor,
+    origin = "mcp.start",
+    task_id = opts.task_id,
+    action = "exec.run",
+    target = server.command,
+    target_path = server.command,
+    argv = argv,
+    prompt_text = opts.prompt_text,
+    approval_id = opts.approval_id,
+    approval_actor = opts.approval_actor,
+    approval_tool = opts.approval_tool,
+    project_root = opts.project_root,
+    subagent = opts.subagent,
+  })
+  if gate_report.allowed ~= true then
+    local blocked = gate_result("blocked_by_security_gate", gate_report)
+    record({
+      event = "mcp_start",
+      task_id = opts.task_id,
+      tool = "mcp.start",
+      request = {
+        server = name,
+        source_label = server._source_label,
+      },
+      policy_decision = gate_report.decision,
+      result = blocked,
+      error_path = gate_report.hint,
+    })
+    post_gate(gate_report, blocked, {
+      actor = actor,
+      origin = "mcp.start",
+      task_id = opts.task_id,
+      server = name,
+      subagent = opts.subagent,
+      approval_id = opts.approval_id,
+    })
+    return blocked
+  end
+
   local net_report = net_guard.evaluate_argv(argv, {
     actor = actor,
     origin = "mcp.start",
@@ -200,6 +263,14 @@ function M.start(name, opts)
       policy_decision = "deny",
       result = result,
       error_path = net_report.hint,
+    })
+    post_gate(gate_report, result, {
+      actor = actor,
+      origin = "mcp.start",
+      task_id = opts.task_id,
+      server = name,
+      subagent = opts.subagent,
+      approval_id = opts.approval_id,
     })
     return result
   end
@@ -223,6 +294,14 @@ function M.start(name, opts)
       policy_decision = trust_result.decision,
       result = result,
       error_path = result.hint,
+    })
+    post_gate(gate_report, result, {
+      actor = actor,
+      origin = "mcp.start",
+      task_id = opts.task_id,
+      server = name,
+      subagent = opts.subagent,
+      approval_id = opts.approval_id,
     })
 
     return result
@@ -257,6 +336,14 @@ function M.start(name, opts)
       result = result,
       error_path = result.hint,
     })
+    post_gate(gate_report, result, {
+      actor = actor,
+      origin = "mcp.start",
+      task_id = opts.task_id,
+      server = name,
+      subagent = opts.subagent,
+      approval_id = opts.approval_id,
+    })
     return result
   end
 
@@ -280,6 +367,14 @@ function M.start(name, opts)
     },
     policy_decision = trust_result.decision,
     result = result,
+  })
+  post_gate(gate_report, result, {
+    actor = actor,
+    origin = "mcp.start",
+    task_id = opts.task_id,
+    server = name,
+    subagent = opts.subagent,
+    approval_id = opts.approval_id,
   })
 
   return result
@@ -530,6 +625,49 @@ function M.call(name, tool_name, arguments, opts)
     return result
   end
 
+  local prompt_text = opts.prompt_text
+  if type(prompt_text) ~= "string" or prompt_text == "" then
+    prompt_text = vim.inspect(arguments or {})
+  end
+  local gate_report = security_gate.pre_tool_call({
+    actor = opts.actor or "agent",
+    origin = "mcp.call",
+    task_id = opts.task_id,
+    action = action_class,
+    target = string.format("%s:%s", tostring(name), tostring(tool_name)),
+    project_root = opts.project_root,
+    prompt_text = prompt_text,
+    approval_id = opts.approval_id or decision.pending_id,
+    approval_actor = opts.approval_actor,
+    approval_tool = opts.approval_tool,
+    subagent = opts.subagent,
+  })
+  if gate_report.allowed ~= true then
+    local blocked = gate_result("blocked_by_security_gate", gate_report)
+    record({
+      event = "mcp_call",
+      task_id = opts.task_id,
+      tool = "mcp.call",
+      request = {
+        server = name,
+        tool = tool_name,
+      },
+      policy_decision = gate_report.decision,
+      result = blocked,
+      error_path = gate_report.hint,
+    })
+    post_gate(gate_report, blocked, {
+      actor = opts.actor or "agent",
+      origin = "mcp.call",
+      task_id = opts.task_id,
+      subagent = opts.subagent,
+      approval_id = opts.approval_id or decision.pending_id,
+      server = name,
+      target = target,
+    })
+    return blocked
+  end
+
   local response = transport.request(
     server,
     "tools/call",
@@ -540,6 +678,14 @@ function M.call(name, tool_name, arguments, opts)
     vim.tbl_deep_extend("force", opts, {
       actor = opts.actor or "agent",
       origin = "mcp.call",
+      action = action_class,
+      target = target,
+      prompt_text = prompt_text,
+      approval_id = opts.approval_id or decision.pending_id,
+      approval_actor = opts.approval_actor,
+      approval_tool = opts.approval_tool,
+      subagent = opts.subagent,
+      server = name,
     })
   )
 
@@ -556,6 +702,15 @@ function M.call(name, tool_name, arguments, opts)
       policy_decision = decision.decision,
       result = result,
       error_path = result.hint,
+    })
+    post_gate(gate_report, result, {
+      actor = opts.actor or "agent",
+      origin = "mcp.call",
+      task_id = opts.task_id,
+      subagent = opts.subagent,
+      approval_id = opts.approval_id or decision.pending_id,
+      server = name,
+      target = target,
     })
     return result
   end
@@ -579,6 +734,15 @@ function M.call(name, tool_name, arguments, opts)
       result = result,
       error_path = result.hint,
     })
+    post_gate(gate_report, result, {
+      actor = opts.actor or "agent",
+      origin = "mcp.call",
+      task_id = opts.task_id,
+      subagent = opts.subagent,
+      approval_id = opts.approval_id or decision.pending_id,
+      server = name,
+      target = target,
+    })
     return result
   end
 
@@ -596,6 +760,15 @@ function M.call(name, tool_name, arguments, opts)
       result = result,
       error_path = result.hint,
     })
+    post_gate(gate_report, result, {
+      actor = opts.actor or "agent",
+      origin = "mcp.call",
+      task_id = opts.task_id,
+      subagent = opts.subagent,
+      approval_id = opts.approval_id or decision.pending_id,
+      server = name,
+      target = target,
+    })
     return result
   end
 
@@ -612,6 +785,15 @@ function M.call(name, tool_name, arguments, opts)
     result = {
       ok = true,
     },
+  })
+  post_gate(gate_report, result, {
+    actor = opts.actor or "agent",
+    origin = "mcp.call",
+    task_id = opts.task_id,
+    subagent = opts.subagent,
+    approval_id = opts.approval_id or decision.pending_id,
+    server = name,
+    target = target,
   })
 
   return result
