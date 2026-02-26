@@ -535,13 +535,23 @@ local cases = {
     id = "safe-profile-wp17-command-isolation",
     run = function()
       local root = repo_root()
+      local safe_lua_cmd = table.concat({
+        "+lua local names={",
+        "'JigAgentApprovals','JigAgentApprovalResolve','JigPatchCreate',",
+        "'JigPatchReview','JigPatchApply','JigPatchRollback',",
+        "'JigAgentInstructionDisable','JigAgentInstructionEnable',",
+        "'JigAgentContextAdd','JigAgentContextRemove'",
+        "}; for _,name in ipairs(names) do ",
+        "assert(vim.fn.exists(':'..name)==0,name) end; ",
+        "assert(package.loaded['jig.agent']==nil)",
+      }, "")
       local result = vim
         .system({
           "nvim",
           "--headless",
           "-u",
           root .. "/init.lua",
-          [[+lua local names={'JigAgentApprovals','JigAgentApprovalResolve','JigPatchCreate','JigPatchReview','JigPatchApply','JigPatchRollback','JigAgentInstructionDisable','JigAgentInstructionEnable','JigAgentContextAdd','JigAgentContextRemove'}; for _,name in ipairs(names) do assert(vim.fn.exists(':'..name)==0,name) end; assert(package.loaded['jig.agent']==nil)]],
+          safe_lua_cmd,
           "+qa",
         }, {
           env = safe_env(),

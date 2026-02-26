@@ -525,8 +525,8 @@ function M.render_review_lines(session)
   end
 
   lines[#lines + 1] = ""
-  lines[#lines + 1] =
-    "commands: :JigPatchHunkAccept/:JigPatchHunkReject/:JigPatchApplyAll/:JigPatchDiscardAll/:JigPatchApply/:JigPatchRollback"
+  lines[#lines + 1] = "commands: :JigPatchHunkAccept/:JigPatchHunkReject/:JigPatchApplyAll/"
+    .. ":JigPatchDiscardAll/:JigPatchApply/:JigPatchRollback"
   lines[#lines + 1] = "drill-down: :JigPatchHunkShow <session> <file_index> <hunk_index>"
 
   return lines

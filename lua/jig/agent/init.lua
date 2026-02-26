@@ -478,7 +478,9 @@ end
 local function cmd_approval_resolve(opts)
   if #opts.fargs < 2 then
     vim.notify(
-      "Usage: :JigAgentApprovalResolve <approval_id> <allow|deny|allow-always|deny-always> [global|project|task] [scope_value]",
+      "Usage: :JigAgentApprovalResolve <approval_id> "
+        .. "<allow|deny|allow-always|deny-always> "
+        .. "[global|project|task] [scope_value]",
       vim.log.levels.ERROR
     )
     return
