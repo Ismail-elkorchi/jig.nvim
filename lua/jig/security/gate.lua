@@ -411,11 +411,11 @@ function M.pre_tool_call(spec)
     report.normalized_target = target
   end
 
-  if
-    report.allowed
-    and (report.capability == "fs.write" or report.capability == "fs.delete" or report.capability == "editor.patch_apply")
-    and target ~= nil
-  then
+  local path_sensitive_capability = report.capability == "fs.write"
+    or report.capability == "fs.delete"
+    or report.capability == "editor.patch_apply"
+
+  if report.allowed and path_sensitive_capability and target ~= nil then
     local root = resolve_root(spec)
     report.project_root = root or ""
 
