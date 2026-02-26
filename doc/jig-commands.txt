@@ -33,6 +33,10 @@ COMMANDS
   :JigSymbols         optional-one Find symbols with fallback behavior
   :JigTerm            optional-one Open integrated terminal (default root or buffer directory)
   :JigToolHealth      none         Show shell, provider, and external tool integration summary
+  :JigToolchainInstall none         Install toolchain from manifest and write toolchain lockfile
+  :JigToolchainRestore none         Restore toolchain to versions pinned in toolchain lockfile
+  :JigToolchainRollback none         Restore previous toolchain lock backup and re-apply
+  :JigToolchainUpdate none         Update toolchain lock state from manifest with explicit command
   :JigUiProfile       optional-one Set accessibility profile (default|high-contrast|reduced-decoration|reduced-motion)
   :JigVerboseMap      one          Show keymap provenance via :verbose map <lhs>
   :JigVerboseSet      one          Show option provenance via :verbose set <option>?

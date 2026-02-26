@@ -14,6 +14,18 @@ COMMANDS
   :JigTerm [root|buffer]
       Open interactive terminal in Jig root (default) or current buffer dir.
 
+  :JigToolchainInstall
+      Apply toolchain manifest and write toolchain lockfile.
+
+  :JigToolchainUpdate
+      Explicit toolchain update path; writes rollback backup before lock updates.
+
+  :JigToolchainRestore
+      Restore managed/system toolchain probes to lockfile-pinned versions.
+
+  :JigToolchainRollback
+      Restore previous toolchain lock backup and re-apply in one command.
+
 EXECUTION RULES
   - argv-first execution via vim.system()
   - no implicit shell=true
@@ -33,6 +45,7 @@ SAFE PROFILE
 POLICY
   Jig does not auto-install tools.
   Jig does not auto-run startup network actions.
+  Jig does not auto-update toolchains on startup.
 
 CHECKS
   :checkhealth jig

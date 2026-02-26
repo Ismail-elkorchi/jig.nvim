@@ -160,6 +160,10 @@ jobs:
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigExec")==2)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigToolHealth")==2)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigTerm")==2)' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigToolchainInstall")==2)' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigToolchainUpdate")==2)' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigToolchainRestore")==2)' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigToolchainRollback")==2)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigMcpTrust")==0)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigMcpList")==0)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigAgentContext")==0)' '+qa'
@@ -182,6 +186,10 @@ jobs:
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigExec")==0)' '+qa'
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigToolHealth")==0)' '+qa'
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigTerm")==0)' '+qa'
+          NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigToolchainInstall")==0)' '+qa'
+          NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigToolchainUpdate")==0)' '+qa'
+          NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigToolchainRestore")==0)' '+qa'
+          NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigToolchainRollback")==0)' '+qa'
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigMcpTrust")==0)' '+qa'
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigMcpList")==0)' '+qa'
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigAgentContext")==0)' '+qa'
@@ -272,6 +280,10 @@ jobs:
           rg -n '"command-execution-smoke"' tests/tools/snapshots/latest-headless.json
           rg -n '"capture-concurrency-guard"' tests/tools/snapshots/latest-headless.json
           rg -n '"timeout-or-nil-path"' tests/tools/snapshots/latest-headless.json
+          rg -n '"toolchain-install-restore-version-equality"' tests/tools/snapshots/latest-headless.json
+          rg -n '"toolchain-rollback-restores-previous-lock"' tests/tools/snapshots/latest-headless.json
+          rg -n '"toolchain-drift-visible-in-health"' tests/tools/snapshots/latest-headless.json
+          rg -n '"toolchain-drift-warning-via-jighealth"' tests/tools/snapshots/latest-headless.json
           rg -n '"safe-profile-isolation"' tests/tools/snapshots/latest-headless.json
 
       - name: Agent harness snapshot checks
@@ -361,11 +373,14 @@ jobs:
           set -euo pipefail
           tmp="$(mktemp -d)"
           XDG_DATA_HOME="$tmp/data" \
+          XDG_CONFIG_HOME="$tmp/config" \
           XDG_STATE_HOME="$tmp/state" \
           XDG_CACHE_HOME="$tmp/cache" \
           NVIM_APPNAME=jig-ci \
           nvim --headless -u ./init.lua '+qa'
           test ! -d "$tmp/data/jig-ci/lazy/lazy.nvim"
+          test ! -f "$tmp/config/jig-ci/jig-toolchain-manifest.json"
+          test ! -f "$tmp/config/jig-ci/jig-toolchain-lock.json"
 
       - name: Health check
         run: nvim --headless -u ./init.lua '+JigHealth' '+qa'

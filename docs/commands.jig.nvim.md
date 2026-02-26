@@ -34,6 +34,10 @@ Generated from the default runtime command surface. Do not edit manually.
 | `:JigSymbols` | `optional-one` | `no` | Find symbols with fallback behavior |
 | `:JigTerm` | `optional-one` | `no` | Open integrated terminal (default root or buffer directory) |
 | `:JigToolHealth` | `none` | `no` | Show shell, provider, and external tool integration summary |
+| `:JigToolchainInstall` | `none` | `no` | Install toolchain from manifest and write toolchain lockfile |
+| `:JigToolchainRestore` | `none` | `no` | Restore toolchain to versions pinned in toolchain lockfile |
+| `:JigToolchainRollback` | `none` | `no` | Restore previous toolchain lock backup and re-apply |
+| `:JigToolchainUpdate` | `none` | `no` | Update toolchain lock state from manifest with explicit command |
 | `:JigUiProfile` | `optional-one` | `no` | Set accessibility profile (default|high-contrast|reduced-decoration|reduced-motion) |
 | `:JigVerboseMap` | `one` | `no` | Show keymap provenance via :verbose map <lhs> |
 | `:JigVerboseSet` | `one` | `no` | Show option provenance via :verbose set <option>? |
