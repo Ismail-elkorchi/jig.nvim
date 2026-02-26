@@ -78,6 +78,27 @@ local REQUIRED_LOG_FIELDS = {
   "what_new_failure_mode_or_metric_it_added",
 }
 
+local SNAPSHOT_INPUT_DEFAULTS = {
+  issues_snapshot = {
+    env_key = "WP15_ISSUES_SNAPSHOT_PATH",
+    fallback = "data/wp15/issues_snapshot.json",
+    retrieved_field = "retrieved_at",
+    max_age_days = 30,
+  },
+  test_snapshot_summary = {
+    env_key = "WP15_TEST_SUMMARY_PATH",
+    fallback = "data/wp15/test_snapshot_summary.json",
+    retrieved_field = "retrieved_at",
+    max_age_days = 30,
+  },
+  dashboard_snapshot = {
+    env_key = "WP15_DASHBOARD_SNAPSHOT_PATH",
+    fallback = "data/wp15/dashboard_snapshot.json",
+    retrieved_field = "source_retrieved_at",
+    max_age_days = 30,
+  },
+}
+
 local function to_string(value)
   if value == vim.NIL then
     return ""
@@ -122,6 +143,22 @@ local function domain(url)
     return nil
   end
   return url:match("^https?://([^/%?#]+)")
+end
+
+local function normalize_date(raw)
+  local value = to_string(raw)
+  if value == "" then
+    return nil
+  end
+  local plain = value:match("^(%d%d%d%d%-%d%d%-%d%d)$")
+  if plain ~= nil then
+    return plain
+  end
+  local prefixed = value:match("^(%d%d%d%d%-%d%d%-%d%d)[T%s]")
+  if prefixed ~= nil then
+    return prefixed
+  end
+  return nil
 end
 
 local function resolve_path(env_key, fallback)
@@ -472,35 +509,83 @@ end
 local function load_freshness_policy(path, errors)
   if vim.fn.filereadable(path) ~= 1 then
     errors[#errors + 1] = "R8 violation: missing freshness policy file " .. path
-    return {}
+    return {
+      evidence_tiers = {},
+      snapshot_inputs = {},
+    }
   end
 
   local rows = common.parse_yaml_list(path)
   if #rows == 0 then
     errors[#errors + 1] = "R8 violation: freshness policy is empty"
-    return {}
+    return {
+      evidence_tiers = {},
+      snapshot_inputs = {},
+    }
   end
 
-  local policy = {}
+  local policy = {
+    evidence_tiers = {},
+    snapshot_inputs = {},
+  }
   for _, row in ipairs(rows) do
-    local quality_tier = to_string(row.quality_tier)
-    if quality_tier == "" then
-      errors[#errors + 1] = "R8 violation: freshness rule missing quality_tier"
-    else
-      local raw_days = row.max_age_days
-      local max_age_days = nil
-      if raw_days ~= nil and raw_days ~= vim.NIL then
-        if type(raw_days) ~= "number" then
-          errors[#errors + 1] = "R8 violation: freshness rule max_age_days must be numeric for quality_tier "
-            .. quality_tier
-        elseif raw_days < 0 then
-          errors[#errors + 1] = "R8 violation: freshness rule max_age_days must be >= 0 for quality_tier "
-            .. quality_tier
-        else
-          max_age_days = math.floor(raw_days)
-        end
+    local raw_days = row.max_age_days
+    local max_age_days = nil
+    if raw_days ~= nil and raw_days ~= vim.NIL then
+      if type(raw_days) ~= "number" then
+        errors[#errors + 1] = "R8 violation: freshness rule max_age_days must be numeric"
+      elseif raw_days < 0 then
+        errors[#errors + 1] = "R8 violation: freshness rule max_age_days must be >= 0"
+      else
+        max_age_days = math.floor(raw_days)
       end
-      policy[quality_tier] = max_age_days
+    end
+
+    local quality_tier = to_string(row.quality_tier)
+    local snapshot_input = to_string(row.snapshot_input)
+
+    if quality_tier ~= "" then
+      policy.evidence_tiers[quality_tier] = max_age_days
+    elseif snapshot_input ~= "" then
+      local default = SNAPSHOT_INPUT_DEFAULTS[snapshot_input]
+      local retrieved_field = to_string(row.retrieved_field)
+      if retrieved_field == "" then
+        retrieved_field = default and default.retrieved_field or "retrieved_at"
+      end
+
+      if default == nil then
+        errors[#errors + 1] = "R8 violation: unknown snapshot_input freshness target `"
+          .. snapshot_input
+          .. "`"
+      end
+
+      policy.snapshot_inputs[snapshot_input] = {
+        max_age_days = max_age_days,
+        retrieved_field = retrieved_field,
+      }
+    else
+      errors[#errors + 1] =
+        "R8 violation: freshness rule must define either quality_tier or snapshot_input"
+    end
+  end
+
+  for name, defaults in pairs(SNAPSHOT_INPUT_DEFAULTS) do
+    local existing = policy.snapshot_inputs[name]
+    if existing == nil then
+      errors[#errors + 1] = "R8 violation: freshness policy missing snapshot_input rule `"
+        .. name
+        .. "`"
+      policy.snapshot_inputs[name] = {
+        max_age_days = defaults.max_age_days,
+        retrieved_field = defaults.retrieved_field,
+      }
+    else
+      if existing.max_age_days == nil then
+        existing.max_age_days = defaults.max_age_days
+      end
+      if to_string(existing.retrieved_field) == "" then
+        existing.retrieved_field = defaults.retrieved_field
+      end
     end
   end
 
@@ -517,11 +602,11 @@ local function validate_evidence_freshness(evidence, snapshot, freshness_policy,
 
   for _, item in ipairs(evidence) do
     local id = to_string(item.id)
-    local retrieved_at = to_string(item.retrieved_at)
-    if retrieved_at:match("^%d%d%d%d%-%d%d%-%d%d$") == nil then
+    local normalized_date = normalize_date(item.retrieved_at)
+    if normalized_date == nil then
       errors[#errors + 1] = "R8 violation: evidence " .. id .. " retrieved_at must use YYYY-MM-DD"
     else
-      local retrieved_days = common.date_to_epoch_days(retrieved_at)
+      local retrieved_days = common.date_to_epoch_days(normalized_date)
       if retrieved_days == nil then
         errors[#errors + 1] = "R8 violation: evidence " .. id .. " retrieved_at is not parseable"
       else
@@ -530,7 +615,7 @@ local function validate_evidence_freshness(evidence, snapshot, freshness_policy,
         end
 
         local quality_tier = to_string(item.quality_tier)
-        local max_age_days = freshness_policy[quality_tier]
+        local max_age_days = freshness_policy.evidence_tiers[quality_tier]
         if type(max_age_days) == "number" and retrieved_days <= snapshot.epoch_days then
           local age = snapshot.epoch_days - retrieved_days
           if age > max_age_days then
@@ -555,6 +640,102 @@ local function validate_evidence_freshness(evidence, snapshot, freshness_policy,
     errors[#errors + 1] = "R8 violation: stale evidence ids: "
       .. table.concat(stale, "; ")
       .. ". Suggested action: refresh retrieved_at + re-verify metadata, or downgrade confidence / adjust quality_tier / move to off-repo dossier."
+  end
+end
+
+local function load_json_file(path, label, errors)
+  if vim.fn.filereadable(path) ~= 1 then
+    errors[#errors + 1] = "R8 violation: missing snapshot input file (`" .. label .. "`): " .. path
+    return nil
+  end
+
+  local ok, decoded = pcall(common.parse_json, path)
+  if not ok then
+    errors[#errors + 1] = "R8 violation: invalid snapshot input JSON (`"
+      .. label
+      .. "`): "
+      .. tostring(decoded)
+    return nil
+  end
+
+  return decoded
+end
+
+local function validate_snapshot_inputs_freshness(paths, snapshot, freshness_policy, errors)
+  if snapshot == nil then
+    return
+  end
+
+  local stale = {}
+  local future = {}
+
+  for name, defaults in pairs(SNAPSHOT_INPUT_DEFAULTS) do
+    local file_path = paths[name]
+    local policy = freshness_policy.snapshot_inputs[name] or {}
+    local max_age_days = policy.max_age_days
+    if max_age_days == nil then
+      max_age_days = defaults.max_age_days
+    end
+
+    local retrieved_field = to_string(policy.retrieved_field)
+    if retrieved_field == "" then
+      retrieved_field = defaults.retrieved_field
+    end
+
+    local payload = load_json_file(file_path, name, errors)
+    if payload ~= nil then
+      local raw_value = payload[retrieved_field]
+      local normalized = normalize_date(raw_value)
+
+      if normalized == nil then
+        errors[#errors + 1] = "R8 violation: snapshot input `"
+          .. name
+          .. "` missing parseable "
+          .. retrieved_field
+          .. " (YYYY-MM-DD or ISO timestamp)"
+      else
+        local retrieved_days = common.date_to_epoch_days(normalized)
+        if retrieved_days == nil then
+          errors[#errors + 1] = "R8 violation: snapshot input `"
+            .. name
+            .. "` has unparseable date in field "
+            .. retrieved_field
+        else
+          if retrieved_days > snapshot.epoch_days then
+            future[#future + 1] =
+              string.format("%s(%s=%s)", name, retrieved_field, tostring(raw_value))
+          end
+
+          if type(max_age_days) == "number" and retrieved_days <= snapshot.epoch_days then
+            local age = snapshot.epoch_days - retrieved_days
+            if age > max_age_days then
+              stale[#stale + 1] = string.format(
+                "%s(age=%dd, field=%s, max=%dd)",
+                name,
+                age,
+                retrieved_field,
+                max_age_days
+              )
+            end
+          end
+        end
+      end
+    end
+  end
+
+  if #future > 0 then
+    table.sort(future)
+    errors[#errors + 1] = "R8 violation: snapshot input retrieved_at after snapshot_date ("
+      .. snapshot.date
+      .. "): "
+      .. table.concat(future, ", ")
+  end
+
+  if #stale > 0 then
+    table.sort(stale)
+    errors[#errors + 1] = "R8 violation: stale snapshot inputs: "
+      .. table.concat(stale, "; ")
+      .. ". Suggested action: refresh snapshot artifacts and regenerate scorecard/dashboard outputs."
   end
 end
 
@@ -760,6 +941,18 @@ local function main()
       "WP15_FRESHNESS_POLICY_PATH",
       "data/wp15/freshness_policy.yaml"
     ),
+    issues_snapshot = resolve_path(
+      SNAPSHOT_INPUT_DEFAULTS.issues_snapshot.env_key,
+      SNAPSHOT_INPUT_DEFAULTS.issues_snapshot.fallback
+    ),
+    test_snapshot_summary = resolve_path(
+      SNAPSHOT_INPUT_DEFAULTS.test_snapshot_summary.env_key,
+      SNAPSHOT_INPUT_DEFAULTS.test_snapshot_summary.fallback
+    ),
+    dashboard_snapshot = resolve_path(
+      SNAPSHOT_INPUT_DEFAULTS.dashboard_snapshot.env_key,
+      SNAPSHOT_INPUT_DEFAULTS.dashboard_snapshot.fallback
+    ),
   }
 
   local baselines = common.parse_yaml_list(paths.baselines)
@@ -772,6 +965,7 @@ local function main()
   local evidence_by_id = validate_evidence_schema(evidence, errors)
   local domain_count = validate_evidence_coverage(baselines, evidence, errors)
   validate_evidence_freshness(evidence, snapshot, freshness_policy, errors)
+  validate_snapshot_inputs_freshness(paths, snapshot, freshness_policy, errors)
   validate_research_log(paths.research_log, evidence_by_id, errors)
   validate_disconfirming(errors)
 
