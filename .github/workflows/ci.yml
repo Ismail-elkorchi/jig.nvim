@@ -330,6 +330,15 @@ jobs:
           rg -n '"startup-network-trace-fixture"' tests/security/snapshots/latest-headless.json
           rg -n '"mcp-trust-enforcement"' tests/security/snapshots/latest-headless.json
           rg -n '"exec-safety-override-logging"' tests/security/snapshots/latest-headless.json
+          rg -n '"workspace-boundary-path-traversal"' tests/security/snapshots/latest-headless.json
+          rg -n '"workspace-boundary-symlink-escape"' tests/security/snapshots/latest-headless.json
+          rg -n '"argv-injection-blocked"' tests/security/snapshots/latest-headless.json
+          rg -n '"consent-identity-confusion-blocked"' tests/security/snapshots/latest-headless.json
+          rg -n '"prompt-injection-tool-misuse-blocked"' tests/security/snapshots/latest-headless.json
+          rg -n '"unicode-bidi-patch-blocked"' tests/security/snapshots/latest-headless.json
+          rg -n '"patch-pipeline-workspace-boundary-denied"' tests/security/snapshots/latest-headless.json
+          rg -n '"security-post-call-audit-attribution"' tests/security/snapshots/latest-headless.json
+          rg -n '"threat-model-data-coverage"' tests/security/snapshots/latest-headless.json
           rg -n '"safe-profile-isolation"' tests/security/snapshots/latest-headless.json
 
       - name: Ops harness snapshot checks

@@ -175,6 +175,8 @@ local cases = {
       local ok_create, session = patch.create({
         intent = "agent_patch_candidate",
         summary = "apply selected hunks",
+        actor = "agent",
+        project_root = tmp,
         files = {
           {
             path = file_one,
@@ -244,6 +246,8 @@ local cases = {
       local ok_create, session = patch.create({
         intent = "rollback_check",
         summary = "checkpoint should restore",
+        actor = "agent",
+        project_root = tmp,
         files = {
           {
             path = target,
@@ -333,6 +337,8 @@ local cases = {
       local ok_create, session = patch.create({
         intent = "legibility",
         summary = "review metadata and range rendering",
+        actor = "agent",
+        project_root = tmp,
         files = {
           {
             path = target,

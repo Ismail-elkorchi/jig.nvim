@@ -787,6 +787,16 @@ local function cmd_patch_create(opts)
     return
   end
 
+  if spec_or_err.actor == nil then
+    spec_or_err.actor = "agent"
+  end
+  if spec_or_err.origin == nil then
+    spec_or_err.origin = "agent.patch.command"
+  end
+  if spec_or_err.project_root == nil then
+    spec_or_err.project_root = require("jig.agent.config").get().root
+  end
+
   local ok_create, session_or_err = patch.create(spec_or_err)
   if not ok_create then
     vim.notify("JigPatchCreate failed: " .. tostring(session_or_err), vim.log.levels.ERROR)

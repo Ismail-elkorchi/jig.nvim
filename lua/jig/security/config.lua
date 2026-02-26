@@ -95,6 +95,23 @@ M.defaults = {
       unknown = true,
     },
   },
+  gate = {
+    enabled = true,
+    outside_root_confirmation = "JIG-ALLOW-OUTSIDE-ROOT",
+    prompt_injection_patterns = {
+      "ignore previous instructions",
+      "ignore all previous instructions",
+      "system prompt",
+      "developer prompt",
+      "call tool",
+      "execute command",
+      "run shell",
+      "curl ",
+      "wget ",
+      "exfiltrate",
+      "send secrets",
+    },
+  },
 }
 
 local function deep_merge(dst, src)

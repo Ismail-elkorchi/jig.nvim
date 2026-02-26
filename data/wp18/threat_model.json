@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "scope": "wp18-agent-threat-model",
+  "classes": [
+    {
+      "id": "workspace_boundary_escape",
+      "description": "Path traversal, root confusion, or symlink escape writes outside resolved workspace root.",
+      "enforcement_points": [
+        "pre_tool_call_gate",
+        "workspace_root_validator",
+        "patch_pipeline_gate"
+      ],
+      "regression_tests": [
+        "workspace-boundary-path-traversal",
+        "workspace-boundary-symlink-escape"
+      ]
+    },
+    {
+      "id": "argument_injection_patterns",
+      "description": "Shell/git/tool argv payloads that splice destructive execution paths through injected separators.",
+      "enforcement_points": [
+        "pre_tool_call_gate"
+      ],
+      "regression_tests": [
+        "argv-injection-blocked"
+      ]
+    },
+    {
+      "id": "consent_identity_confusion",
+      "description": "Approval identity mismatch (actor/tool/server) enabling confused-deputy execution.",
+      "enforcement_points": [
+        "pre_tool_call_gate",
+        "audit_logger"
+      ],
+      "regression_tests": [
+        "consent-identity-confusion-blocked"
+      ]
+    },
+    {
+      "id": "prompt_injection_tool_misuse",
+      "description": "Indirect prompt/tool-output injection causing high-risk tool misuse.",
+      "enforcement_points": [
+        "pre_tool_call_gate",
+        "policy_engine"
+      ],
+      "regression_tests": [
+        "prompt-injection-tool-misuse-blocked"
+      ]
+    },
+    {
+      "id": "unicode_trojan_source",
+      "description": "Hidden or bidi Unicode payloads in patches/diffs that obscure reviewer intent.",
+      "enforcement_points": [
+        "diff_patch_unicode_scanner",
+        "patch_pipeline_gate"
+      ],
+      "regression_tests": [
+        "unicode-bidi-patch-blocked"
+      ]
+    }
+  ]
+}

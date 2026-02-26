@@ -3,13 +3,38 @@
 Canonical help: `:help jig-security`
 
 ## Scope
-WP-10 adds trust-boundary controls for startup networking, local-config surfaces, MCP trust policy, and destructive execution safety.
+- WP-10 adds trust-boundary controls for startup networking, local-config surfaces, MCP trust policy, and destructive execution safety.
+- WP-18 adds a deterministic agent threat model + regression suite for tool-using workflows.
 
 ## Security Posture
 - secure by default
 - explicit, user-controlled escape hatches
 - no startup implicit networking
 - no vendor account/API lock-in by default
+- containment over absolute prevention; all high-risk decisions require attribution and audit trails
+
+## WP-18 Threat Model (Operational)
+Threat model artifacts (committed, offline):
+- `data/wp18/threat_model.json`
+- `data/wp18/evidence.jsonl`
+- `data/wp18/fixtures_manifest.json`
+
+Threat classes covered by WP-18:
+1. workspace boundary escape (path traversal/root confusion/symlink escape)
+2. argument injection patterns (`shell/git/tool argv`)
+3. consent/identity confusion (approval actor/tool mismatch)
+4. prompt-injection driven tool misuse
+5. hidden/bidi unicode payloads in patches/diffs
+
+Enforcement points:
+- pre-tool-call gate: `lua/jig/security/gate.lua`
+- patch pipeline gate: `lua/jig/agent/patch.lua`
+- workspace root resolution/policy: `jig.nav.root`
+- post-tool-call audit logging: `jig.agent.log`
+
+Audit events:
+- `security_pre_tool_call`
+- `security_post_tool_call`
 
 ## Startup Network Policy
 Jig applies startup network controls in two layers:
@@ -89,9 +114,15 @@ Retention:
 - does not load agent or MCP/ACP modules
 - does not expose `:JigExec`, `:JigTerm`, `:JigMcpTrust`, or related optional command surfaces
 
+## Boundaries and Non-Guarantees
+- Jig does not claim perfect prevention for all prompt-injection variants.
+- Jig cannot prove remote MCP server integrity; local policy can only deny/ask/allow with attribution.
+- Human approvals can still be wrong; WP-18 focuses on visibility, scoping, and reproducible failure injection.
+
 ## Verification
 ```bash
 tests/security/run_harness.sh
 nvim --headless -u ./init.lua '+checkhealth jig' '+qa'
 NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigMcpTrust")==0)' '+qa'
+nvim --headless -u NONE -l tests/run_harness.lua -- --suite security
 ```

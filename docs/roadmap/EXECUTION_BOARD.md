@@ -1,7 +1,7 @@
 # EXECUTION_BOARD
 
 Generated from: `dependency roadmap (internal planning source)`
-Updated at: `2026-02-26`
+Updated at: `2026-02-27`
 
 ## Status Legend
 - `not-started`
@@ -181,8 +181,8 @@ Updated at: `2026-02-26`
 - ADR(s): tbd
 
 ### WP-18: Agent Threat Model and Security Regression Suite
-- Status: `not-started` (`next`)
+- Status: `done`
 - Depends on: `WP-17`
 - Issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/22
-- PR(s): tbd
+- PR(s): tbd (this WP-18 implementation branch)
 - ADR(s): tbd

@@ -1,0 +1,8 @@
+{
+  "description": "Runtime harness synthesizes U+202E bidi payload from this spec.",
+  "codepoint": "202E",
+  "lines": [
+    "normal-line",
+    "prefix-{BIDI}-payload"
+  ]
+}

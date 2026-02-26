@@ -1,6 +1,7 @@
 local config = require("jig.agent.config")
 local icons = require("jig.ui.icons")
 local log = require("jig.agent.log")
+local security_gate = require("jig.security.gate")
 local state = require("jig.agent.state")
 
 local M = {}
@@ -39,6 +40,43 @@ end
 
 local function normalize_path(path)
   return config.normalize_path(path or "")
+end
+
+local function collect_patch_lines(hunks)
+  local lines = {}
+  for _, hunk in ipairs(hunks or {}) do
+    for _, line in ipairs(hunk.original_lines or hunk.original or {}) do
+      lines[#lines + 1] = tostring(line)
+    end
+    local replacements = hunk.replacement_lines or hunk.replacement or {}
+    if type(replacements) == "string" then
+      replacements = vim.split(replacements, "\n", { plain = true, trimempty = false })
+    end
+    for _, line in ipairs(replacements or {}) do
+      lines[#lines + 1] = tostring(line)
+    end
+  end
+  return lines
+end
+
+local function gate_patch(spec)
+  spec = spec or {}
+  local report = security_gate.pre_tool_call({
+    actor = tostring(spec.actor or "agent"),
+    origin = tostring(spec.origin or "agent.patch"),
+    task_id = tostring(spec.task_id or ""),
+    action = "editor.patch_apply",
+    target = tostring(spec.path or ""),
+    target_path = tostring(spec.path or ""),
+    project_root = spec.project_root,
+    patch_lines = spec.patch_lines or {},
+    approval_id = spec.approval_id,
+    approval_actor = spec.approval_actor,
+    approval_tool = spec.approval_tool,
+    confirmation_token = spec.confirmation_token,
+    allow_outside_root = spec.allow_outside_root == true,
+  })
+  return report
 end
 
 local function read_lines(path)
@@ -111,12 +149,29 @@ local function normalize_hunk(spec, file_lines)
   }
 end
 
-local function normalized_files(spec_files)
+local function normalized_files(spec_files, opts)
   local files = {}
 
   for _, file_spec in ipairs(spec_files or {}) do
     local path = normalize_path(file_spec.path)
     if path and path ~= "" then
+      local gate_report = gate_patch({
+        actor = opts and opts.actor,
+        origin = opts and opts.origin or "agent.patch.create",
+        task_id = opts and opts.task_id,
+        path = path,
+        project_root = opts and opts.project_root,
+        patch_lines = collect_patch_lines(file_spec.hunks),
+        approval_id = opts and opts.approval_id,
+        approval_actor = opts and opts.approval_actor,
+        approval_tool = opts and opts.approval_tool,
+        confirmation_token = opts and opts.confirmation_token,
+        allow_outside_root = opts and opts.allow_outside_root == true,
+      })
+      if gate_report.allowed ~= true then
+        return nil, gate_report.hint or gate_report.reason, gate_report
+      end
+
       local base_lines = read_lines(path)
       local hunks = {}
 
@@ -139,7 +194,7 @@ local function normalized_files(spec_files)
     end
   end
 
-  return files
+  return files, nil, nil
 end
 
 local function find_session(store, session_id)
@@ -232,7 +287,24 @@ end
 function M.create(spec)
   spec = spec or {}
 
-  local files = normalized_files(spec.files)
+  local files, gate_error, gate_report = normalized_files(spec.files, spec)
+  if files == nil then
+    log.record({
+      event = "patch_session_denied",
+      task_id = tostring(spec.source_task_id or spec.task_id or ""),
+      tool = "agent.patch",
+      request = {
+        intent = tostring(spec.intent or "agent_candidate_patch"),
+      },
+      policy_decision = gate_report and gate_report.decision or "deny",
+      result = {
+        ok = false,
+        reason = gate_report and gate_report.reason or "patch_gate_denied",
+      },
+      error_path = gate_error or "patch security gate denied request",
+    })
+    return false, gate_error or "patch session denied by security gate"
+  end
   if #files == 0 then
     return false, "patch session requires at least one file"
   end
@@ -247,6 +319,9 @@ function M.create(spec)
     summary = tostring(spec.summary or ""),
     source_task_id = tostring(spec.source_task_id or ""),
     status = "open",
+    actor = tostring(spec.actor or "agent"),
+    origin = tostring(spec.origin or "agent.patch.create"),
+    project_root = normalize_path(spec.project_root) or config.get().root,
     created_at = now_iso(),
     updated_at = now_iso(),
     applied_at = "",
@@ -404,12 +479,63 @@ function M.apply(session_id)
   end
 
   for _, file in ipairs(session.files or {}) do
+    local gate_report = gate_patch({
+      actor = session.actor,
+      origin = "agent.patch.apply",
+      task_id = session.source_task_id,
+      path = file.path,
+      project_root = session.project_root,
+      patch_lines = collect_patch_lines(file.hunks),
+      approval_id = session.approval_id,
+      approval_actor = session.approval_actor,
+      approval_tool = session.approval_tool,
+    })
+    if gate_report.allowed ~= true then
+      security_gate.post_tool_call(gate_report, {
+        ok = false,
+        code = -1,
+        reason = gate_report.reason,
+        hint = gate_report.hint,
+      }, {
+        actor = session.actor,
+        origin = "agent.patch.apply",
+        task_id = session.source_task_id,
+        target = file.path,
+        approval_id = session.approval_id,
+      })
+      return false, gate_report.hint or gate_report.reason
+    end
+
     local base_lines = vim.deepcopy(file.checkpoint_lines or {})
     local output = apply_hunks(base_lines, file.hunks)
     local ok_write, err_write = write_lines(file.path, output)
     if not ok_write then
+      security_gate.post_tool_call(gate_report, {
+        ok = false,
+        code = -1,
+        reason = "write_failed",
+        hint = err_write,
+      }, {
+        actor = session.actor,
+        origin = "agent.patch.apply",
+        task_id = session.source_task_id,
+        target = file.path,
+        approval_id = session.approval_id,
+      })
       return false, err_write
     end
+
+    security_gate.post_tool_call(gate_report, {
+      ok = true,
+      code = 0,
+      reason = "ok",
+    }, {
+      actor = session.actor,
+      origin = "agent.patch.apply",
+      task_id = session.source_task_id,
+      target = file.path,
+      approval_id = session.approval_id,
+    })
   end
 
   update_session(session, function(item)
@@ -443,10 +569,61 @@ function M.rollback(session_id)
   end
 
   for _, file in ipairs(session.files or {}) do
+    local gate_report = gate_patch({
+      actor = session.actor,
+      origin = "agent.patch.rollback",
+      task_id = session.source_task_id,
+      path = file.path,
+      project_root = session.project_root,
+      patch_lines = file.checkpoint_lines or {},
+      approval_id = session.approval_id,
+      approval_actor = session.approval_actor,
+      approval_tool = session.approval_tool,
+    })
+    if gate_report.allowed ~= true then
+      security_gate.post_tool_call(gate_report, {
+        ok = false,
+        code = -1,
+        reason = gate_report.reason,
+        hint = gate_report.hint,
+      }, {
+        actor = session.actor,
+        origin = "agent.patch.rollback",
+        task_id = session.source_task_id,
+        target = file.path,
+        approval_id = session.approval_id,
+      })
+      return false, gate_report.hint or gate_report.reason
+    end
+
     local ok_write, err_write = write_lines(file.path, file.checkpoint_lines or {})
     if not ok_write then
+      security_gate.post_tool_call(gate_report, {
+        ok = false,
+        code = -1,
+        reason = "write_failed",
+        hint = err_write,
+      }, {
+        actor = session.actor,
+        origin = "agent.patch.rollback",
+        task_id = session.source_task_id,
+        target = file.path,
+        approval_id = session.approval_id,
+      })
       return false, err_write
     end
+
+    security_gate.post_tool_call(gate_report, {
+      ok = true,
+      code = 0,
+      reason = "ok",
+    }, {
+      actor = session.actor,
+      origin = "agent.patch.rollback",
+      task_id = session.source_task_id,
+      target = file.path,
+      approval_id = session.approval_id,
+    })
   end
 
   update_session(session, function(item)

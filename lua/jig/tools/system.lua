@@ -84,6 +84,13 @@ local function mk_hint(reason)
     ["destructive-denied-non-user"] = "Destructive command denied for non-user actors.",
     destructive_requires_override = "Destructive command blocked. Re-run with :JigExec! only if intentional.",
     destructive_denied_non_user = "Destructive command denied for non-user actors.",
+    workspace_boundary_escape = "Target is outside project root. Use explicit outside-root approval token only when required.",
+    unicode_trojan_source = "Hidden/bidi unicode was detected in patch payload; inspect and sanitize content.",
+    argument_injection_pattern = "Suspicious argument-injection pattern detected; rewrite command as safe argv tokens.",
+    prompt_injection_tool_misuse = "Prompt/tool-output matched injection pattern on high-risk action; request explicit review.",
+    consent_identity_confusion = "Approval identity mismatch detected; request a fresh approval for this actor/tool pair.",
+    pre_hook_error = "Security pre-tool hook failed; inspect hook implementation and retry.",
+    pre_hook_denied = "Security pre-tool hook denied this action.",
   }
   return hints[reason] or "Run :JigToolHealth to inspect shell/tool integration status."
 end
@@ -239,6 +246,47 @@ local function security_gate(argv, opts, meta)
   local task_id = opts.task_id
   local security = {}
 
+  local ok_gate, gate = pcall(require, "jig.security.gate")
+  if ok_gate and type(gate.pre_tool_call) == "function" then
+    local pre = gate.pre_tool_call({
+      actor = actor,
+      origin = origin,
+      task_id = task_id,
+      action = opts.action or "exec.run",
+      target = opts.target or argv[1] or "",
+      target_path = opts.target_path,
+      project_root = opts.project_root,
+      argv = argv,
+      prompt_text = opts.prompt_text,
+      patch_lines = opts.patch_lines,
+      approval_id = opts.approval_id,
+      approval_actor = opts.approval_actor,
+      approval_tool = opts.approval_tool,
+      confirmation_token = opts.confirmation_token,
+      allow_outside_root = opts.allow_outside_root == true,
+      cwd = meta.cwd,
+    })
+    security.pre_tool_call = pre
+    if pre.allowed ~= true then
+      meta.security = security
+      local blocked = synthetic_result(meta, pre.reason, pre.hint or pre.reason, {
+        reason = pre.reason,
+        security = security,
+      })
+      if type(gate.post_tool_call) == "function" then
+        gate.post_tool_call(pre, blocked, {
+          actor = actor,
+          origin = origin,
+          task_id = task_id,
+          target = opts.target or argv[1] or "",
+          subagent = opts.subagent,
+          approval_id = opts.approval_id,
+        })
+      end
+      return false, blocked
+    end
+  end
+
   local ok_net, net_guard = pcall(require, "jig.security.net_guard")
   if ok_net and type(net_guard.evaluate_argv) == "function" then
     local net_report = net_guard.evaluate_argv(argv, {
@@ -250,11 +298,26 @@ local function security_gate(argv, opts, meta)
     security.net_guard = net_report
     if net_report.allowed ~= true then
       meta.security = security
-      return false,
+      local blocked =
         synthetic_result(meta, "startup_network_denied", net_report.hint or net_report.reason, {
           reason = "startup_network_denied",
           security = security,
         })
+      if
+        ok_gate
+        and type(gate.post_tool_call) == "function"
+        and type(security.pre_tool_call) == "table"
+      then
+        gate.post_tool_call(security.pre_tool_call, blocked, {
+          actor = actor,
+          origin = origin,
+          task_id = task_id,
+          target = opts.target or argv[1] or "",
+          subagent = opts.subagent,
+          approval_id = opts.approval_id,
+        })
+      end
+      return false, blocked
     end
   end
 
@@ -269,11 +332,26 @@ local function security_gate(argv, opts, meta)
     security.exec_safety = exec_report
     if exec_report.allowed ~= true then
       meta.security = security
-      return false,
+      local blocked =
         synthetic_result(meta, exec_report.reason, exec_report.hint or exec_report.reason, {
           reason = exec_report.reason,
           security = security,
         })
+      if
+        ok_gate
+        and type(gate.post_tool_call) == "function"
+        and type(security.pre_tool_call) == "table"
+      then
+        gate.post_tool_call(security.pre_tool_call, blocked, {
+          actor = actor,
+          origin = origin,
+          task_id = task_id,
+          target = opts.target or argv[1] or "",
+          subagent = opts.subagent,
+          approval_id = opts.approval_id,
+        })
+      end
+      return false, blocked
     end
   end
 
@@ -304,6 +382,13 @@ local function pump_queue()
 
     local ok_spawn, proc_or_err = pcall(vim.system, job.argv, job.system_opts, function(wait_result)
       local result = build_result(wait_result, job.meta)
+      local pre = job.meta.security and job.meta.security.pre_tool_call
+      if type(pre) == "table" then
+        local ok_gate, gate = pcall(require, "jig.security.gate")
+        if ok_gate and type(gate.post_tool_call) == "function" then
+          gate.post_tool_call(pre, result, job.security_context or {})
+        end
+      end
       if job.capture then
         queue_state.active_capture = math.max(0, queue_state.active_capture - 1)
       end
@@ -322,6 +407,13 @@ local function pump_queue()
 
     if not ok_spawn then
       local result = synthetic_result(job.meta, "spawn_error", tostring(proc_or_err))
+      local pre = job.meta.security and job.meta.security.pre_tool_call
+      if type(pre) == "table" then
+        local ok_gate, gate = pcall(require, "jig.security.gate")
+        if ok_gate and type(gate.post_tool_call) == "function" then
+          gate.post_tool_call(pre, result, job.security_context or {})
+        end
+      end
       if job.capture then
         queue_state.active_capture = math.max(0, queue_state.active_capture - 1)
       end
@@ -397,6 +489,15 @@ function M.run(argv, opts)
     capture = capture,
     capture_limit = limit,
     meta = meta,
+    security_context = {
+      actor = opts.actor or "user",
+      origin = opts.origin or "jig.tools.system",
+      task_id = opts.task_id,
+      subagent = opts.subagent,
+      target = opts.target or normalized_argv[1] or "",
+      approval_id = opts.approval_id,
+      server = opts.server,
+    },
   }
 
   table.insert(queue_state.queue, job)
@@ -446,18 +547,66 @@ function M.run_sync(argv, opts)
 
   local ok_spawn, proc_or_err = pcall(vim.system, normalized_argv, system_opts)
   if not ok_spawn then
-    return synthetic_result(meta, "spawn_error", tostring(proc_or_err))
+    local spawn_result = synthetic_result(meta, "spawn_error", tostring(proc_or_err))
+    local pre = meta.security and meta.security.pre_tool_call
+    if type(pre) == "table" then
+      local ok_gate, gate = pcall(require, "jig.security.gate")
+      if ok_gate and type(gate.post_tool_call) == "function" then
+        gate.post_tool_call(pre, spawn_result, {
+          actor = opts.actor or "user",
+          origin = opts.origin or "jig.tools.system",
+          task_id = opts.task_id,
+          subagent = opts.subagent,
+          target = opts.target or normalized_argv[1] or "",
+          approval_id = opts.approval_id,
+          server = opts.server,
+        })
+      end
+    end
+    return spawn_result
   end
 
   local ok_wait, wait_result = pcall(proc_or_err.wait, proc_or_err, timeout_ms)
   if not ok_wait then
-    return synthetic_result(meta, "system_wait_error", tostring(wait_result))
+    local wait_error = synthetic_result(meta, "system_wait_error", tostring(wait_result))
+    local pre = meta.security and meta.security.pre_tool_call
+    if type(pre) == "table" then
+      local ok_gate, gate = pcall(require, "jig.security.gate")
+      if ok_gate and type(gate.post_tool_call) == "function" then
+        gate.post_tool_call(pre, wait_error, {
+          actor = opts.actor or "user",
+          origin = opts.origin or "jig.tools.system",
+          task_id = opts.task_id,
+          subagent = opts.subagent,
+          target = opts.target or normalized_argv[1] or "",
+          approval_id = opts.approval_id,
+          server = opts.server,
+        })
+      end
+    end
+    return wait_error
   end
 
   local result = build_result(wait_result, meta)
   if result.reason == "exit_nonzero" and result.duration_ms >= timeout_ms then
     result.reason = "timeout"
     result.hint = mk_hint("timeout")
+  end
+
+  local pre = meta.security and meta.security.pre_tool_call
+  if type(pre) == "table" then
+    local ok_gate, gate = pcall(require, "jig.security.gate")
+    if ok_gate and type(gate.post_tool_call) == "function" then
+      gate.post_tool_call(pre, result, {
+        actor = opts.actor or "user",
+        origin = opts.origin or "jig.tools.system",
+        task_id = opts.task_id,
+        subagent = opts.subagent,
+        target = opts.target or normalized_argv[1] or "",
+        approval_id = opts.approval_id,
+        server = opts.server,
+      })
+    end
   end
 
   return result
