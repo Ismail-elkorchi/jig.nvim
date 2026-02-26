@@ -184,5 +184,5 @@ Updated at: `2026-02-27`
 - Status: `done`
 - Depends on: `WP-17`
 - Issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/22
-- PR(s): tbd (this WP-18 implementation branch)
+- PR(s): https://github.com/Ismail-elkorchi/jig.nvim/pull/51
 - ADR(s): tbd
