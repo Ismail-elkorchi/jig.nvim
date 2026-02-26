@@ -1,7 +1,7 @@
 # EXECUTION_BOARD
 
 Generated from: `dependency roadmap (internal planning source)`
-Updated at: `2026-02-21`
+Updated at: `2026-02-26`
 
 ## Status Legend
 - `not-started`
@@ -165,8 +165,16 @@ Updated at: `2026-02-21`
   - high-severity gap without owner or falsifier test plan
 
 ### WP-16: Toolchain Lockfile and External Dependency Lifecycle
-- Status: `not-started` (`next`)
+- Status: `done`
 - Depends on: `WP-15`
 - Issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/20
+- PR(s): https://github.com/Ismail-elkorchi/jig.nvim/pull/47
+- Completed at: `2026-02-26`
+- ADR(s): tbd
+
+### WP-17: Agent UX Surface, Transactional Edits, and Context Ledger
+- Status: `not-started` (`next`)
+- Depends on: `WP-16`
+- Issue: https://github.com/Ismail-elkorchi/jig.nvim/issues/21
 - PR(s): tbd
 - ADR(s): tbd
