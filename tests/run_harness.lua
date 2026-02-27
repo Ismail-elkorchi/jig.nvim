@@ -61,6 +61,7 @@ local function run_startup_smoke()
   assert(vim.fn.exists(":JigKeys") == 2, "JigKeys missing")
   assert(vim.fn.exists(":JigFiles") == 2, "JigFiles missing")
   assert(vim.fn.exists(":JigExec") == 2, "JigExec missing")
+  assert(vim.fn.exists(":JigVersion") == 2, "JigVersion missing")
   assert(vim.fn.exists(":JigToolchainInstall") == 2, "JigToolchainInstall missing")
   assert(vim.fn.exists(":JigToolchainUpdate") == 2, "JigToolchainUpdate missing")
   assert(vim.fn.exists(":JigToolchainRestore") == 2, "JigToolchainRestore missing")
@@ -99,6 +100,29 @@ local function run_startup_smoke()
     vim.fn.filereadable(tmp .. "/config/jig-ci/jig-toolchain-lock.json") == 0,
     "startup auto-created toolchain lockfile"
   )
+
+  local safe_env = vim.fn.deepcopy(env)
+  safe_env.NVIM_APPNAME = "jig-safe"
+  local safe_result = vim
+    .system({
+      "nvim",
+      "--headless",
+      "-u",
+      join(ROOT, "init.lua"),
+      "+lua assert(vim.g.jig_profile=='safe','safe profile expected')",
+      "+lua assert(vim.fn.exists(':JigVersion')==2,'JigVersion missing in safe profile')",
+      "+JigVersion",
+      "+qa",
+    }, {
+      env = safe_env,
+      text = true,
+    })
+    :wait(10000)
+  assert(
+    safe_result ~= nil and safe_result.code == 0,
+    "safe profile version command failed: " .. tostring(safe_result and safe_result.stderr or "nil")
+  )
+
   vim.fn.delete(tmp, "rf")
 
   return {

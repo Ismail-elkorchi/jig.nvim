@@ -41,6 +41,7 @@ NVIM_APPNAME=jig-safe nvim
 
 ## Commands
 - `:JigHealth` run distro + provider health checks.
+- `:JigVersion` print deterministic support report (Jig commit, Neovim version, OS, channel, stdpaths).
 - `:JigVerboseMap {lhs}` show keymap provenance.
 - `:JigVerboseSet {option}` show option provenance.
 - `:JigBisectGuide` print deterministic bisect guidance.
@@ -117,6 +118,8 @@ tests/perf/run_harness.sh
 ```
 
 ## Documentation
+- `SECURITY.md`
+- `SUPPORT.md`
 - `docs/install.jig.nvim.md`
 - `docs/contract.jig.nvim.md`
 - `docs/keymaps.jig.nvim.md`
@@ -143,6 +146,11 @@ tests/perf/run_harness.sh
 - `doc/jig-security.txt` (`:help jig-security`)
 - `doc/jig-platform.txt` (`:help jig-platform`)
 - `doc/jig-testing.txt` (`:help jig-testing`)
+
+## Support and Security
+- Support workflow: `SUPPORT.md`
+- Security disclosure policy: `SECURITY.md`
+- Security controls and boundaries: `docs/security.jig.nvim.md` and `:help jig-security`
 
 ## License
 MIT

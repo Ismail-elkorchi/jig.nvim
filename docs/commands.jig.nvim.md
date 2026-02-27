@@ -41,6 +41,7 @@ Generated from the default runtime command surface. Do not edit manually.
 | `:JigUiProfile` | `optional-one` | `no` | Set accessibility profile (default|high-contrast|reduced-decoration|reduced-motion) |
 | `:JigVerboseMap` | `one` | `no` | Show keymap provenance via :verbose map <lhs> |
 | `:JigVerboseSet` | `one` | `no` | Show option provenance via :verbose set <option>? |
+| `:JigVersion` | `none` | `no` | Print deterministic Jig/Neovim/environment support report |
 
 Canonical help: `:help jig-commands`
 

@@ -40,6 +40,7 @@ COMMANDS
   :JigUiProfile       optional-one Set accessibility profile (default|high-contrast|reduced-decoration|reduced-motion)
   :JigVerboseMap      one          Show keymap provenance via :verbose map <lhs>
   :JigVerboseSet      one          Show option provenance via :verbose set <option>?
+  :JigVersion         none         Print deterministic Jig/Neovim/environment support report
 
 BOUNDARIES
   This file covers default-profile commands. Optional agent commands are
