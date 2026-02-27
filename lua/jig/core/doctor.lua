@@ -126,7 +126,15 @@ end
 local function collect_version_report()
   local root = repo_root()
   local version = vim.version()
-  local uname = (vim.uv or vim.loop).os_uname()
+  local uname = {
+    sysname = "",
+    release = "",
+    machine = "",
+  }
+  local ok_uname, detected_uname = pcall(vim.uv.os_uname)
+  if ok_uname and type(detected_uname) == "table" then
+    uname = detected_uname
+  end
   local commit, commit_source = resolve_head_sha(root)
   local channel = channel_state.load()
 
