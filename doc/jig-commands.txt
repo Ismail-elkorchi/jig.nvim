@@ -41,6 +41,9 @@ COMMANDS
   :JigVerboseMap      one          Show keymap provenance via :verbose map <lhs>
   :JigVerboseSet      one          Show option provenance via :verbose set <option>?
   :JigVersion         none         Print deterministic Jig/Neovim/environment support report
+  :JigWorkbench       optional-one Assemble an idempotent workbench layout (dev|review|agent|minimal)
+  :JigWorkbenchHelp   none         Open workbench help topic
+  :JigWorkbenchReset  none         Reset workbench layout roles in current tab
 
 BOUNDARIES
   This file covers default-profile commands. Optional agent commands are

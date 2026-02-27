@@ -164,6 +164,9 @@ jobs:
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigToolchainUpdate")==2)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigToolchainRestore")==2)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigToolchainRollback")==2)' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigWorkbench")==2)' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigWorkbenchReset")==2)' '+qa'
+          nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigWorkbenchHelp")==2)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigMcpTrust")==0)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigMcpList")==0)' '+qa'
           nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigAgentContext")==0)' '+qa'
@@ -192,6 +195,9 @@ jobs:
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigToolchainUpdate")==0)' '+qa'
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigToolchainRestore")==0)' '+qa'
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigToolchainRollback")==0)' '+qa'
+          NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigWorkbench")==0)' '+qa'
+          NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigWorkbenchReset")==0)' '+qa'
+          NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigWorkbenchHelp")==0)' '+qa'
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigMcpTrust")==0)' '+qa'
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigMcpList")==0)' '+qa'
           NVIM_APPNAME=jig-safe nvim --headless -u ./init.lua '+lua assert(vim.fn.exists(":JigAgentContext")==0)' '+qa'
@@ -274,6 +280,7 @@ jobs:
           rg -n '"markdown-link-check"' tests/docs/snapshots/latest-headless.json
           rg -n '"help-reference-check"' tests/docs/snapshots/latest-headless.json
           rg -n '"issue-template-failure-surfaces"' tests/docs/snapshots/latest-headless.json
+          rg -n '"workbench-doc-research-gate"' tests/docs/snapshots/latest-headless.json
           rg -n '"labels-manifest-controls"' tests/docs/snapshots/latest-headless.json
           rg -n '"execution-board-wp16-wp18-tracking"' tests/docs/snapshots/latest-headless.json
 
@@ -298,6 +305,18 @@ jobs:
           rg -n '"toolchain-drift-visible-in-health"' tests/tools/snapshots/latest-headless.json
           rg -n '"toolchain-drift-warning-via-jighealth"' tests/tools/snapshots/latest-headless.json
           rg -n '"safe-profile-isolation"' tests/tools/snapshots/latest-headless.json
+
+      - name: Workbench harness snapshot checks
+        run: |
+          tests/workbench/run_harness.sh
+          test -f tests/workbench/snapshots/latest-headless.json
+          rg -n '"research-done-r1-r5-gate"' tests/workbench/snapshots/latest-headless.json
+          rg -n '"workbench-help-command-surface"' tests/workbench/snapshots/latest-headless.json
+          rg -n '"dev-preset-idempotent-layout"' tests/workbench/snapshots/latest-headless.json
+          rg -n '"review-preset-git-surface"' tests/workbench/snapshots/latest-headless.json
+          rg -n '"minimal-preset-no-terminal"' tests/workbench/snapshots/latest-headless.json
+          rg -n '"agent-preset-enabled-panel"' tests/workbench/snapshots/latest-headless.json
+          rg -n '"safe-profile-isolation"' tests/workbench/snapshots/latest-headless.json
 
       - name: Agent harness snapshot checks
         run: |

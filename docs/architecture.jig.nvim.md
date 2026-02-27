@@ -43,6 +43,9 @@ Canonical help: `:help jig`
 - `tools/toolchain.lua`: manifest+lockfile lifecycle for external toolchain install/update/restore/rollback and drift reporting.
 - `tools/health.lua`: shell/provider/tool health summaries and checkhealth integration.
 - `tools/init.lua`: command orchestration + `:JigExec`, `:JigToolHealth`, `:JigTerm`, and `:JigToolchain*` lifecycle commands.
+- `workbench/config.lua`: workbench preset policy and tunables.
+- `workbench/init.lua`: idempotent workbench layout orchestration + `:JigWorkbench*` commands.
+- `workbench/research_check.lua`: deterministic R1–R5 research truth-condition checker.
 - `security/config.lua`: runtime security policy defaults + override merge.
 - `security/startup_phase.lua`: startup phase boundary tracking (`startup` -> `done`).
 - `security/net_guard.lua`: startup network classification, deny-by-default, and trace hooks.
@@ -85,6 +88,7 @@ Canonical help: `:help jig`
 - `lua/jig/tests/perf/harness.lua`: deterministic perf probes and extreme-regression budgets.
 - `lua/jig/tests/ops/harness.lua`: release/rollback/incident operations drill suite.
 - `lua/jig/tests/agent_ui/harness.lua`: WP-17 approval/pipeline/context/instruction UX regression suite.
+- `lua/jig/tests/workbench/harness.lua`: workbench layout/idempotence/safe-profile/research-gate regression suite.
 
 ## Policy
 - Stability-first defaults.

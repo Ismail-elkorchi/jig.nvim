@@ -67,6 +67,9 @@ NVIM_APPNAME=jig-safe nvim
 - `:JigExec! {cmd...}` user-only destructive override path (visible warning + audit log).
 - `:JigToolHealth` show shell/provider/tool integration summary.
 - `:JigTerm [root|buffer]` open integrated terminal in Jig root (or current buffer directory).
+- `:JigWorkbench [preset]` assemble an idempotent daily-driver layout (`dev|review|agent|minimal`).
+- `:JigWorkbenchReset` reset workbench role panes in the current tab.
+- `:JigWorkbenchHelp` open workbench help topic.
 - `:JigMcpList` list discovered MCP servers (when agent module enabled).
 - `:JigMcpTrust` list MCP trust state/capabilities and update allow/ask/deny/revoke.
 - `:JigMcpStart <server>` start MCP handshake for one server (when enabled).
@@ -128,6 +131,7 @@ tests/perf/run_harness.sh
 - `docs/plugin-manager.jig.nvim.md`
 - `docs/profiling.jig.nvim.md`
 - `docs/navigation.jig.nvim.md`
+- `docs/workbench.jig.nvim.md`
 - `docs/lsp.jig.nvim.md`
 - `docs/tools.jig.nvim.md`
 - `docs/agents.jig.nvim.md`
@@ -140,7 +144,9 @@ tests/perf/run_harness.sh
 - `docs/stability.jig.nvim.md`
 - `docs/compatibility.jig.nvim.md`
 - `docs/troubleshooting.jig.nvim.md`
+- `docs/roadmap/NEOVIM_ROADMAP_ALIGNMENT.md`
 - `doc/jig-lsp.txt` (`:help jig-lsp`)
+- `doc/jig-workbench.txt` (`:help jig-workbench`)
 - `doc/jig-tools.txt` (`:help jig-tools`)
 - `doc/jig-agents.txt` (`:help jig-agents`)
 - `doc/jig-security.txt` (`:help jig-security`)

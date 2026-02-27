@@ -1,0 +1,47 @@
+*jig-workbench*  Jig Workbench Mode
+
+OVERVIEW
+  Workbench Mode assembles an explicit, repeatable, IDE-like session layout
+  on demand. It does not run automatically at startup.
+
+COMMANDS
+  :JigWorkbench [dev|review|agent|minimal]
+      Assemble workbench layout for selected preset.
+
+  :JigWorkbenchReset
+      Close workbench role panes (nav/term/agent) and clear role state.
+
+  :JigWorkbenchHelp
+      Open this help topic. If help tags are unavailable, opens |:JigDocs|
+      fallback index.
+
+PRESETS
+  dev
+      nav(files) + main + terminal
+  review
+      nav(git changes) + main + terminal
+  agent
+      nav(files) + main + terminal + agent queue panel
+      (agent panel appears only when agent module is enabled)
+  minimal
+      nav(files) + main
+
+FIRST 10 MINUTES
+  1. :JigWorkbench dev
+  2. edit in center pane; navigate from left pane
+  3. run tests/tasks in terminal pane
+  4. :JigWorkbench review before commit
+  5. :JigWorkbenchReset when pane drift appears
+
+SAFE PROFILE
+  NVIM_APPNAME=jig-safe does not expose workbench commands.
+
+BOUNDARIES
+  - No startup auto-install/update behavior.
+  - No startup implicit network behavior.
+  - Native cmdline path remains default.
+
+SEE ALSO
+  |jig| |jig-commands| |jig-tools| |jig-agents| |jig-security|
+
+vim:tw=78:ts=8:noet:ft=help:norl:

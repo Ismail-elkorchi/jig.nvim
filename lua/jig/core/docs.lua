@@ -13,6 +13,7 @@ local function docs_entries()
     { label = "Install", help = "jig-install" },
     { label = "Configuration", help = "jig-configuration" },
     { label = "Commands", help = "jig-commands" },
+    { label = "Workbench", help = "jig-workbench" },
     { label = "Keymaps", help = "jig-keymaps" },
     { label = "Troubleshooting", help = "jig-troubleshooting" },
     { label = "Migration", help = "jig-migration" },
@@ -43,6 +44,7 @@ local function render_docs_lines(entries)
 
   lines[#lines + 1] = ""
   lines[#lines + 1] = "Recovery shortcuts:"
+  lines[#lines + 1] = "  - :JigWorkbench dev"
   lines[#lines + 1] = "  - :JigRepro"
   lines[#lines + 1] = "  - :JigBisectGuide"
   lines[#lines + 1] = "  - NVIM_APPNAME=jig-safe nvim"
