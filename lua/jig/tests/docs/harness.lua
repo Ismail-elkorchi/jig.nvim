@@ -358,6 +358,26 @@ local function repro_command_ok()
   }
 end
 
+local function version_command_ok()
+  assert(vim.fn.exists(":JigVersion") == 2, "JigVersion command missing")
+  vim.cmd("JigVersion")
+  local payload = vim.g.jig_version_last
+  assert(type(payload) == "table", "JigVersion payload missing")
+  assert(type(payload.jig) == "table", "JigVersion payload.jig missing")
+  assert(type(payload.channel) == "table", "JigVersion payload.channel missing")
+  assert(type(payload.stdpath) == "table", "JigVersion payload.stdpath missing")
+  assert(type(payload.neovim) == "string" and payload.neovim ~= "", "JigVersion neovim missing")
+  assert(
+    type(payload.stdpath.config) == "string" and payload.stdpath.config ~= "",
+    "stdpath config missing"
+  )
+  assert(type(payload.channel.value) == "string" and payload.channel.value ~= "", "channel missing")
+  return {
+    profile = payload.jig.profile,
+    channel = payload.channel.value,
+  }
+end
+
 local function keymap_docs_linked_ok()
   assert(keymap_docs.generate({ check = true }), "keymap docs out of sync")
   local index = read_or_empty(repo_root() .. "/docs/index.jig.nvim.md")
@@ -435,6 +455,10 @@ local cases = {
   {
     id = "repro-command-surface",
     run = repro_command_ok,
+  },
+  {
+    id = "version-command-surface",
+    run = version_command_ok,
   },
   {
     id = "command-doc-sync-gate",

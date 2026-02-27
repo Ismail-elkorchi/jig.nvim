@@ -31,6 +31,9 @@ COMMAND DISCOVERY
   :JigRepro
       Print deterministic minimal repro workflow.
 
+  :JigVersion
+      Print deterministic support report (commit/profile/channel/stdpaths).
+
 NOT GUARANTEED / BOUNDARIES
   - Jig documents default behavior and explicit optional features.
   - Optional modules are not guaranteed in `NVIM_APPNAME=jig-safe`.
