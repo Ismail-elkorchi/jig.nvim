@@ -141,6 +141,7 @@ local function command_cross_ref_ok()
 
   local index = read_or_empty(repo_root() .. "/docs/index.jig.nvim.md")
   assert(index:find(":help jig%-keymaps", 1, false) ~= nil, "index missing jig-keymaps link")
+  assert(index:find(":help jig%-workbench", 1, false) ~= nil, "index missing jig-workbench link")
 
   return {
     commands = #entries,
@@ -153,6 +154,7 @@ local function required_vimdoc_ok()
     "jig",
     "jig-install",
     "jig-configuration",
+    "jig-workbench",
     "jig-keymaps",
     "jig-troubleshooting",
     "jig-migration",
@@ -171,6 +173,7 @@ local function required_vimdoc_ok()
     "doc/jig.txt",
     "doc/jig-install.txt",
     "doc/jig-configuration.txt",
+    "doc/jig-workbench.txt",
     "doc/jig-keymaps.txt",
     "doc/jig-troubleshooting.txt",
     "doc/jig-migration.txt",
@@ -265,6 +268,28 @@ local function repro_template_ok()
   for _, path in ipairs(files) do
     assert(vim.fn.filereadable(path) == 1, "missing repro template file: " .. path)
   end
+
+  return {
+    files = #files,
+  }
+end
+
+local function workbench_docs_present_ok()
+  local root = repo_root()
+  local files = {
+    root .. "/docs/workbench.jig.nvim.md",
+    root .. "/docs/roadmap/NEOVIM_ROADMAP_ALIGNMENT.md",
+    root .. "/doc/jig-workbench.txt",
+  }
+
+  for _, path in ipairs(files) do
+    assert(vim.fn.filereadable(path) == 1, "missing workbench docs file: " .. path)
+  end
+
+  local checker_ok, checker = pcall(require, "jig.workbench.research_check")
+  assert(checker_ok and type(checker.run) == "function", "missing workbench research checker")
+  local ok, report = checker.run({ root = root })
+  assert(ok == true, "workbench research gate failed: " .. table.concat(report.errors or {}, ", "))
 
   return {
     files = #files,
@@ -490,6 +515,10 @@ local cases = {
   {
     id = "repro-template-present",
     run = repro_template_ok,
+  },
+  {
+    id = "workbench-doc-research-gate",
+    run = workbench_docs_present_ok,
   },
   {
     id = "runbooks-present",

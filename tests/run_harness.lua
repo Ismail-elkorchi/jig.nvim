@@ -66,6 +66,9 @@ local function run_startup_smoke()
   assert(vim.fn.exists(":JigToolchainUpdate") == 2, "JigToolchainUpdate missing")
   assert(vim.fn.exists(":JigToolchainRestore") == 2, "JigToolchainRestore missing")
   assert(vim.fn.exists(":JigToolchainRollback") == 2, "JigToolchainRollback missing")
+  assert(vim.fn.exists(":JigWorkbench") == 2, "JigWorkbench missing")
+  assert(vim.fn.exists(":JigWorkbenchReset") == 2, "JigWorkbenchReset missing")
+  assert(vim.fn.exists(":JigWorkbenchHelp") == 2, "JigWorkbenchHelp missing")
   assert(vim.fn.exists(":JigMcpTrust") == 0, "JigMcpTrust should be absent by default")
   assert(vim.fn.exists(":JigMcpList") == 0, "JigMcpList should be absent by default")
   assert(vim.fn.exists(":JigAgentContext") == 0, "JigAgentContext should be absent by default")
@@ -111,6 +114,9 @@ local function run_startup_smoke()
       join(ROOT, "init.lua"),
       "+lua assert(vim.g.jig_profile=='safe','safe profile expected')",
       "+lua assert(vim.fn.exists(':JigVersion')==2,'JigVersion missing in safe profile')",
+      "+lua assert(vim.fn.exists(':JigWorkbench')==0,'JigWorkbench should be absent in safe profile')",
+      "+lua assert(vim.fn.exists(':JigWorkbenchReset')==0,'JigWorkbenchReset should be absent in safe profile')",
+      "+lua assert(vim.fn.exists(':JigWorkbenchHelp')==0,'JigWorkbenchHelp should be absent in safe profile')",
       "+JigVersion",
       "+qa",
     }, {
@@ -167,6 +173,10 @@ local SUITES = {
   tools = {
     module = "jig.tests.tools.harness",
     snapshot = join(ROOT, "tests/tools/snapshots/latest-headless.json"),
+  },
+  workbench = {
+    module = "jig.tests.workbench.harness",
+    snapshot = join(ROOT, "tests/workbench/snapshots/latest-headless.json"),
   },
   lsp = {
     module = "jig.tests.lsp.harness",

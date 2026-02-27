@@ -9,8 +9,10 @@ START HERE
   |jig-configuration|   profile/config boundaries
   |jig-commands|        default :Jig* command index
   |jig-keymaps|         default keymap registry output
+  |jig-workbench|       single-entry workbench presets for daily loops
 
 OPERATIONS
+  |jig-workbench|       workbench mode presets and reset path
   |jig-troubleshooting| recurring failure classes + next commands
   |jig-migration|       migration checklist and rollback path
   |jig-release|         release checklist and channel publication workflow
@@ -30,6 +32,9 @@ COMMAND DISCOVERY
 
   :JigRepro
       Print deterministic minimal repro workflow.
+
+  :JigWorkbench [preset]
+      Assemble an idempotent dogfooding layout (`dev|review|agent|minimal`).
 
   :JigVersion
       Print deterministic support report (commit/profile/channel/stdpaths).

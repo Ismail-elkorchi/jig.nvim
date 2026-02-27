@@ -42,6 +42,9 @@ Generated from the default runtime command surface. Do not edit manually.
 | `:JigVerboseMap` | `one` | `no` | Show keymap provenance via :verbose map <lhs> |
 | `:JigVerboseSet` | `one` | `no` | Show option provenance via :verbose set <option>? |
 | `:JigVersion` | `none` | `no` | Print deterministic Jig/Neovim/environment support report |
+| `:JigWorkbench` | `optional-one` | `no` | Assemble an idempotent workbench layout (dev|review|agent|minimal) |
+| `:JigWorkbenchHelp` | `none` | `no` | Open workbench help topic |
+| `:JigWorkbenchReset` | `none` | `no` | Reset workbench layout roles in current tab |
 
 Canonical help: `:help jig-commands`
 

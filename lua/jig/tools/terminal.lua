@@ -108,6 +108,7 @@ function M.open(opts)
 
   vim.cmd("botright split")
   local win = vim.api.nvim_get_current_win()
+  vim.cmd("enew")
   local bufnr = vim.api.nvim_get_current_buf()
 
   vim.bo[bufnr].buflisted = false

@@ -23,6 +23,7 @@ end
 require("jig.lsp").setup()
 require("jig.nav").setup()
 require("jig.tools").setup()
+require("jig.workbench").setup()
 
 local user_agent = type(vim.g.jig_agent) == "table" and vim.g.jig_agent or {}
 if user_agent.enabled == true then
